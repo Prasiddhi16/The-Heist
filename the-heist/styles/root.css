@@ -1,10 +1,10 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --bg:       #0F172A;
-  --surface:  #1E293B;
-  --surface2: #263347;
-  --border:   rgba(255,255,255,0.07);
+  --bg:       #d9dbdf;
+  --surface:  #f6f7f9;
+  --surface2: #bcc2ca;
+  --border:   rgba(56, 35, 35, 0.07);
   --blue:     #3B82F6;
   --blue-d:   rgba(59,130,246,0.12);
   --green:    #10B981;
@@ -14,7 +14,7 @@
   --red:      #EF4444;
   --red-d:    rgba(239,68,68,0.12);
   --purple:   #8B5CF6;
-  --text:     #F8FAFC;
+  --text:     #171b1e;
   --muted:    #7B8FB7;
   --radius:   10px;
   --sidebar:  240px;
@@ -83,7 +83,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;font-size:14px;background:v
 /* ── Sidebar ── */
 .sidebar{
   width:var(--sidebar);min-width:var(--sidebar);
-  background:#0C1628;border-right:1px solid var(--border);
+  background:#bfdbde;border-right:1px solid var(--border);
   display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;
   transition:transform .25s;
 }

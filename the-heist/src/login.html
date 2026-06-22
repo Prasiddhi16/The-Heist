@@ -12,15 +12,16 @@
 
 <body>    
   <div id="screen-login">
-  <div class="login-art">
-    <div class="login-art-svg">
-    <div class="login-art-text">
+    <div class="login-art">
+      <div class="login-art-svg">
+      </div> 
+      <div class="login-art-text">
       <h2>Heist Solver</h2>
-      <p>Detective Intelligence System · DBMS Project</p>
+      <p>Detective Intelligence System</p>
+      </div>
     </div>
-  </div>
 
-  <div class="login-form-panel">
+    <div class="login-form-panel">
     <div class="lf-logo">
       <div class="lf-logo-icon">H</div>
       <div>
@@ -35,12 +36,12 @@
     </div>
 
     <div id="reg-fields" class="hidden">
-      <div class="fg"><label class="flabel">Full Name</label><input class="finput" placeholder="e.g. Inspector Kane" id="reg-name"></div>
+      <div class="rf"><label class="flabel">Full Name</label><input class="finput" placeholder="e.g. Inspector Kane" id="reg-name"></div>
     </div>
-    <div class="fg"><label class="flabel">Badge ID / Username</label><input class="finput" placeholder="inspector_kane" id="inp-user" value="inspector_kane"></div>
-    <div class="fg"><label class="flabel">Password</label><input class="finput" type="password" placeholder="••••••••" id="inp-pass" value="password"></div>
-    <button class="submit-btn" onclick="doLogin()">Access Intelligence System </button>
-    <p style="text-align:center;color:var(--muted);font-size:.72rem;margin-top:1.25rem">PostgreSQL · University DBMS Project · 2026</p>
+    <div class="rf"><label class="flabel">Username</label><input class="finput" placeholder="Enter your username" id="inp-user" value="inspector_kane"></div>
+    <div class="rf"><label class="flabel">Password</label><input class="finput" type="password" placeholder="Enter your password" id="inp-pass" value="password"></div>
+    <button class="submit-btn" id="login-btn" onclick="doLogin()"> Access Intelligence System </button>
+    <p style="text-align:center;color:var(--muted);font-size:.72rem;margin-top:1.25rem"></p>
   </div>
 </div>
 
@@ -48,30 +49,113 @@
 </html>
 
 <script>
-function switchLoginTab(m){
-  loginMode=m;
-  document.getElementById("ltab-in").classList.toggle("active",m==="in");
-  document.getElementById("ltab-up").classList.toggle("active",m==="up");
-  document.getElementById("reg-fields").classList.toggle("hidden",m==="in");
+  //Use in main later
+  // Mapping page names
+  var PAGES = {
+  dashboard:   'dashboard.html',
+  cases:       'cases.html',
+  evidence:    'evidence.html',
+  suspects:    'suspects.html'
+};
+
+function nav(page) {
+  if (!PAGES[page]) { 
+    console.warn('Unknown page:', page); 
+    return; 
+  }
+
+  //Change location to load the new file
+  window.location.href = PAGES[page];
 }
+
+var loginMode = 'in';
+
+function switchLoginTab(m) {
+  loginMode = m;
+  var tabIn = document.getElementById('ltab-in');
+  var tabUp = document.getElementById('ltab-up');
+  var regFields = document.getElementById('reg-fields');
+  var loginBtn = document.getElementById('login-btn');
+
+  if (tabIn) tabIn.classList.toggle('active', m === 'in');//Sign in tab is active
+  if (tabUp) tabUp.classList.toggle('active', m === 'up');//Sign up tab is active
+  if (regFields) regFields.classList.toggle('hidden', m === 'in');//Hidden during sign in
+  if (loginBtn) {
+    loginBtn.textContent = m === 'in' ? 'Access Intelligence System' : 'Create Account';//Submit button text according to tabs
+  }
+}
+
+//Login/Sign up
 function doLogin(){
-  var u=document.getElementById("inp-user").value.trim()||"Inspector";
-  S.username=u;
-  document.getElementById("nav-uname").textContent=u;
-  document.getElementById("nav-av").textContent=u.charAt(0).toUpperCase();
-  document.getElementById("sb-av").textContent=u.charAt(0).toUpperCase();
-  document.getElementById("sb-name").textContent=u;
-  document.getElementById("dash-name").textContent=u;
-  var lb=LEADERBOARD.find(function(l){return l.isPlayer;});
-  if(lb)lb.name=u;
-  document.getElementById("screen-login").style.display="none";
-  renderAll();
+  //Get username and password from the form
+  var u = document.getElementById('inp-user').value.trim() || 'Inspector';
+  var p = document.getElementById('inp-pass').value;
+  if (!p) { alert('Please enter your password.'); return; }
+
+  //store user data inside browser's memory storage card
+  localStorage.setItem('loggedInUser', u);
+
+  //Switch screen
   nav("dashboard");
-  toast("Welcome, "+u+"! Intelligence system access granted.","ok");
 }
+
+// Logout  //in main later
 function doLogout(){
-  document.getElementById("screen-login").style.display="flex";
-  S.activeCase=null;S.collectedEv=new Set();S.selectedSuspect=null;S.selectedMethod=null;
-  toast("Session terminated. Stay safe, Detective.","info");
+  //Remove userdata from the browser's memory
+  localStorage.removeItem('loggedInUser');
+  nav('login');
+}
+
+/* Monitoring session */
+document.addEventListener('DOMContentLoaded', function() {
+  var isLoginPage = window.location.pathname.includes('login.html') || window.location.pathname === '/' || window.location.pathname.endsWith('/');
+  var savedUser = localStorage.getItem('loggedInUser');
+
+  if (isLoginPage) {
+   /* if (savedUser) {
+      nav('dashboard');
+    }*/ //use this later for remember me
+    
+    // Key bindings for login fields if they exist on screen
+    var inpPass = document.getElementById('inp-pass');
+    var inpUser = document.getElementById('inp-user');
+
+    if (inpPass) {
+      inpPass.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') doLogin();
+      });
+    }
+    if (inpUser) {
+      inpUser.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') document.getElementById('inp-pass').focus();
+      });
+    }
+
+  } else {
+    if (!savedUser) {
+      nav('login');
+      return;
+    }
+
+    updateUIPlaceholders(savedUser);
+  }
+});
+
+//Use in main later
+//Fill these elements with username
+function updateUIPlaceholders(u) {
+  var navUname  = document.getElementById('nav-uname');
+  var navAv     = document.getElementById('nav-av');
+  var sbAv      = document.getElementById('sb-av');
+  var sbName    = document.getElementById('sb-name');
+  var dashName  = document.getElementById('dash-name');
+  var initial   = u.charAt(0).toUpperCase();
+
+  if (navUname) navUname.textContent = u;
+  if (navAv)    navAv.textContent    = initial;
+  if (sbAv)     sbAv.textContent     = initial;
+  if (sbName)   sbName.textContent   = u;
+  if (dashName) dashName.textContent = u;
+
 }
 </script>

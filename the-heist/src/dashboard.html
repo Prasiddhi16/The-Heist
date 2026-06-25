@@ -1,16 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Heist Solver — Detective Intelligence System</title>
-<link rel="stylesheet" href="../styles/root.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-</head>
-
-<body> 
+{% extends '/index.html' %}
+{% load static %}
+{% block title %} Dashboard page {% endblock %}
+{% block content %}
     <!-- DASHBOARD -->
     <div class="panel active" id="panel-dashboard">
         <div class="page-hdr">
@@ -75,5 +66,14 @@
           </div>
         </div>
     </div>
-</body>
-    
+ {% endblock %}
+
+    {% block extra_css %} 
+    <link rel="stylesheet" href="{% %}">
+    {% endblock %}
+
+    {% block extra_js %}
+    <script>
+
+    </script>
+    {% endblock %}

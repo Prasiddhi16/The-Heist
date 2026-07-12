@@ -51,22 +51,22 @@
 <script>
   //Use in main later
   // Mapping page names
-  var PAGES = {
-  dashboard:   'dashboard.html',
-  cases:       'cases.html',
-  evidence:    'evidence.html',
-  suspects:    'suspects.html'
+var PAGES = {
+  dashboard: '/dashboard/',
+  cases: '/cases/',
+  heist: '/heist/',
+  login: '/login/'
 };
+
 
 function nav(page) {
   if (!PAGES[page]) { 
     console.warn('Unknown page:', page); 
     return; 
   }
-
-  //Change location to load the new file
-  window.location.href = PAGES[page];
+  window.location.href = PAGES[page];  // ✅ go to Django route
 }
+
 
 var loginMode = 'in';
 
@@ -87,15 +87,13 @@ function switchLoginTab(m) {
 
 //Login/Sign up
 function doLogin(){
-  //Get username and password from the form
   var u = document.getElementById('inp-user').value.trim() || 'Inspector';
   var p = document.getElementById('inp-pass').value;
   if (!p) { alert('Please enter your password.'); return; }
 
-  //store user data inside browser's memory storage card
   localStorage.setItem('loggedInUser', u);
 
-  //Switch screen
+  
   nav("dashboard");
 }
 

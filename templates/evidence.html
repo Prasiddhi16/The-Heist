@@ -5,48 +5,47 @@
 {% block content %}
 
 <div class="page-hdr">
-    <div>
-        <div class="page-title">Evidence</div>
-        <div class="page-sub">
-            View and manage all collected evidence.
-        </div>
+  <div>
+    <div class="page-title">Evidence — {{ case.title }}</div>
+    <div class="page-sub">
+      View and manage all collected evidence.
     </div>
+  </div>
 </div>
 
 <div class="card">
 
-    <h3>Collected Evidence</h3>
+  <h3>Collected Evidence</h3>
 
-    <table class="data-table">
+  <table class="data-table">
 
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Evidence</th>
-                <th>Collected At</th>
-                <th>Status</th>
-            </tr>
-        </thead>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Evidence</th>
+        <th>Collected At</th>
+        <th>Status</th>
+      </tr>
+    </thead>
 
-        <tbody>
+    <tbody>
 
-            <tr>
-                <td>EV-001</td>
-                <td>Fingerprint</td>
-                <td>Warehouse</td>
-                <td>Verified</td>
-            </tr>
+      {% for e in evidence_items %}
+      <tr>
+        <td>{{ e.evidence_id }}</td>
+        <td>{{ e.name }}</td>
+        <td>{{ e.collected_at }}</td>
+        <td>{{ e.status }}</td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4">No evidence logged for this case yet.</td>
+      </tr>
+      {% endfor %}
 
-            <tr>
-                <td>EV-002</td>
-                <td>Knife</td>
-                <td>Kitchen</td>
-                <td>Pending Lab</td>
-            </tr>
+    </tbody>
 
-        </tbody>
-
-    </table>
+  </table>
 
 </div>
 

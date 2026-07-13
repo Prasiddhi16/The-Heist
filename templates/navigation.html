@@ -14,14 +14,14 @@
 
   <div class="sidebar-section-label">Investigation</div>
 
-  <a href="{% url 'evidence' %}" class="nav-item">
+  <a href="{% url 'evidence' case.id %}" class="nav-item">
     <span class="nav-icon">
         <i class="fa-solid fa-fingerprint"></i>
     </span>
     Evidence
   </a>
 
-  <a href="{% url 'suspects' %}" class="nav-item">
+  <a href="{% url 'suspects' case.id %}" class="nav-item">
     <span class="nav-icon">
         <i class="fa-solid fa-user-secret"></i>
     </span>

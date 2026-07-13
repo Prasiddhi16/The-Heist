@@ -1,0 +1,32 @@
+{% extends 'index.html' %}
+{% block title %}Suspects{% endblock %}
+{% block content %}
+
+<div class="page-hdr">
+  <div>
+    <div class="page-title">Suspects — {{ case.title }}</div>
+    <div class="page-sub">List of suspects under investigation.</div>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Suspect List</h3>
+  <table class="data-table">
+    <thead>
+      <tr><th>Name</th><th>Age</th><th>Status</th><th>Risk</th></tr>
+    </thead>
+    <tbody>
+      {% for s in suspects %}
+      <tr>
+        <td>{{ s.name }}</td>
+        <td>{{ s.age }}</td>
+        <td>{{ s.status }}</td>
+        <td>{{ s.risk }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4">No suspects logged for this case yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -2,6 +2,66 @@
 {% block title %}Suspects{% endblock %}
 {% block content %}
 
+<style>
+  .page-hdr { border-left: 3px solid #b3221c; padding-left: 14px; margin-bottom: 18px; }
+  .page-title {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #221c0f;
+  }
+  .page-sub { color: #9a8f7c; font-style: italic; }
+
+  .card {
+    background: #14120f;
+    background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 4px 4px;
+    border: 1px solid #2c2620;
+    box-shadow: 0 0 0 1px #000 inset, 0 8px 24px rgba(0,0,0,0.5);
+  }
+
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #8a7f6e;
+    border-bottom: 1px solid #3a332a;
+    padding: 10px 12px;
+    text-align: left;
+  }
+  .data-table td {
+    padding: 12px;
+    border-bottom: 1px solid #221e19;
+    color: #d8d0c0;
+    font-family: 'Georgia', serif;
+  }
+  .data-table tr:hover td { background: rgba(179,34,28,0.06); }
+
+  .risk-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-size: 0.72rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-family: 'Courier New', monospace;
+  }
+  .risk-prime { background: rgba(179,34,28,0.18); color: #ff5c52; border: 1px solid #7a1e19; }
+  .risk-poi   { background: rgba(214,158,46,0.18); color: #e0a940; border: 1px solid #7a5c15; }
+  .risk-clear { background: rgba(70,140,100,0.15); color: #6fbf8d; border: 1px solid #2e5c40; }
+
+  .stamp-empty {
+    text-align: center;
+    padding: 30px;
+    color: #5c5346;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+  }
+</style>
+
 <div class="page-hdr">
   <div>
     <div class="page-title">Suspects — {{ case.title }}</div>
@@ -10,7 +70,7 @@
 </div>
 
 <div class="card">
-  <h3>Suspect List</h3>
+  <h3 style="font-family:'Courier New',monospace; color:#c9c1b0; letter-spacing:1px; padding:16px 16px 0;">SUSPECT LIST</h3>
   <table class="data-table">
     <thead>
       <tr><th>Name</th><th>Age</th><th>Status</th><th>Risk</th></tr>
@@ -18,13 +78,21 @@
     <tbody>
       {% for s in suspects %}
       <tr>
-        <td>{{ s.name }}</td>
+        <td><strong>{{ s.name }}</strong></td>
         <td>{{ s.age }}</td>
         <td>{{ s.status }}</td>
-        <td>{{ s.risk }}</td>
+        <td>
+          {% if s.risk == "Prime Suspect" %}
+            <span class="risk-badge risk-prime">Prime Suspect</span>
+          {% elif s.risk == "Person of Interest" %}
+            <span class="risk-badge risk-poi">Person of Interest</span>
+          {% else %}
+            <span class="risk-badge risk-clear">{{ s.risk }}</span>
+          {% endif %}
+        </td>
       </tr>
       {% empty %}
-      <tr><td colspan="4">No suspects logged for this case yet.</td></tr>
+      <tr><td colspan="4" class="stamp-empty">— NO SUSPECTS LOGGED FOR THIS CASE —</td></tr>
       {% endfor %}
     </tbody>
   </table>

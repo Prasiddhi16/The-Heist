@@ -11,8 +11,7 @@ def dashboard(request):
     return render(request, "dashboard.html")
 
 def cases(request):
-    return render(request, "cases.html")
-
+    return render(request, "cases.html", {"cases": Case.objects.all()})
 def heist(request):
     return render(request, "heist.html")
     

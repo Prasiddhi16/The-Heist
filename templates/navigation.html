@@ -1,10 +1,6 @@
-<!-- navigation.html -->
-<!-- Include this file via: <link> or copy-paste into your page -->
-<!-- Requires: ../styles/root.css -->
 
 <aside class="sidebar">
 
-  <!-- Section: MAIN -->
   <div class="sidebar-section-label">Main</div>
 
   <div class="nav-item" onclick="navigate('dashboard')">
@@ -16,16 +12,21 @@
     <span class="nav-count">4</span>
   </div>
 
-  <!-- Section: INVESTIGATION -->
   <div class="sidebar-section-label">Investigation</div>
 
-  <div class="nav-item" onclick="navigate('evidence')">
-    <span class="nav-icon">🔎</span> Evidence
-  </div>
+  <a href="{% url 'evidence' %}" class="nav-item">
+    <span class="nav-icon">
+        <i class="fa-solid fa-fingerprint"></i>
+    </span>
+    Evidence
+  </a>
 
-  <div class="nav-item" onclick="navigate('suspects')">
-    <span class="nav-icon">👤</span> Suspects
-  </div>
+  <a href="{% url 'suspects' %}" class="nav-item">
+    <span class="nav-icon">
+        <i class="fa-solid fa-user-secret"></i>
+    </span>
+    Suspects
+  </a>
 
   <div class="nav-item" onclick="navigate('board')">
     <span class="nav-icon">📌</span> Inv. Board
@@ -39,7 +40,6 @@
     <span class="nav-icon">⚖️</span> Case Resolution
   </div>
 
-  <!-- Section: RECORDS -->
   <div class="sidebar-section-label">Records</div>
 
   <div class="nav-item" onclick="navigate('history')">
@@ -50,7 +50,6 @@
     <span class="nav-icon">🏆</span> Leaderboard
   </div>
 
-  <!-- Footer: Detective Info -->
   <div class="sidebar-footer">
     <div class="detective-chip">
       <div class="detective-avatar">IK</div>

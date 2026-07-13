@@ -14,3 +14,10 @@ def cases(request):
 
 def heist(request):
     return render(request, "heist.html")
+    
+def evidence(request):
+    return render(request, "evidence.html")
+
+
+def suspects(request):
+    return render(request, "suspects.html")

@@ -1,0 +1,53 @@
+{% extends 'index.html' %}
+
+{% block title %}Evidence{% endblock %}
+
+{% block content %}
+
+<div class="page-hdr">
+    <div>
+        <div class="page-title">Evidence</div>
+        <div class="page-sub">
+            View and manage all collected evidence.
+        </div>
+    </div>
+</div>
+
+<div class="card">
+
+    <h3>Collected Evidence</h3>
+
+    <table class="data-table">
+
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Evidence</th>
+                <th>Collected At</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td>EV-001</td>
+                <td>Fingerprint</td>
+                <td>Warehouse</td>
+                <td>Verified</td>
+            </tr>
+
+            <tr>
+                <td>EV-002</td>
+                <td>Knife</td>
+                <td>Kitchen</td>
+                <td>Pending Lab</td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}

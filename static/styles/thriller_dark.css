@@ -1,0 +1,143 @@
+
+:root {
+  --bg-page:      #0c0a08;
+  --bg-panel:     #14120f;
+  --bg-sidebar:   #17140f;
+  --bg-topbar:    #1a1712;
+  --border-dim:   #2c2620;
+  --border-faint: #221e19;
+  --text-main:    #d8d0c0;
+  --text-bright:  #e8e2d5;
+  --text-dim:     #9a8f7c;
+  --text-faint:   #6b6150;
+  --accent-red:   #b3221c;
+  --accent-red-bright: #ff5c52;
+}
+
+body {
+  background: var(--bg-page) !important;
+  color: var(--text-main);
+}
+
+/* --- Sidebar (MAIN / INVESTIGATION / RECORDS) --- */
+.sidebar, nav.sidebar, #sidebar {
+  background: var(--bg-sidebar) !important;
+  border-right: 1px solid var(--border-dim);
+}
+.sidebar .section-label, .sidebar h4, .sidebar .nav-group-title {
+  color: var(--text-faint);
+  font-family: 'Courier New', monospace;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+}
+.sidebar a, .sidebar .nav-link {
+  color: var(--text-dim);
+}
+.sidebar a:hover, .sidebar .nav-link:hover {
+  color: var(--text-bright);
+  background: rgba(179,34,28,0.08);
+}
+.sidebar .nav-link.active, .sidebar a.active {
+  background: rgba(179,34,28,0.15);
+  color: var(--accent-red-bright);
+  border-left: 3px solid var(--accent-red);
+}
+.sidebar .badge {
+  background: var(--accent-red);
+  color: #fff;
+}
+.sidebar .user-card, .sidebar .profile-footer {
+  background: var(--bg-topbar);
+  border-top: 1px solid var(--border-dim);
+  color: var(--text-main);
+}
+
+/* --- Topbar (logo, search, bell, avatar) --- */
+.topbar, header.topbar, .app-header {
+  background: var(--bg-topbar) !important;
+  border-bottom: 1px solid var(--border-dim);
+}
+.topbar input, .search-input, input[type="search"] {
+  background: #0f0d0a;
+  border: 1px solid var(--border-dim);
+  color: var(--text-main);
+}
+.topbar input::placeholder { color: var(--text-faint); }
+.topbar .brand-title, .app-header h1 { color: var(--text-bright); }
+.topbar .brand-sub { color: var(--text-dim); }
+
+/* --- Page header --- */
+.page-hdr { border-left: 3px solid var(--accent-red); padding-left: 14px; margin-bottom: 18px; }
+.page-title {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-bright);
+}
+.page-sub { color: var(--text-dim); font-style: italic; }
+
+/* --- Card / panel --- */
+.card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-dim);
+  box-shadow: 0 0 0 1px #000 inset, 0 8px 24px rgba(0,0,0,0.5);
+  border-radius: 4px;
+  padding: 16px;
+}
+.card h3 {
+  font-family: 'Courier New', monospace;
+  color: #c9c1b0;
+  letter-spacing: 1px;
+  margin-top: 0;
+}
+
+/* --- Tables --- */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--border-dim);
+  padding: 10px 12px;
+  text-align: left;
+}
+.data-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border-faint);
+  color: var(--text-main);
+  font-family: 'Georgia', serif;
+}
+.data-table tr:hover td { background: rgba(179,34,28,0.06); }
+
+.evidence-id { font-family: 'Courier New', monospace; color: var(--text-faint); font-size: 0.85rem; }
+
+.stamp-empty {
+  text-align: center;
+  padding: 30px;
+  color: var(--text-faint);
+  font-family: 'Courier New', monospace;
+  letter-spacing: 1px;
+}
+
+/* --- Tags / badges --- */
+.tag, .risk-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 2px;
+  font-size: 0.72rem;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-family: 'Courier New', monospace;
+}
+.risk-prime { background: rgba(179,34,28,0.18); color: #ff5c52; border: 1px solid #7a1e19; }
+.risk-poi, .tag-poi   { background: rgba(214,158,46,0.18); color: #e0a940; border: 1px solid #7a5c15; }
+.risk-clear, .tag-clear { background: rgba(70,140,100,0.15); color: #6fbf8d; border: 1px solid #2e5c40; }
+
+.tag-physical    { background: rgba(90,110,180,0.18); color: #8fa6ff; border: 1px solid #364a8a; }
+.tag-digital     { background: rgba(70,140,160,0.18); color: #5fc7d9; border: 1px solid #1f5c66; }
+.tag-forensic    { background: rgba(150,70,180,0.18); color: #c98fe0; border: 1px solid #5c1f6b; }
+.tag-testimonial { background: rgba(214,158,46,0.18); color: #e0a940; border: 1px solid #7a5c15; }

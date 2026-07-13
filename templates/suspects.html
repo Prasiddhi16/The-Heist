@@ -18,6 +18,7 @@
     background-size: 4px 4px;
     border: 1px solid #2c2620;
     box-shadow: 0 0 0 1px #000 inset, 0 8px 24px rgba(0,0,0,0.5);
+    overflow-x: auto; /* Prevents tables with many columns from breaking layout */
   }
 
   .data-table { width: 100%; border-collapse: collapse; }
@@ -73,26 +74,38 @@
   <h3 style="font-family:'Courier New',monospace; color:#c9c1b0; letter-spacing:1px; padding:16px 16px 0;">SUSPECT LIST</h3>
   <table class="data-table">
     <thead>
-      <tr><th>Name</th><th>Age</th><th>Status</th><th>Risk</th></tr>
+      <tr>
+        <th>Name</th>
+        <th>Occupation</th>
+        <th>Motive</th>
+        <th>Alibi & Status</th>
+        <th>Status</th>
+      </tr>
     </thead>
     <tbody>
       {% for s in suspects %}
       <tr>
         <td><strong>{{ s.name }}</strong></td>
-        <td>{{ s.age }}</td>
-        <td>{{ s.status }}</td>
+        <td>{{ s.occupation|default:"Unknown" }}</td>
+        <td><small style="color: #bfae93;">{{ s.motive|default:"None logged" }}</small></td>
         <td>
-          {% if s.risk == "Prime Suspect" %}
+          <div>{{ s.alibi|default:"No alibi provided" }}</div>
+          {% if s.alibi_status %}
+            <small style="font-style: italic; color: #9a8f7c;">({{ s.alibi_status }})</small>
+          {% endif %}
+        </td>
+        <td>
+          {% if s.suspect_status == "Prime Suspect" %}
             <span class="risk-badge risk-prime">Prime Suspect</span>
-          {% elif s.risk == "Person of Interest" %}
+          {% elif s.suspect_status == "Person of Interest" %}
             <span class="risk-badge risk-poi">Person of Interest</span>
           {% else %}
-            <span class="risk-badge risk-clear">{{ s.risk }}</span>
+            <span class="risk-badge risk-clear">{{ s.suspect_status|default:"Cleared" }}</span>
           {% endif %}
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="4" class="stamp-empty">— NO SUSPECTS LOGGED FOR THIS CASE —</td></tr>
+      <tr><td colspan="5" class="stamp-empty">— NO SUSPECTS LOGGED FOR THIS CASE —</td></tr>
       {% endfor %}
     </tbody>
   </table>

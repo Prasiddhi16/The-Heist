@@ -1,4 +1,3 @@
-
 <aside class="sidebar">
 
   <div class="sidebar-section-label">Main</div>
@@ -14,19 +13,19 @@
 
   <div class="sidebar-section-label">Investigation</div>
 
-  <a href="{% url 'evidence' case.id %}" class="nav-item">
+  <div class="nav-item" onclick="var id = '{{ case.case_id }}' || '1'; window.location.href='/case/' + id + '/evidence/';">
     <span class="nav-icon">
-        <i class="fa-solid fa-fingerprint"></i>
+      <i class="fa-solid fa-fingerprint"></i>
     </span>
     Evidence
-  </a>
+  </div>
 
-  <a href="{% url 'suspects' case.id %}" class="nav-item">
+  <div class="nav-item" onclick="var id = '{{ case.case_id }}' || '1'; window.location.href='/case/' + id + '/suspects/';">
     <span class="nav-icon">
-        <i class="fa-solid fa-user-secret"></i>
+      <i class="fa-solid fa-user-secret"></i>
     </span>
     Suspects
-  </a>
+  </div>
 
   <div class="nav-item" onclick="navigate('board')">
     <span class="nav-icon">📌</span> Inv. Board

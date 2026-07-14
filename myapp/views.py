@@ -21,3 +21,15 @@ def evidence(request):
 
 def suspects(request):
     return render(request, "suspects.html")
+
+def caseresolution(request):
+    return render(request, "caseresolution.html")
+
+def analysis(request):
+    return render(request, "analysis.html")
+
+def history(request):
+    return render(request, "history.html")
+
+def leaderboard(request):
+    return render(request, "leaderboard.html")

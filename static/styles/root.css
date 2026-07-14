@@ -20,7 +20,15 @@
   --sidebar:  240px;
   --navbar:   58px;
 }
+.nav-item.active {
+  background-color: #2563eb;   /* blue background */
+  color: #ffffff;               /* white text */
+  border-radius: 6px;
+}
 
+.nav-item.active .nav-icon {
+  color: #ffffff;
+}
 html,body{height:100%;font-family:'Inter',sans-serif;font-size:14px;background:var(--bg);color:var(--text);overflow:hidden;min-height:100vh;}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}

@@ -1,0 +1,72 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %} Dashboard page {% endblock %}
+{% block content %}
+        <div class="page-hdr">
+          <div>
+            <div class="page-title">Welcome, <span id="dash-name"> </span> </div>
+            <div class="page-sub">Here's your intelligence overview for today.</div>
+          </div>
+          <a href="{% url 'cases' %}" class="btn btn-primary">Browse Cases</a>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-card">
+            <div class="stat-top"><div class="stat-label">Cases Solved</div><div class="stat-icon-wrap" style="background:var(--green-d)"></div></div>
+            <div class="stat-value" style="color:var(--green)">12</div>
+            <div class="stat-trend"><span class="trend-up">▲ 3</span> this month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><div class="stat-label">Active Cases</div><div class="stat-icon-wrap" style="background:var(--blue-d)"></div></div>
+            <div class="stat-value" style="color:var(--blue)">4</div>
+            <div class="stat-trend"><span class="trend-dn">▼ 1</span> vs last week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><div class="stat-label">Success Rate</div><div class="stat-icon-wrap" style="background:var(--orange-d)"></div></div>
+            <div class="stat-value" style="color:var(--orange)">87%</div>
+            <div class="stat-trend"><span class="trend-up">▲ 2%</span> improvement</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top"><div class="stat-label">Detective Rank</div><div class="stat-icon-wrap" style="background:rgba(139,92,246,.15)"></div></div>
+            <div class="stat-value" style="color:#8B5CF6">#5</div>
+            <div class="stat-trend"><span class="trend-up">▲ 2</span> places up</div>
+          </div>
+        </div>
+
+        <div class="dash-grid">
+          <div>
+            <!-- Recent Cases -->
+            <div class="card" style="margin-bottom:1rem">
+              <div class="section-hdr">
+                <div class="section-title">Recent Cases</div>
+                <button class="btn btn-ghost btn-sm" onclick="nav('cases')">View All →</button>
+              </div>
+              <div style="overflow-x:auto">
+                <table class="data-table">
+                  <thead><tr><th>Case</th><th>Location</th><th>Status</th><th>Difficulty</th><th>Loss</th><th></th></tr></thead>
+                  <tbody id="dash-case-table"></tbody>
+                </table>
+              </div>
+            </div>
+            <!-- Timeline -->
+            <div class="card">
+              <div class="section-hdr"><div class="section-title">Investigation Activity</div></div>
+              <div class="timeline" id="dash-timeline"></div>
+            </div>
+          </div>
+
+          <!-- Most Wanted -->
+          <div>
+            <div class="card">
+              <div class="section-hdr"><div class="section-title"> Most Wanted</div></div>
+              <div class="wanted-list" id="wanted-list"></div>
+            </div>
+          </div>
+        </div>
+ {% endblock %}
+
+ {% block extra_js %}
+    <script>
+
+    </script>
+    {% endblock %}

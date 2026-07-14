@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Heist Solver — Detective Intelligence System</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'styles/root.css' %}">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div id="screen-login">
+    <div class="login-art">
+        <div class="login-art-svg"></div>
+
+        <div class="login-art-text">
+            <h2>Heist Solver</h2>
+            <p>Detective Intelligence System</p>
+        </div>
+    </div>
+
+    <div class="login-form-panel">
+
+        <div class="lf-logo">
+            <div class="lf-logo-icon">H</div>
+
+            <div>
+                <div class="lf-logo-text">Heist Solver</div>
+                <div class="lf-logo-sub">Detective Intelligence System</div>
+            </div>
+        </div>
+
+        <div class="tab-switch">
+            <button class="tab-btn active" id="ltab-in" onclick="switchLoginTab('in')">
+                Sign In
+            </button>
+
+            <button class="tab-btn" id="ltab-up" onclick="switchLoginTab('up')">
+                Register
+            </button>
+        </div>
+
+        <div id="reg-fields" class="hidden">
+            <div class="rf">
+                <label class="flabel">Full Name</label>
+                <input class="finput"
+                       placeholder="e.g. Inspector Kane"
+                       id="reg-name">
+            </div>
+        </div>
+
+        <div class="rf">
+            <label class="flabel">Username</label>
+
+            <input class="finput"
+                   placeholder="Enter your username"
+                   id="inp-user"
+                   value="inspector_kane">
+        </div>
+
+        <div class="rf">
+            <label class="flabel">Password</label>
+
+            <input class="finput"
+                   type="password"
+                   placeholder="Enter your password"
+                   id="inp-pass"
+                   value="password">
+        </div>
+
+        <button class="submit-btn"
+                id="login-btn"
+                onclick="doLogin()">
+            Access Intelligence System
+        </button>
+
+    </div>
+</div>
+
+<script>
+
+const PAGES = {
+    dashboard: "{% url 'dashboard' %}",
+    cases: "{% url 'cases' %}",
+    heist: "{% url 'heist' %}",
+    login: "{% url 'login' %}"
+};
+
+function nav(page) {
+    if (PAGES[page]) {
+        window.location.href = PAGES[page];
+    }
+}
+
+let loginMode = "in";
+
+function switchLoginTab(mode) {
+
+    loginMode = mode;
+
+    document.getElementById("ltab-in").classList.toggle("active", mode === "in");
+    document.getElementById("ltab-up").classList.toggle("active", mode === "up");
+
+    document.getElementById("reg-fields").classList.toggle("hidden", mode === "in");
+
+    document.getElementById("login-btn").textContent =
+        mode === "in"
+            ? "Access Intelligence System"
+            : "Create Account";
+}
+
+function doLogin() {
+
+    const username =
+        document.getElementById("inp-user").value.trim() || "Inspector";
+
+    const password =
+        document.getElementById("inp-pass").value;
+
+    if (!password) {
+        alert("Please enter your password.");
+        return;
+    }
+
+    localStorage.setItem("loggedInUser", username);
+
+    nav("dashboard");
+}
+
+function doLogout() {
+    localStorage.removeItem("loggedInUser");
+    nav("login");
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const savedUser = localStorage.getItem("loggedInUser");
+
+    const pass = document.getElementById("inp-pass");
+    const user = document.getElementById("inp-user");
+
+    if (pass) {
+        pass.addEventListener("keydown", e => {
+            if (e.key === "Enter") doLogin();
+        });
+    }
+
+    if (user) {
+        user.addEventListener("keydown", e => {
+            if (e.key === "Enter") pass.focus();
+        });
+    }
+});
+
+</script>
+
+</body>
+</html>

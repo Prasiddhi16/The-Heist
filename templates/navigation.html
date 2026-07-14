@@ -1,0 +1,59 @@
+<aside class="sidebar">
+
+  <div class="sidebar-section-label">Main</div>
+
+  <a href="{% url 'dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+    <span class="nav-icon">📊</span> Dashboard
+  </a>
+
+  <a href="{% url 'cases' %}" class="nav-item {% if request.resolver_match.url_name == 'cases' %}active{% endif %}">
+    <span class="nav-icon">📁</span> Active Cases
+    <span class="nav-count">4</span>
+  </a>
+
+  <div class="sidebar-section-label">Investigation</div>
+
+  <a href="{% url 'evidence' %}" class="nav-item {% if request.resolver_match.url_name == 'evidence' %}active{% endif %}">
+    <span class="nav-icon"><i class="fa-solid fa-fingerprint"></i></span>
+    Evidence
+  </a>
+
+  <a href="{% url 'suspects' %}" class="nav-item {% if request.resolver_match.url_name == 'suspects' %}active{% endif %}">
+    <span class="nav-icon"><i class="fa-solid fa-user-secret"></i></span>
+    Suspects
+  </a>
+
+  <a href="{% url 'heist' %}" class="nav-item {% if request.resolver_match.url_name == 'heist' %}active{% endif %}">
+    <span class="nav-icon">📌</span> Inv. Board
+  </a>
+
+  <a href="#" class="nav-item">
+    <span class="nav-icon">📈</span> Analysis
+  </a>
+
+  <a href="{% url 'caseresolution' %}" class="nav-item {% if request.resolver_match.url_name == 'caseresolution' %}active{% endif %}">
+  <span class="nav-icon">⚖️</span> Case Resolution
+</a>
+
+  <div class="sidebar-section-label">Records</div>
+
+  <a href="#" class="nav-item">
+    <span class="nav-icon">🗂️</span> Case History
+  </a>
+
+  <a href="#" class="nav-item">
+    <span class="nav-icon">🏆</span> Leaderboard
+  </a>
+
+  <div class="sidebar-footer">
+    <div class="detective-chip">
+      <div class="detective-avatar">IK</div>
+      <div>
+        <div class="detective-name">inspector_kane</div>
+        <div class="detective-rank">⭐ Senior Detective</div>
+      </div>
+      <button class="logout-btn" title="Logout" onclick="handleLogout()">⏻</button>
+    </div>
+  </div>
+
+</aside>

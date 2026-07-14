@@ -1,0 +1,67 @@
+{% extends 'index.html' %}
+
+{% block title %}Active Cases{% endblock %}
+
+{% block content %}
+
+<div class="page-hdr">
+  <div>
+    <div class="page-title">Active Cases</div>
+    <div class="page-sub">Select a case to begin your investigation.</div>
+  </div>
+</div>
+
+<!-- Filter Pills -->
+<div class="case-filters">
+  <button class="filter-pill active" onclick="filterCases('all', this)">All</button>
+  <button class="filter-pill" onclick="filterCases('open', this)">Open</button>
+  <button class="filter-pill" onclick="filterCases('active', this)">Active</button>
+  <button class="filter-pill" onclick="filterCases('closed', this)">Closed</button>
+</div>
+
+<!-- Cases Grid -->
+<div class="case-grid" id="caseGrid">
+  {% for case in cases %}
+  <div class="case-card" data-status="{{ case.status|lower }}" onclick="openCase('{{ case.case_number }}')">
+    <div class="case-card-top">
+      <div>
+        <div class="case-num">{{ case.case_number }}</div>
+        <div class="case-title">{{ case.title }}</div>
+      </div>
+      <span class="badge">{{ case.status }}</span>
+    </div>
+    <div class="case-loc">📍 {{ case.location }}</div>
+    <p style="font-size:.78rem;color:var(--muted);line-height:1.55;">
+      {{ case.summary }}
+    </p>
+    <div class="case-meta">
+      <div class="case-loss">Loss: <strong>${{ case.loss_amount }}</strong> · {{ case.date_opened }}</div>
+    </div>
+    <button class="btn btn-primary btn-full" onclick="event.stopPropagation(); openCase('{{ case.case_number }}')">
+      🔍 Investigate
+    </button>
+  </div>
+  {% empty %}
+  <p>No active cases found.</p>
+  {% endfor %}
+</div>
+<!-- /case-grid -->
+
+<script>
+  function filterCases(status, btn) {
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+
+    document.querySelectorAll('.case-card').forEach(card => {
+      const match = status === 'all' || card.dataset.status === status;
+      card.style.display = match ? 'flex' : 'none';
+    });
+  }
+
+  function openCase(caseId) {
+    sessionStorage.setItem('selectedCase', caseId);
+    window.location.href = "{% url 'heist' %}";
+  }
+</script>
+
+{% endblock %}

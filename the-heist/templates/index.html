@@ -28,6 +28,11 @@
   </div>
 
 </div>
+<script>
+  window.SUPABASE_URL = "{{ supabase_url }}";
+  window.SUPABASE_ANON_KEY = "{{ supabase_anon_key }}";
+</script>
+<script src="{% static 'js/supabase-client.js' %}"></script>
 <script src="{% static 'js/app.js' %}"></script>
 {% block extra_js %}{% endblock %}
 </body>

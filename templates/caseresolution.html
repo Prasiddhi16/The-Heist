@@ -1,21 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Heist Solver — Detective Intelligence System</title>
-<link rel="stylesheet" href="../styles/root.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div class="page-hdr">
-        <div class="page-title">
-            Case-Resolution
-        </div>
-        <div class="page-sub">Select suspect and method, then close the case.</div>
-        <div>SELECT A CASE </div>
-    </div>
+{% extends 'index.html' %}
 
-</body>
+{% block title %}Case Resolution{% endblock %}
+
+{% block content %}
+
+<div class="page-hdr">
+  <div>
+    <div class="page-title">Case Resolution</div>
+    <div class="page-sub">Select suspect and method, then close the case.</div>
+  </div>
+</div>
+
+<div class="card">
+  SELECT A CASE
+</div>
+
+{% endblock %}

@@ -13,7 +13,4 @@ urlpatterns = [
     path("evidence/", views.evidence, name="evidence"),
     path("suspects/", views.suspects, name="suspects"),
     path("resolution/", views.caseresolution, name="caseresolution"),
-    path("analysis/", views.analysis, name="analysis"),
-    path("history/", views.history, name="history"),
-    path("leaderboard/", views.leaderboard, name="leaderboard"),
 ]

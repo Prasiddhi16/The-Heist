@@ -10,7 +10,7 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-from decouple import config
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -127,10 +127,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
-
-
-SUPABASE_URL = 'https://rtqayebxmnxjihtxofcm.supabase.co'
-SUPABASE_ANON_KEY ='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0cWF5ZWJ4bW54amlodHhvZmNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4Njg5ODcsImV4cCI6MjA5OTQ0NDk4N30.OEpULRFtb25A-gulXxVd7PbIwHyxYUnCJfifBU6uY4s'
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STORAGES = {
@@ -138,4 +134,3 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
-

@@ -30,3 +30,5 @@ def evidence(request, case_id):
         "case": case,
         "evidence_items": case.evidence_items.all(),
     })
+def caseresolution(request):
+    return render(request, "caseresolution.html")

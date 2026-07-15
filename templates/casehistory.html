@@ -1,0 +1,360 @@
+{% extends 'index.html' %}
+{% block title %}Case History{% endblock %}
+{% block content %}
+
+<style>
+  .page-hdr { border-left: 3px solid #b3221c; padding-left: 14px; margin-bottom: 18px; }
+  .page-title {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #221c0f;
+  }
+  .page-sub { color: #9a8f7c; font-style: italic; }
+
+  .stat-row { display: flex; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+  .stat-chip {
+    position: relative;
+    background: #14120f;
+    border: 1px solid #2c2620;
+    box-shadow: 0 0 0 1px #000 inset;
+    padding: 12px 18px;
+    min-width: 140px;
+  }
+  /* manila tab notch, top-right corner of each chip */
+  .stat-chip::before {
+    content: '';
+    position: absolute;
+    top: -1px; right: 10px;
+    width: 22px; height: 6px;
+    background: #b3221c;
+    opacity: 0.55;
+  }
+  .stat-chip .lbl {
+    font-family: 'Courier New', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #8a7f6e;
+    margin-bottom: 4px;
+  }
+  .stat-chip .val { font-family: 'Courier New', monospace; font-size: 1.4rem; color: #d8d0c0; }
+  .stat-chip .val.green { color: #6fbf8d; }
+  .stat-chip .val.gold { color: #e0a940; }
+  .stat-chip .val.red { color: #ff5c52; }
+
+  .card {
+    background: #14120f;
+    background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 4px 4px;
+    border: 1px solid #2c2620;
+    box-shadow: 0 0 0 1px #000 inset, 0 8px 24px rgba(0,0,0,0.5);
+    overflow-x: auto;
+  }
+
+  /* ---- toolbar: search / filter / sort, styled like a file-index tab strip ---- */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 16px 16px 0;
+  }
+  .toolbar-title {
+    font-family: 'Courier New', monospace;
+    color: #c9c1b0;
+    letter-spacing: 1px;
+    margin-right: auto;
+    white-space: nowrap;
+  }
+  .tb-input, .tb-select {
+    background: #0d0b09;
+    border: 1px solid #3a332a;
+    color: #d8d0c0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    padding: 7px 10px;
+    letter-spacing: 0.5px;
+  }
+  .tb-input::placeholder { color: #5c5346; }
+  .tb-input:focus, .tb-select:focus {
+    outline: none;
+    border-color: #b3221c;
+  }
+  .tb-input { width: 200px; }
+
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #8a7f6e;
+    border-bottom: 1px solid #3a332a;
+    padding: 10px 12px;
+    text-align: left;
+    user-select: none;
+  }
+  .data-table th.sortable { cursor: pointer; }
+  .data-table th.sortable:hover { color: #d8d0c0; }
+  .data-table th .arrow { display: inline-block; width: 10px; opacity: 0.5; }
+  .data-table th.active .arrow { opacity: 1; color: #ff5c52; }
+
+  .data-table td {
+    padding: 12px;
+    border-bottom: 1px solid #221e19;
+    color: #d8d0c0;
+    font-family: 'Georgia', serif;
+    vertical-align: middle;
+  }
+  .data-table tr { transition: background 0.15s ease; }
+  .data-table tr:hover td { background: rgba(179,34,28,0.06); }
+  .data-table tr.hidden-row { display: none; }
+
+  .case-idx {
+    font-family: 'Courier New', monospace;
+    color: #5c5346;
+    font-size: 0.72rem;
+    margin-right: 6px;
+  }
+
+  .acc-wrap { display: flex; align-items: center; gap: 8px; }
+  .acc-track {
+    flex: 1;
+    min-width: 60px;
+    height: 6px;
+    background: #221e19;
+    border: 1px solid #2c2620;
+    position: relative;
+    overflow: hidden;
+  }
+  .acc-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7a1e19, #b3221c);
+  }
+  .acc-fill.high { background: linear-gradient(90deg, #2e5c40, #6fbf8d); }
+  .acc-num {
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    color: #a89e8c;
+    min-width: 34px;
+    text-align: right;
+  }
+
+  .stamp {
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: 0.72rem;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-family: 'Courier New', monospace;
+    border: 2px solid currentColor;
+    border-radius: 3px;
+    transform: rotate(-5deg);
+    position: relative;
+    background: transparent;
+  }
+  .stamp::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border: 1px solid currentColor;
+    border-radius: 2px;
+    opacity: 0.5;
+  }
+  .stamp-clear { color: #6fbf8d; }
+  .stamp-prime { color: #ff5c52; }
+
+  .score-pos { color: #6fbf8d; font-family: 'Courier New', monospace; }
+  .score-neg { color: #ff5c52; font-family: 'Courier New', monospace; }
+
+
+  .stamp-empty {
+    text-align: center;
+    padding: 46px 20px;
+    color: #5c5346;
+  }
+  .stamp-empty .folder-icon {
+    font-family: 'Courier New', monospace;
+    font-size: 1.8rem;
+    color: #3a332a;
+    margin-bottom: 10px;
+  }
+  .stamp-empty .msg {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+    color: #6b6152;
+  }
+  .stamp-empty .hint {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 0.85rem;
+    color: #4a4234;
+    margin-top: 6px;
+  }
+
+  @media (max-width: 720px) {
+    .toolbar { flex-direction: column; align-items: stretch; }
+    .toolbar-title { margin-right: 0; }
+    .tb-input { width: 100%; }
+
+    .data-table thead { display: none; }
+    .data-table, .data-table tbody, .data-table tr, .data-table td { display: block; width: 100%; }
+    .data-table tr {
+      border: 1px solid #221e19;
+      margin: 12px 0;
+      padding: 10px 4px;
+    }
+    .data-table td {
+      border-bottom: none;
+      padding: 6px 8px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .data-table td::before {
+      content: attr(data-label);
+      font-family: 'Courier New', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #8a7f6e;
+      flex-shrink: 0;
+    }
+  }
+</style>
+
+<div class="page-hdr">
+  <div class="page-title">Case History</div>
+  <div class="page-sub">Archive of all closed investigations.</div>
+</div>
+
+<div class="stat-row">
+  <div class="stat-chip">
+    <div class="lbl">Conviction Rate</div>
+    <div class="val green">{{ conviction_rate }}%</div>
+  </div>
+  <div class="stat-chip">
+    <div class="lbl">Avg. Score</div>
+    <div class="val">{{ avg_score }}</div>
+  </div>
+  <div class="stat-chip">
+    <div class="lbl">Best Score</div>
+    <div class="val gold">+{{ best_score }}</div>
+  </div>
+  <div class="stat-chip">
+    <div class="lbl">Cases Closed</div>
+    <div class="val">{{ cases|length }}</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="toolbar">
+    <h3 class="toolbar-title">CASE LOG</h3>
+    <input id="caseSearch" class="tb-input" type="text" placeholder="Search case or suspect…" autocomplete="off">
+    <select id="outcomeFilter" class="tb-select">
+      <option value="all">All outcomes</option>
+      <option value="correct">Correct only</option>
+      <option value="incorrect">Incorrect only</option>
+    </select>
+  </div>
+  <table class="data-table" id="caseTable">
+    <thead>
+      <tr>
+        <th class="sortable" data-key="name">Case <span class="arrow">▾</span></th>
+        <th class="sortable" data-key="date">Date Solved <span class="arrow">▾</span></th>
+        <th>Suspect Accused</th>
+        <th data-key="outcome">Outcome</th>
+        <th class="sortable" data-key="accuracy">Accuracy <span class="arrow">▾</span></th>
+        <th class="sortable active" data-key="score">Score <span class="arrow">▾</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in cases %}
+      <tr data-name="{{ c.name|lower }}" data-suspect="{{ c.suspect_name|lower }}"
+          data-outcome="{{ c.outcome }}" data-date="{{ c.date_solved }}"
+          data-accuracy="{{ c.accuracy }}" data-score="{{ c.score }}">
+        <td data-label="Case"><span class="case-idx">#{{ forloop.counter|stringformat:"03d" }}</span><strong>{{ c.name }}</strong></td>
+        <td data-label="Date Solved">{{ c.date_solved }}</td>
+        <td data-label="Suspect Accused">{{ c.suspect_name }}</td>
+        <td data-label="Outcome">
+          {% if c.outcome == "correct" %}
+            <span class="stamp stamp-clear">Correct</span>
+          {% else %}
+            <span class="stamp stamp-prime">Incorrect</span>
+          {% endif %}
+        </td>
+        <td data-label="Accuracy">
+          <div class="acc-wrap">
+            <div class="acc-track"><div class="acc-fill{% if c.accuracy >= 70 %} high{% endif %}" style="width: {{ c.accuracy }}%;"></div></div>
+            <span class="acc-num">{{ c.accuracy }}%</span>
+          </div>
+        </td>
+        <td data-label="Score" class="{% if c.score >= 0 %}score-pos{% else %}score-neg{% endif %}">{% if c.score >= 0 %}+{% endif %}{{ c.score }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6">
+        <div class="stamp-empty">
+          <div class="folder-icon">▭ ▭ ▭</div>
+          <div class="msg">— NO CASES CLOSED YET —</div>
+          <div class="hint">Solve your first case to start the file.</div>
+        </div>
+      </td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script>
+(function () {
+  const search = document.getElementById('caseSearch');
+  const filter = document.getElementById('outcomeFilter');
+  const table = document.getElementById('caseTable');
+  if (!table) return;
+  const tbody = table.querySelector('tbody');
+  const rows = Array.from(tbody.querySelectorAll('tr[data-name]'));
+  const headers = table.querySelectorAll('th.sortable');
+
+  function applyFilters() {
+    const q = (search.value || '').toLowerCase().trim();
+    const oc = filter.value;
+    rows.forEach(row => {
+      const matchesText = !q || row.dataset.name.includes(q) || row.dataset.suspect.includes(q);
+      const matchesOutcome = oc === 'all' || row.dataset.outcome === oc;
+      row.classList.toggle('hidden-row', !(matchesText && matchesOutcome));
+    });
+  }
+
+  let sortKey = 'score', sortDir = -1;
+  function applySort() {
+    const sorted = [...rows].sort((a, b) => {
+      let av = a.dataset[sortKey], bv = b.dataset[sortKey];
+      if (sortKey === 'accuracy' || sortKey === 'score') {
+        av = parseFloat(av); bv = parseFloat(bv);
+      }
+      if (av < bv) return -1 * sortDir;
+      if (av > bv) return 1 * sortDir;
+      return 0;
+    });
+    sorted.forEach(row => tbody.appendChild(row));
+  }
+
+  headers.forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.dataset.key;
+      sortDir = (sortKey === key) ? sortDir * -1 : -1;
+      sortKey = key;
+      headers.forEach(h => { h.classList.remove('active'); h.querySelector('.arrow').textContent = '▾'; });
+      th.classList.add('active');
+      th.querySelector('.arrow').textContent = sortDir === -1 ? '▾' : '▴';
+      applySort();
+    });
+  });
+
+  search.addEventListener('input', applyFilters);
+  filter.addEventListener('change', applyFilters);
+  applySort();
+})();
+</script>
+{% endblock %}

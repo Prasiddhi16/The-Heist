@@ -32,3 +32,5 @@ def evidence(request, case_id):
     })
 def caseresolution(request):
     return render(request, "caseresolution.html")
+def casehistory(request):
+    return render(request, "casehistory.html")

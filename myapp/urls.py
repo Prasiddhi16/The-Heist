@@ -8,6 +8,7 @@ urlpatterns = [
     path("case/<int:case_id>/evidence/", views.evidence, name="evidence"),
     
     path("dashboard/", views.dashboard, name="dashboard"),
+    path("casehistory/", views.casehistory, name="casehistory"), 
     path("cases/", views.cases, name="cases"),
     path("heist/", views.heist, name="heist"),
     path("evidence/", views.evidence, name="evidence"),

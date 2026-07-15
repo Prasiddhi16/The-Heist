@@ -1,5 +1,5 @@
 from django.shortcuts import render
-
+from django.conf import settings
 def home(request):
     return render(request, "login.html")   # root → login page
 
@@ -35,7 +35,7 @@ def leaderboard(request):
     return render(request, "leaderboard.html")
 
 def index(request):
-return render(request, 'home.html', {
-        'supabase_url': settings.SUPABASE_URL,
-        'supabase_anon_key': settings.SUPABASE_ANON_KEY,
-})
+    return render(request, "home.html", {
+        "supabase_url": settings.SUPABASE_URL,
+        "supabase_anon_key": settings.SUPABASE_ANON_KEY,
+    })

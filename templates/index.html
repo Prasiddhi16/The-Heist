@@ -6,35 +6,33 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}The Heist{% endblock %}</title>
   <meta name="csrf-token" content="{{ csrf_token }}">
- 
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <link rel="stylesheet" href="{% static 'css/root.css' %}">
-
+  <link rel="stylesheet" href="{% static 'styles/root.css' %}">
   {% block extra_css %}{% endblock %}
-
 </head>
 
 <body>
 <div class="app-shell">
-
   {% include 'navigation.html' %}
-
   <div class="main-content">
     {% include 'header.html' %}
     <main class="page-body">
       {% block content %}{% endblock %}
     </main>
   </div>
-
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
   window.SUPABASE_URL = "{{ supabase_url }}";
   window.SUPABASE_ANON_KEY = "{{ supabase_anon_key }}";
 </script>
+
 <script src="{% static 'js/supabase-client.js' %}"></script>
 <script src="{% static 'js/app.js' %}"></script>
 {% block extra_js %}{% endblock %}
 </body>
-
 </html>

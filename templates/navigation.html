@@ -95,15 +95,63 @@
     <span class="nav-icon"><i class="fa-solid fa-trophy"></i></span> Leaderboard
   </a>
 
-  <div class="sidebar-footer">
-    <div class="detective-chip">
-      <div class="detective-avatar">IK</div>
-      <div>
-        <div class="detective-name">inspector_kane</div>
-        <div class="detective-rank"><i class="fa-solid fa-star"></i> Senior Detective</div>
-      </div>
-      <button class="logout-btn" title="Logout" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i></button>
-    </div>
-  </div>
 
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const client = window.supabaseClient;
+        if (!client) return;
+
+        // Populate the placeholders
+          const cachedUser = localStorage.getItem("loggedInUser");
+          if (cachedUser) {
+            document.getElementById("sb-username").textContent = cachedUser;
+            document.getElementById("sb-avatar").textContent = cachedUser.substring(0, 2).toUpperCase();
+          }
+
+        // Fetch data directly using the Supabase token
+        try {
+            const { data: { user } } = await client.auth.getUser();
+            if (user) {
+                // Fetch stats profile record
+                const { data: profile } = await client
+                    .from('users')
+                    .select('username, rank')
+                    .eq('user_id', user.id)
+                    .single();
+
+                if (profile) {
+                    document.getElementById("sb-username").textContent = profile.username || cachedUser;
+                    document.getElementById("sb-avatar").textContent = (profile.username || cachedUser).substring(0, 2).toUpperCase();
+                    document.getElementById("sb-rank").innerHTML = `<i class="fa-solid fa-star"></i> ${profile.rank || 'Rookie'}`;
+                }
+            }
+
+            // setting the badge count based on active cases
+            const { count } = await client
+                .from('cases')
+                .select('*', { count: 'exact', head: true })
+                .eq('status', 'Active');
+            
+            if (count !== null) {
+                document.getElementById("activeCasesCount").textContent = count;
+            }
+        } catch (err) {
+            console.error("Sidebar system sync exception:", err);
+        }
+    });
+
+    // logout
+    async function handleLogout() {
+        if (window.supabaseClient) {
+            try {
+                // await makes sure network clearance completes before redirecting
+                await window.supabaseClient.auth.signOut();
+            } catch (err) {
+                console.error("Signout error:", err);
+            }
+        }
+        localStorage.removeItem("loggedInUser");
+        window.location.href = "{% url 'login' %}";
+    }
+  </script>
 </aside>

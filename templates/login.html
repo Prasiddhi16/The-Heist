@@ -4,17 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Heist Solver — Detective Intelligence System</title>
-
-    <!-- CSS -->
     <link rel="stylesheet" href="{% static 'styles/root.css' %}">
-
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Utility fallback to make sure hidden states hide correctly */
+        .hidden { display: none !important; }
+        .error-msg { color: #ff6b6b; font-size: 0.85rem; margin-bottom: 1rem; text-align: center; }
+    </style>
 </head>
 
 <body>
@@ -50,6 +49,9 @@
             </button>
         </div>
 
+        <!-- Error reporting zone -->
+        <div id="auth-error" class="error-msg hidden"></div>
+
         <div id="reg-fields" class="hidden">
             <div class="rf">
                 <label class="flabel">Full Name</label>
@@ -61,7 +63,6 @@
 
         <div class="rf">
             <label class="flabel">Username</label>
-
             <input class="finput"
                    placeholder="Enter your username"
                    id="inp-user"
@@ -70,7 +71,6 @@
 
         <div class="rf">
             <label class="flabel">Password</label>
-
             <input class="finput"
                    type="password"
                    placeholder="Enter your password"
@@ -80,7 +80,7 @@
 
         <button class="submit-btn"
                 id="login-btn"
-                onclick="doLogin()">
+                onclick="handleSubmit()">
             Access Intelligence System
         </button>
 
@@ -89,28 +89,23 @@
 
 <script>
 
-const PAGES = {
-    dashboard: "{% url 'dashboard' %}",
-    cases: "{% url 'cases' %}",
-    heist: "{% url 'heist' %}",
-    login: "{% url 'login' %}"
-};
-
-function nav(page) {
-    if (PAGES[page]) {
-        window.location.href = PAGES[page];
+let loginMode = "in";
+function showError(msg) {
+    const errBox = document.getElementById("auth-error");
+    if (msg) {
+        errBox.textContent = msg;
+        errBox.classList.remove("hidden");
+    } else {
+        errBox.classList.add("hidden");
     }
 }
 
-let loginMode = "in";
-
 function switchLoginTab(mode) {
-
     loginMode = mode;
+    showError(""); // Clear old status alerts
 
     document.getElementById("ltab-in").classList.toggle("active", mode === "in");
     document.getElementById("ltab-up").classList.toggle("active", mode === "up");
-
     document.getElementById("reg-fields").classList.toggle("hidden", mode === "in");
 
     document.getElementById("login-btn").textContent =
@@ -119,39 +114,101 @@ function switchLoginTab(mode) {
             : "Create Account";
 }
 
-function doLogin() {
-
-    const username =
-        document.getElementById("inp-user").value.trim() || "Inspector";
-
-    const password =
-        document.getElementById("inp-pass").value;
-
-    if (!password) {
-        alert("Please enter your password.");
+async function handleSubmit() {
+    event.preventDefault(); 
+    showError("");
+    
+    // Check client instance state before calling APIs
+    if (!window.supabaseClient) {
+        showError("Supabase initialization failed. Verify client connection settings.");
         return;
     }
 
-    localStorage.setItem("loggedInUser", username);
+    const username = document.getElementById("inp-user").value.trim().toLowerCase();
+    const password = document.getElementById("inp-pass").value;
+    const fullName = document.getElementById("reg-name").value.trim();
 
-    nav("dashboard");
+    if (!username || !password) {
+        showError("Username and password credentials are required.");
+        return;
+    }
+
+    // Convert username to a valid standard format string for Supabase auth engine
+    const pseudoEmail = `${username}@heistsolver.internal`;
+    const btn = document.getElementById("login-btn");
+    
+    btn.disabled = true;
+    btn.textContent = loginMode === "in" ? "Verifying Credentials..." : "Creating Dossier...";
+
+    try {
+        if (loginMode === "in") {
+            // login
+            const { data, error } = await window.supabaseClient.auth.signInWithPassword({
+                email: pseudoEmail,
+                password: password,
+            });
+
+            if (error) throw error;
+
+            localStorage.setItem("loggedInUser", username);
+            nav("dashboard");
+
+        } else {
+            // register
+            if (!fullName) {
+                showError("Please enter your full name to generate a target profile.");
+                btn.disabled = false;
+                btn.textContent = "Create Account";
+                return;
+            }
+
+            // Sign up user inside Supabase core identities
+            const { data, error: signUpError } = await window.supabaseClient.auth.signUp({
+                email: pseudoEmail,
+                password: password,
+            });
+
+            if (signUpError) throw signUpError;
+            if (!data.user) throw new Error("Authentication interface failed to provision identity.");
+
+            // Insert new stats entry row inside public.users table
+            const { error: profileError } = await window.supabaseClient
+                .from('users')
+                .insert([
+                    {
+                        user_id: data.user.id,
+                        username: username,
+                        full_name: fullName,
+                        rank: 'Rookie',
+                        cases_solved: 0,
+                        score: 0
+                    }
+                ]);
+
+            if (profileError) {
+                console.error("Profile binding tracking failed:", profileError);
+                // If profile table sync failed but auth succeeded, proceed to loop manually
+            }
+
+            localStorage.setItem("loggedInUser", username);
+            alert("Account created successfully! Welcome to the agency.");
+            window.location.href = "{% url 'dashboard' %}";
+        }
+    } catch (err) {
+        showError(err.message || "An unexpected system anomaly has occurred.");
+        btn.disabled = false;
+        btn.textContent = loginMode === "in" ? "Access Intelligence System" : "Create Account";
+    }
 }
 
-function doLogout() {
-    localStorage.removeItem("loggedInUser");
-    nav("login");
-}
 
 document.addEventListener("DOMContentLoaded", () => {
-
-    const savedUser = localStorage.getItem("loggedInUser");
-
     const pass = document.getElementById("inp-pass");
     const user = document.getElementById("inp-user");
 
     if (pass) {
         pass.addEventListener("keydown", e => {
-            if (e.key === "Enter") doLogin();
+            if (e.key === "Enter") handleSubmit();
         });
     }
 

@@ -1,53 +1,105 @@
 {% extends 'index.html' %}
-
 {% block title %}Evidence{% endblock %}
-
 {% block content %}
 
+<style>
+  .page-hdr { border-left: 3px solid #b3221c; padding-left: 14px; margin-bottom: 18px; }
+  .page-title {
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #161106;
+  }
+  .page-sub { color: #9a8f7c; font-style: italic; }
+
+  .card {
+    background: #14120f;
+    background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 4px 4px;
+    border: 1px solid #2c2620;
+    box-shadow: 0 0 0 1px #000 inset, 0 8px 24px rgba(0,0,0,0.5);
+  }
+
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th {
+    font-family: 'Courier New', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #8a7f6e;
+    border-bottom: 1px solid #3a332a;
+    padding: 10px 12px;
+    text-align: left;
+  }
+  .data-table td {
+    padding: 12px;
+    border-bottom: 1px solid #221e19;
+    color: #d8d0c0;
+    font-family: 'Georgia', serif;
+  }
+  .data-table tr:hover td { background: rgba(179,34,28,0.06); }
+
+  .evidence-id { font-family: 'Courier New', monospace; color: #6b6150; font-size: 0.85rem; }
+
+  .tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 2px;
+    font-size: 0.72rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-family: 'Courier New', monospace;
+  }
+  .tag-physical    { background: rgba(90,110,180,0.18); color: #8fa6ff; border: 1px solid #364a8a; }
+  .tag-digital     { background: rgba(70,140,160,0.18); color: #5fc7d9; border: 1px solid #1f5c66; }
+  .tag-forensic    { background: rgba(150,70,180,0.18); color: #c98fe0; border: 1px solid #5c1f6b; }
+  .tag-testimonial { background: rgba(214,158,46,0.18); color: #e0a940; border: 1px solid #7a5c15; }
+
+  .stamp-empty {
+    text-align: center;
+    padding: 30px;
+    color: #5c5346;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 1px;
+  }
+</style>
+
 <div class="page-hdr">
-    <div>
-        <div class="page-title">Evidence</div>
-        <div class="page-sub">
-            View and manage all collected evidence.
-        </div>
-    </div>
+  <div>
+    <div class="page-title">Evidence — {{ case.title }}</div>
+    <div class="page-sub">View and manage all collected evidence.</div>
+  </div>
 </div>
 
 <div class="card">
-
-    <h3>Collected Evidence</h3>
-
-    <table class="data-table">
-
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Evidence</th>
-                <th>Collected At</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-
-        <tbody>
-
-            <tr>
-                <td>EV-001</td>
-                <td>Fingerprint</td>
-                <td>Warehouse</td>
-                <td>Verified</td>
-            </tr>
-
-            <tr>
-                <td>EV-002</td>
-                <td>Knife</td>
-                <td>Kitchen</td>
-                <td>Pending Lab</td>
-            </tr>
-
-        </tbody>
-
-    </table>
-
+  <h3 style="font-family:'Courier New',monospace; color:#c9c1b0; letter-spacing:1px; padding:16px 16px 0;">COLLECTED EVIDENCE</h3>
+  <table class="data-table">
+    <thead>
+      <tr><th>ID</th><th>Evidence</th><th>Collected At</th><th>Type</th></tr>
+    </thead>
+    <tbody>
+      {% for e in evidence_items %}
+      <tr>
+        <td class="evidence-id">EV-{{ e.evidence_id }}</td>
+        <td><strong>{{ e.item_name }}</strong></td>
+        <td>{{ e.found_at }}</td>
+        <td>
+          {% if e.evidence_type == "Physical" %}
+            <span class="tag tag-physical">Physical</span>
+          {% elif e.evidence_type == "Digital" %}
+            <span class="tag tag-digital">Digital</span>
+          {% elif e.evidence_type == "Forensic" %}
+            <span class="tag tag-forensic">Forensic</span>
+          {% else %}
+            <span class="tag tag-testimonial">{{ e.evidence_type }}</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" class="stamp-empty">— NO EVIDENCE LOGGED FOR THIS CASE —</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
-
 {% endblock %}

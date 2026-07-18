@@ -1,0 +1,26 @@
+[
+  {"model": "myapp.case", "pk": 1, "fields": {"case_number": "HS-2026-005", "title": "The Clockmaker's Murder"}},
+  {"model": "myapp.case", "pk": 2, "fields": {"case_number": "HS-2026-007", "title": "Silent Auction Sabotage"}},
+  {"model": "myapp.case", "pk": 3, "fields": {"case_number": "HS-2026-008", "title": "The Vanishing Bride"}},
+
+  {"model": "myapp.suspect", "pk": 1, "fields": {"case": 1, "name": "Rohan Kapoor", "age": null, "status": "Not Verified", "risk": "Prime Suspect"}},
+  {"model": "myapp.suspect", "pk": 2, "fields": {"case": 1, "name": "Nandini Malhotra", "age": null, "status": "Verified", "risk": "Cleared"}},
+  {"model": "myapp.suspect", "pk": 3, "fields": {"case": 1, "name": "Aakash Verma", "age": null, "status": "Verified", "risk": "Person of Interest"}},
+  {"model": "myapp.suspect", "pk": 4, "fields": {"case": 2, "name": "Vidya Ahluwalia", "age": null, "status": "Not Verified", "risk": "Prime Suspect"}},
+  {"model": "myapp.suspect", "pk": 5, "fields": {"case": 2, "name": "Girish Ferreira", "age": null, "status": "Verified", "risk": "Cleared"}},
+  {"model": "myapp.suspect", "pk": 6, "fields": {"case": 3, "name": "Dev Khanna", "age": null, "status": "Not Verified", "risk": "Prime Suspect"}},
+  {"model": "myapp.suspect", "pk": 7, "fields": {"case": 3, "name": "Ekta Rana", "age": null, "status": "Verified", "risk": "Cleared"}},
+  {"model": "myapp.suspect", "pk": 8, "fields": {"case": 3, "name": "Unidentified caller", "age": null, "status": "N/A", "risk": "Person of Interest"}},
+
+  {"model": "myapp.evidence", "pk": 1, "fields": {"case": 1, "evidence_id": "EV-001", "name": "Jammed pendulum mechanism", "collected_at": "Workbench", "status": "Physical"}},
+  {"model": "myapp.evidence", "pk": 2, "fields": {"case": 1, "evidence_id": "EV-002", "name": "Torn cufflink", "collected_at": "Base of stairwell", "status": "Physical"}},
+  {"model": "myapp.evidence", "pk": 3, "fields": {"case": 1, "evidence_id": "EV-003", "name": "Threatening voicemail", "collected_at": "Malhotra's answering machine", "status": "Digital"}},
+  {"model": "myapp.evidence", "pk": 4, "fields": {"case": 1, "evidence_id": "EV-004", "name": "Pawnshop ledger entry", "collected_at": "Ambrose Pawn & Loan", "status": "Testimonial"}},
+  {"model": "myapp.evidence", "pk": 5, "fields": {"case": 2, "evidence_id": "EV-005", "name": "Forgery paper stock", "collected_at": "Recovered forged manuscript", "status": "Forensic"}},
+  {"model": "myapp.evidence", "pk": 6, "fields": {"case": 2, "evidence_id": "EV-006", "name": "Preview room access log", "collected_at": "Ferrow Estate entry system", "status": "Digital"}},
+  {"model": "myapp.evidence", "pk": 7, "fields": {"case": 2, "evidence_id": "EV-007", "name": "Supplier purchase record", "collected_at": "Hallowell Fine Papers", "status": "Testimonial"}},
+  {"model": "myapp.evidence", "pk": 8, "fields": {"case": 3, "evidence_id": "EV-008", "name": "Powered-off phone", "collected_at": "Hedge maze planter", "status": "Digital"}},
+  {"model": "myapp.evidence", "pk": 9, "fields": {"case": 3, "evidence_id": "EV-009", "name": "Tire tracks near service road", "collected_at": "Manor rear service road", "status": "Physical"}},
+  {"model": "myapp.evidence", "pk": 10, "fields": {"case": 3, "evidence_id": "EV-010", "name": "Merger termination clause", "collected_at": "Rana-Khanna merger contract", "status": "Digital"}},
+  {"model": "myapp.evidence", "pk": 11, "fields": {"case": 3, "evidence_id": "EV-011", "name": "Valet parking log", "collected_at": "Thornfield Manor valet stand", "status": "Testimonial"}}
+]

@@ -1,6 +1,4 @@
-// supabase-client.js
 
-// Check if the supabase global object is available
 if (window.supabase) {
     const { createClient } = window.supabase;
     

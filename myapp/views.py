@@ -1,41 +1,36 @@
-from django.shortcuts import render
-from django.conf import settings
-def home(request):
-    return render(request, "login.html")   # root → login page
-
-def login_view(request):
-    return render(request, "login.html")
+from django.shortcuts import render, get_object_or_404
+from .models import Case, Suspect, Evidence
 
 def dashboard(request):
-    return render(request, "dashboard.html")
+    case = Case.objects.first()
+    return render(request, "dashboard.html", {
+        "case": case,
+    })
 
 def cases(request):
-    return render(request, "cases.html")
+    return render(request, "cases.html", {
+        "cases": Case.objects.all()
+    })
 
 def heist(request):
     return render(request, "heist.html")
     
-def evidence(request):
-    return render(request, "evidence.html")
+def suspects(request, case_id):
+    case = get_object_or_404(Case, case_id=case_id)
+    suspect_list = Suspect.objects.filter(case_id=case_id) 
+    
+    return render(request, "suspects.html", {
+        "case": case,
+        "suspects": suspect_list,
+    })
 
-
-def suspects(request):
-    return render(request, "suspects.html")
-
+def evidence(request, case_id):
+    case = get_object_or_404(Case, case_id=case_id)
+    return render(request, "evidence.html", {
+        "case": case,
+        "evidence_items": case.evidence_items.all(),
+    })
 def caseresolution(request):
     return render(request, "caseresolution.html")
-
-def analysis(request):
-    return render(request, "analysis.html")
-
-def history(request):
-    return render(request, "history.html")
-
-def leaderboard(request):
-    return render(request, "leaderboard.html")
-
-def index(request):
-    return render(request, "home.html", {
-        "supabase_url": settings.SUPABASE_URL,
-        "supabase_anon_key": settings.SUPABASE_ANON_KEY,
-    })
+def casehistory(request):
+    return render(request, "casehistory.html")

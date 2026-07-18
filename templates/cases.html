@@ -21,29 +21,7 @@
 
 <!-- Cases Grid -->
 <div class="case-grid" id="caseGrid">
-  {% for case in cases %}
-  <div class="case-card" data-status="{{ case.status|lower }}" onclick="openCase('{{ case.case_number }}')">
-    <div class="case-card-top">
-      <div>
-        <div class="case-num">{{ case.case_number }}</div>
-        <div class="case-title">{{ case.title }}</div>
-      </div>
-      <span class="badge">{{ case.status }}</span>
-    </div>
-    <div class="case-loc">📍 {{ case.location }}</div>
-    <p style="font-size:.78rem;color:var(--muted);line-height:1.55;">
-      {{ case.summary }}
-    </p>
-    <div class="case-meta">
-      <div class="case-loss">Loss: <strong>${{ case.loss_amount }}</strong> · {{ case.date_opened }}</div>
-    </div>
-    <button class="btn btn-primary btn-full" onclick="event.stopPropagation(); openCase('{{ case.case_number }}')">
-      🔍 Investigate
-    </button>
-  </div>
-  {% empty %}
-  <p>No active cases found.</p>
-  {% endfor %}
+  <p>Loading cases...</p>
 </div>
 <!-- /case-grid -->
 
@@ -60,8 +38,72 @@
 
   function openCase(caseId) {
     sessionStorage.setItem('selectedCase', caseId);
-    window.location.href = "{% url 'heist' %}";
+    window.location.href = "{% url 'evidence' %}";
   }
+
+  function formatDate(isoString) {
+    if (!isoString) return '';
+    // created_at comes back as an ISO timestamp, e.g. "2026-07-16T13:25:07.30744+00:00"
+    // we only want the date portion to match the design.
+    return isoString.split('T')[0];
+  }
+
+  function renderCases(cases) {
+    const grid = document.getElementById('caseGrid');
+
+    if (!cases || cases.length === 0) {
+      grid.innerHTML = '<p>No active cases found.</p>';
+      return;
+    }
+
+    grid.innerHTML = cases.map(function (c) {
+      const status = (c.status || '').toLowerCase();
+      return `
+        <div class="case-card" data-status="${status}" onclick="openCase('${c.case_number}')">
+          <div class="case-card-top">
+            <div>
+              <div class="case-num">${c.case_number || ''}</div>
+              <div class="case-title">${c.title || ''}</div>
+            </div>
+            <span class="badge">${c.status || ''}</span>
+          </div>
+          <div class="case-loc"><i class="fa-solid fa-location-dot"></i> ${c.location || ''}</div>
+          <p style="font-size:.78rem;color:var(--muted);line-height:1.55;">
+            ${c.description || ''}
+          </p>
+          <div class="case-meta">
+            <div class="case-loss">Loss: <strong>${c.loss_value || 'N/A'}</strong> · ${formatDate(c.created_at)}</div>
+          </div>
+          <button class="btn btn-primary btn-full" onclick="event.stopPropagation(); openCase('${c.case_number}')">
+            <i class="fa-solid fa-magnifying-glass"></i> Investigate
+          </button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  document.addEventListener('DOMContentLoaded', async function () {
+    const grid = document.getElementById('caseGrid');
+
+    if (!window.supabaseClient) {
+      grid.innerHTML = '<p>Unable to connect to the database. Check your Supabase configuration.</p>';
+      console.error('window.supabaseClient is not defined — check supabase-client.js and that SUPABASE_URL/SUPABASE_ANON_KEY are populated.');
+      return;
+    }
+
+    const { data, error } = await window.supabaseClient
+      .from('cases')
+      .select('case_id, case_number, title, status, location, loss_value, risk_level, description, created_at')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      grid.innerHTML = '<p>Failed to load cases. Please try again later.</p>';
+      console.error('Supabase fetch error:', error);
+      return;
+    }
+
+    renderCases(data);
+  });
 </script>
 
 {% endblock %}

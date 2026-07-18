@@ -1,14 +1,64 @@
+<style>
+  /* Sidebar dark-navy theme — scoped to .sidebar only, does not touch
+     any other page's colors. Self-contained here so it doesn't rely
+     on root.css variables loading correctly. */
+  .sidebar{
+    background:#1b1b3d !important;
+    border-right:1px solid rgba(255,255,255,.06) !important;
+  }
+  .sidebar .sidebar-section-label{
+    color:rgba(255,255,255,.35) !important;
+  }
+  .sidebar .nav-item{
+    color:rgba(255,255,255,.6) !important;
+  }
+  .sidebar .nav-item:hover{
+    background:rgba(255,255,255,.06) !important;
+    color:#ffffff !important;
+  }
+  .sidebar .nav-item.active{
+    background:rgba(255,255,255,.12) !important;
+    color:#ffffff !important;
+    border-color:transparent !important;
+    font-weight:600;
+  }
+  .sidebar .nav-count{
+    background:#F59E0B !important;
+    color:#1b1b3d !important;
+    border:none !important;
+    font-weight:800;
+  }
+  .sidebar .sidebar-footer{
+    border-top:1px solid rgba(255,255,255,.06) !important;
+  }
+  .sidebar .detective-chip{
+    background:rgba(255,255,255,.05) !important;
+  }
+  .sidebar .detective-name{
+    color:#ffffff !important;
+  }
+  .sidebar .detective-rank{
+    color:#F59E0B !important;
+  }
+  .sidebar .logout-btn{
+    color:rgba(255,255,255,.5) !important;
+  }
+  .sidebar .logout-btn:hover{
+    color:#EF4444 !important;
+  }
+</style>
+
 <aside class="sidebar">
 
   <div class="sidebar-section-label">Main</div>
 
   <a href="{% url 'dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
-    <span class="nav-icon">📊</span> Dashboard
+    <span class="nav-icon"><i class="fa-solid fa-chart-simple"></i></span> Dashboard
   </a>
 
   <a href="{% url 'cases' %}" class="nav-item {% if request.resolver_match.url_name == 'cases' %}active{% endif %}">
-    <span class="nav-icon">📁</span> Active Cases
-    <span class="nav-count">4</span>
+    <span class="nav-icon"><i class="fa-solid fa-folder-open"></i></span> Active Cases
+    <span class="nav-count">3</span>
   </a>
 
   <div class="sidebar-section-label">Investigation</div>
@@ -24,25 +74,25 @@
   </a>
 
   <a href="{% url 'heist' %}" class="nav-item {% if request.resolver_match.url_name == 'heist' %}active{% endif %}">
-    <span class="nav-icon">📌</span> Inv. Board
+    <span class="nav-icon"><i class="fa-solid fa-thumbtack"></i></span> Inv. Board
   </a>
 
   <a href="#" class="nav-item">
-    <span class="nav-icon">📈</span> Analysis
+    <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span> Analysis
   </a>
 
   <a href="{% url 'caseresolution' %}" class="nav-item {% if request.resolver_match.url_name == 'caseresolution' %}active{% endif %}">
-  <span class="nav-icon">⚖️</span> Case Resolution
+  <span class="nav-icon"><i class="fa-solid fa-scale-balanced"></i></span> Case Resolution
 </a>
 
   <div class="sidebar-section-label">Records</div>
 
   <a href="#" class="nav-item">
-    <span class="nav-icon">🗂️</span> Case History
+    <span class="nav-icon"><i class="fa-solid fa-box-archive"></i></span> Case History
   </a>
 
   <a href="#" class="nav-item">
-    <span class="nav-icon">🏆</span> Leaderboard
+    <span class="nav-icon"><i class="fa-solid fa-trophy"></i></span> Leaderboard
   </a>
 
   <div class="sidebar-footer">
@@ -50,9 +100,9 @@
       <div class="detective-avatar">IK</div>
       <div>
         <div class="detective-name">inspector_kane</div>
-        <div class="detective-rank">⭐ Senior Detective</div>
+        <div class="detective-rank"><i class="fa-solid fa-star"></i> Senior Detective</div>
       </div>
-      <button class="logout-btn" title="Logout" onclick="handleLogout()">⏻</button>
+      <button class="logout-btn" title="Logout" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i></button>
     </div>
   </div>
 

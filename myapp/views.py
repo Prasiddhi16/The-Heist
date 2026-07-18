@@ -1,6 +1,9 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Case, Suspect, Evidence
 
+def login(request):
+    return render(request, "login.html")
+
 def dashboard(request):
     case = Case.objects.first()
     return render(request, "dashboard.html", {

@@ -73,6 +73,11 @@
 
 {% block extra_js %}
 <script>
+/* Note: profile/rank/score/avatar/username are populated globally by app.js
+   (loadProfile) via the #dash-name, #stat-solved, #stat-score, #stat-rank ids.
+   This script only handles what's specific to the dashboard page:
+   recent cases table, evidence timeline, and the most-wanted list. */
+
 document.addEventListener('DOMContentLoaded', async function () {
     const supabase = window.supabaseClient;
     if (!supabase) {
@@ -80,44 +85,28 @@ document.addEventListener('DOMContentLoaded', async function () {
         return;
     }
 
-    // greeting fallback
-    const cachedName = localStorage.getItem('loggedInUser');
-    if (cachedName) {
-        document.getElementById('dash-name').textContent = cachedName;
-    }
-
+    // active cases count (dashboard's own stat card, separate from the sidebar badge)
     try {
-        // fetch data and user metrics
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            const { data: profile } = await supabase
-                .from('users')
-                .select('username, full_name, rank, score, cases_solved')
-                .eq('user_id', user.id)
-                .single();
-
-            if (profile) {
-                document.getElementById('dash-name').textContent = profile.full_name || profile.username || cachedName;
-                document.getElementById('stat-solved').textContent = profile.cases_solved || 0;
-                document.getElementById('stat-score').textContent = profile.score || 0;
-                document.getElementById('stat-rank').textContent = profile.rank || 'Rookie';
-            }
-        }
-
-        // active cases count
-        const { count: activeCount } = await supabase
+        const { count: activeCount, error } = await supabase
             .from('cases')
             .select('*', { count: 'exact', head: true })
             .eq('status', 'Active');
-        
-        document.getElementById('stat-active').textContent = activeCount || 0;
 
-        // recent cases log
-        const { data: casesData } = await supabase
+        if (error) console.error('active count error:', error);
+        document.getElementById('stat-active').textContent = activeCount || 0;
+    } catch (err) {
+        console.error('Active count block failed:', err);
+    }
+
+    // recent cases log
+    try {
+        const { data: casesData, error } = await supabase
             .from('cases')
             .select('case_number, title, location, status, risk_level, loss_value')
             .order('created_at', { ascending: false })
             .limit(4);
+
+        if (error) console.error('cases query error:', error);
 
         const tableBody = document.getElementById('dash-case-table');
         if (casesData && casesData.length > 0) {
@@ -134,12 +123,20 @@ document.addEventListener('DOMContentLoaded', async function () {
         } else {
             tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted)">No operational case files returned.</td></tr>';
         }
+    } catch (err) {
+        console.error('Cases block failed:', err);
+        document.getElementById('dash-case-table').innerHTML =
+            '<tr><td colspan="6" style="text-align:center;color:var(--muted)">Error loading cases.</td></tr>';
+    }
 
-        // timeline dynamics
-        const { data: evidenceTimeline } = await supabase
+    // evidence timeline
+    try {
+        const { data: evidenceTimeline, error } = await supabase
             .from('evidence')
             .select('item_name, found_at, cases(case_number)')
             .limit(3);
+
+        if (error) console.error('evidence query error:', error);
 
         const timelineContainer = document.getElementById('dash-timeline');
         if (evidenceTimeline && evidenceTimeline.length > 0) {
@@ -155,13 +152,21 @@ document.addEventListener('DOMContentLoaded', async function () {
         } else {
             timelineContainer.innerHTML = '<div style="padding:1rem;color:var(--muted);font-size:0.85rem;">No recent physical analysis records found.</div>';
         }
+    } catch (err) {
+        console.error('Timeline block failed:', err);
+        document.getElementById('dash-timeline').innerHTML =
+            '<div style="padding:1rem;color:var(--muted);font-size:0.85rem;">Error loading activity.</div>';
+    }
 
-        // wanted suspects array
-        const { data: suspectList } = await supabase
+    // wanted suspects
+    try {
+        const { data: suspectList, error } = await supabase
             .from('suspects')
             .select('name, occupation, suspect_status, cases(title)')
             .eq('suspect_status', 'Wanted')
             .limit(3);
+
+        if (error) console.error('suspects query error:', error);
 
         const wantedContainer = document.getElementById('wanted-list');
         if (suspectList && suspectList.length > 0) {
@@ -175,9 +180,10 @@ document.addEventListener('DOMContentLoaded', async function () {
         } else {
             wantedContainer.innerHTML = '<div style="padding:1rem;color:var(--muted);font-size:0.85rem;">All target suspects accounted for or contained.</div>';
         }
-
     } catch (err) {
-        console.error('System Exception inside tactical dashboard engine:', err);
+        console.error('Suspects block failed:', err);
+        document.getElementById('wanted-list').innerHTML =
+            '<div style="padding:1rem;color:var(--muted);font-size:0.85rem;">Error loading suspects.</div>';
     }
 });
 

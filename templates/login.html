@@ -80,13 +80,21 @@
 
         <button class="submit-btn"
                 id="login-btn"
-                onclick="handleSubmit()">
+                onclick="handleSubmit(event)">
             Access Intelligence System
         </button>
 
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  window.SUPABASE_URL = "{{ supabase_url }}";
+  window.SUPABASE_ANON_KEY = "{{ supabase_anon_key }}";
+</script>
+
+<script src="{% static 'js/supabase-client.js' %}"></script>
 <script>
 
 let loginMode = "in";
@@ -114,13 +122,13 @@ function switchLoginTab(mode) {
             : "Create Account";
 }
 
-async function handleSubmit() {
+async function handleSubmit(event) {
     event.preventDefault(); 
     showError("");
     
     // Check client instance state before calling APIs
     if (!window.supabaseClient) {
-        showError("Supabase initialization failed. Verify client connection settings.");
+        showError("Supabase initialization failed. Verify client connection settings. ");
         return;
     }
 
@@ -134,7 +142,7 @@ async function handleSubmit() {
     }
 
     // Convert username to a valid standard format string for Supabase auth engine
-    const pseudoEmail = `${username}@heistsolver.internal`;
+    const pseudoEmail = `${username}@heistsolver.com`;
     const btn = document.getElementById("login-btn");
     
     btn.disabled = true;
@@ -151,7 +159,7 @@ async function handleSubmit() {
             if (error) throw error;
 
             localStorage.setItem("loggedInUser", username);
-            nav("dashboard");
+            window.location.href = "{% url 'dashboard' %}";
 
         } else {
             // register
@@ -201,14 +209,13 @@ async function handleSubmit() {
     }
 }
 
-
 document.addEventListener("DOMContentLoaded", () => {
     const pass = document.getElementById("inp-pass");
     const user = document.getElementById("inp-user");
 
     if (pass) {
         pass.addEventListener("keydown", e => {
-            if (e.key === "Enter") handleSubmit();
+            if (e.key === "Enter") handleSubmit(e);
         });
     }
 

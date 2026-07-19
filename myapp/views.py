@@ -1,7 +1,12 @@
 from django.shortcuts import render, get_object_or_404
 from .models import Case, Suspect, Evidence
+from django.conf import settings
 
 def login(request):
+    context = {
+        "supabase_url": getattr(settings, "SUPABASE_URL", ""),
+        "supabase_anon_key": getattr(settings, "SUPABASE_ANON_KEY", ""),
+    }
     return render(request, "login.html")
 
 def dashboard(request):

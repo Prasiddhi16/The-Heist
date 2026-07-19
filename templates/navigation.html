@@ -1,51 +1,24 @@
 <style>
-  /* Sidebar dark-navy theme — scoped to .sidebar only, does not touch
-     any other page's colors. Self-contained here so it doesn't rely
-     on root.css variables loading correctly. */
   .sidebar{
     background:#1b1b3d !important;
     border-right:1px solid rgba(255,255,255,.06) !important;
   }
-  .sidebar .sidebar-section-label{
-    color:rgba(255,255,255,.35) !important;
-  }
-  .sidebar .nav-item{
-    color:rgba(255,255,255,.6) !important;
-  }
-  .sidebar .nav-item:hover{
-    background:rgba(255,255,255,.06) !important;
-    color:#ffffff !important;
-  }
+  .sidebar .sidebar-section-label{ color:rgba(255,255,255,.35) !important; }
+  .sidebar .nav-item{ color:rgba(255,255,255,.6) !important; }
+  .sidebar .nav-item:hover{ background:rgba(255,255,255,.06) !important; color:#ffffff !important; }
   .sidebar .nav-item.active{
     background:rgba(255,255,255,.12) !important;
     color:#ffffff !important;
     border-color:transparent !important;
     font-weight:600;
   }
-  .sidebar .nav-count{
-    background:#F59E0B !important;
-    color:#1b1b3d !important;
-    border:none !important;
-    font-weight:800;
-  }
-  .sidebar .sidebar-footer{
-    border-top:1px solid rgba(255,255,255,.06) !important;
-  }
-  .sidebar .detective-chip{
-    background:rgba(255,255,255,.05) !important;
-  }
-  .sidebar .detective-name{
-    color:#ffffff !important;
-  }
-  .sidebar .detective-rank{
-    color:#F59E0B !important;
-  }
-  .sidebar .logout-btn{
-    color:rgba(255,255,255,.5) !important;
-  }
-  .sidebar .logout-btn:hover{
-    color:#EF4444 !important;
-  }
+  .sidebar .nav-count{ background:#F59E0B !important; color:#1b1b3d !important; border:none !important; font-weight:800; }
+  .sidebar .sidebar-footer{ border-top:1px solid rgba(255,255,255,.06) !important; }
+  .sidebar .detective-chip{ background:rgba(255,255,255,.05) !important; }
+  .sidebar .detective-name{ color:#ffffff !important; }
+  .sidebar .detective-rank{ color:#F59E0B !important; }
+  .sidebar .logout-btn{ color:rgba(255,255,255,.5) !important; }
+  .sidebar .logout-btn:hover{ color:#EF4444 !important; }
 </style>
 
 <aside class="sidebar">
@@ -58,19 +31,17 @@
 
   <a href="{% url 'cases' %}" class="nav-item {% if request.resolver_match.url_name == 'cases' %}active{% endif %}">
     <span class="nav-icon"><i class="fa-solid fa-folder-open"></i></span> Active Cases
-    <span class="nav-count">4</span>
+    <span class="nav-count js-active-count">0</span>
   </a>
 
   <div class="sidebar-section-label">Investigation</div>
 
   <a href="{% url 'evidence' %}" class="nav-item {% if request.resolver_match.url_name == 'evidence' %}active{% endif %}">
-    <span class="nav-icon"><i class="fa-solid fa-fingerprint"></i></span>
-    Evidence
+    <span class="nav-icon"><i class="fa-solid fa-fingerprint"></i></span> Evidence
   </a>
 
   <a href="{% url 'suspects' %}" class="nav-item {% if request.resolver_match.url_name == 'suspects' %}active{% endif %}">
-    <span class="nav-icon"><i class="fa-solid fa-user-secret"></i></span>
-    Suspects
+    <span class="nav-icon"><i class="fa-solid fa-user-secret"></i></span> Suspects
   </a>
 
   <a href="{% url 'heist' %}" class="nav-item {% if request.resolver_match.url_name == 'heist' %}active{% endif %}">
@@ -82,8 +53,8 @@
   </a>
 
   <a href="{% url 'caseresolution' %}" class="nav-item {% if request.resolver_match.url_name == 'caseresolution' %}active{% endif %}">
-  <span class="nav-icon"><i class="fa-solid fa-scale-balanced"></i></span> Case Resolution
-</a>
+    <span class="nav-icon"><i class="fa-solid fa-scale-balanced"></i></span> Case Resolution
+  </a>
 
   <div class="sidebar-section-label">Records</div>
 
@@ -95,63 +66,15 @@
     <span class="nav-icon"><i class="fa-solid fa-trophy"></i></span> Leaderboard
   </a>
 
+  <div class="sidebar-footer">
+    <div class="detective-chip">
+      <div class="detective-avatar js-avatar" id="sb-avatar">??</div>
+      <div>
+        <div class="detective-name js-username" id="sb-username">Loading...</div>
+        <div class="detective-rank js-rank" id="sb-rank"><i class="fa-solid fa-star"></i> Rookie</div>
+      </div>
+      <button class="logout-btn" title="Logout" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i></button>
+    </div>
+  </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", async () => {
-        const client = window.supabaseClient;
-        if (!client) return;
-
-        // Populate the placeholders
-          const cachedUser = localStorage.getItem("loggedInUser");
-          if (cachedUser) {
-            document.getElementById("sb-username").textContent = cachedUser;
-            document.getElementById("sb-avatar").textContent = cachedUser.substring(0, 2).toUpperCase();
-          }
-
-        // Fetch data directly using the Supabase token
-        try {
-            const { data: { user } } = await client.auth.getUser();
-            if (user) {
-                // Fetch stats profile record
-                const { data: profile } = await client
-                    .from('users')
-                    .select('username, rank')
-                    .eq('user_id', user.id)
-                    .single();
-
-                if (profile) {
-                    document.getElementById("sb-username").textContent = profile.username || cachedUser;
-                    document.getElementById("sb-avatar").textContent = (profile.username || cachedUser).substring(0, 2).toUpperCase();
-                    document.getElementById("sb-rank").innerHTML = `<i class="fa-solid fa-star"></i> ${profile.rank || 'Rookie'}`;
-                }
-            }
-
-            // setting the badge count based on active cases
-            const { count } = await client
-                .from('cases')
-                .select('*', { count: 'exact', head: true })
-                .eq('status', 'Active');
-            
-            if (count !== null) {
-                document.getElementById("activeCasesCount").textContent = count;
-            }
-        } catch (err) {
-            console.error("Sidebar system sync exception:", err);
-        }
-    });
-
-    // logout
-    async function handleLogout() {
-        if (window.supabaseClient) {
-            try {
-                // await makes sure network clearance completes before redirecting
-                await window.supabaseClient.auth.signOut();
-            } catch (err) {
-                console.error("Signout error:", err);
-            }
-        }
-        localStorage.removeItem("loggedInUser");
-        window.location.href = "{% url 'login' %}";
-    }
-  </script>
 </aside>

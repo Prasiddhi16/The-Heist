@@ -58,7 +58,7 @@
 
   <div class="sidebar-section-label">Records</div>
 
-  <a href="#" class="nav-item">
+  <a href="#" class="nav-item"{% if request.resolver_match.url_name == 'casehistory' %}active{% endif %}">
     <span class="nav-icon"><i class="fa-solid fa-box-archive"></i></span> Case History
   </a>
 

@@ -31,7 +31,6 @@ class Suspect(models.Model):
 
 
 class Evidence(models.Model):
-    # Fixed from 'evidenc' to 'evidence_id' and 'case_i' to 'case_id'
     evidence_id = models.IntegerField(primary_key=True, db_column='evidence_id')
     case = models.ForeignKey(Case, related_name="evidence_items", on_delete=models.CASCADE, db_column='case_id')
     item_name = models.CharField(max_length=100, db_column='item_name')          

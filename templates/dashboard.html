@@ -4,7 +4,7 @@
 {% block content %}
         <div class="page-hdr">
           <div>
-            <div class="page-title">Welcome, <span id="dash-name"> </span> </div>
+            <div class="page-title">Welcome, <span id="dash-name">Detective</span> </div>
             <div class="page-sub">Here's your intelligence overview for today.</div>
           </div>
           <a href="{% url 'cases' %}" class="btn btn-primary">Browse Cases</a>
@@ -12,24 +12,24 @@
 
         <div class="stat-grid">
           <div class="stat-card">
-            <div class="stat-top"><div class="stat-label">Cases Solved</div><div class="stat-icon-wrap" style="background:var(--green-d)"></div></div>
-            <div class="stat-value" style="color:var(--green)">12</div>
-            <div class="stat-trend"><span class="trend-up">▲ 3</span> this month</div>
+            <div class="stat-top"><div class="stat-label">Cases Solved</div><div class="stat-icon-wrap" style="background:var(--green-d)"><i class="fa-solid fa-check-double" style="color:var(--green)"></i></div></div>
+            <div class="stat-value" id="stat-solved" style="color:var(--green)">0</div>
+            <div class="stat-trend"><span class="trend-up">▲ Live</span> from dossier</div>
           </div>
           <div class="stat-card">
-            <div class="stat-top"><div class="stat-label">Active Cases</div><div class="stat-icon-wrap" style="background:var(--blue-d)"></div></div>
-            <div class="stat-value" style="color:var(--blue)">4</div>
-            <div class="stat-trend"><span class="trend-dn">▼ 1</span> vs last week</div>
+            <div class="stat-top"><div class="stat-label">Active Cases</div><div class="stat-icon-wrap" style="background:var(--blue-d)"><i class="fa-solid fa-folder-open" style="color:var(--blue)"></i></div></div>
+            <div class="stat-value" id="stat-active" style="color:var(--blue)">0</div>
+            <div class="stat-trend"><span class="trend-up">▲ System</span> monitored</div>
           </div>
           <div class="stat-card">
-            <div class="stat-top"><div class="stat-label">Success Rate</div><div class="stat-icon-wrap" style="background:var(--orange-d)"></div></div>
-            <div class="stat-value" style="color:var(--orange)">87%</div>
-            <div class="stat-trend"><span class="trend-up">▲ 2%</span> improvement</div>
+            <div class="stat-top"><div class="stat-label">Detective Score</div><div class="stat-icon-wrap" style="background:var(--orange-d)"><i class="fa-solid fa-star" style="color:var(--orange)"></i></div></div>
+            <div class="stat-value" id="stat-score" style="color:var(--orange)">0</div>
+            <div class="stat-trend">Points accumulated</div>
           </div>
           <div class="stat-card">
-            <div class="stat-top"><div class="stat-label">Detective Rank</div><div class="stat-icon-wrap" style="background:rgba(139,92,246,.15)"></div></div>
-            <div class="stat-value" style="color:#8B5CF6">#5</div>
-            <div class="stat-trend"><span class="trend-up">▲ 2</span> places up</div>
+            <div class="stat-top"><div class="stat-label">Assigned Rank</div><div class="stat-icon-wrap" style="background:rgba(139,92,246,.15)"><i class="fa-solid fa-shield-halved" style="color:#8B5CF6"></i></div></div>
+            <div class="stat-value" id="stat-rank" style="color:#8B5CF6; font-size: 1.5rem; padding-top: 0.35rem;">Rookie</div>
+            <div class="stat-trend">Security clearance</div>
           </div>
         </div>
 
@@ -39,34 +39,157 @@
             <div class="card" style="margin-bottom:1rem">
               <div class="section-hdr">
                 <div class="section-title">Recent Cases</div>
-                <button class="btn btn-ghost btn-sm" onclick="nav('cases')">View All →</button>
+                <a href="{% url 'cases' %}" class="btn btn-ghost btn-sm">View All →</a>
               </div>
               <div style="overflow-x:auto">
                 <table class="data-table">
-                  <thead><tr><th>Case</th><th>Location</th><th>Status</th><th>Difficulty</th><th>Loss</th><th></th></tr></thead>
-                  <tbody id="dash-case-table"></tbody>
+                  <thead><tr><th>Case</th><th>Location</th><th>Status</th><th>Risk Level</th><th>Loss</th><th></th></tr></thead>
+                  <tbody id="dash-case-table">
+                    <tr><td colspan="6" style="text-align:center;color:var(--muted);">Loading central database files...</td></tr>
+                  </tbody>
                 </table>
               </div>
             </div>
             <!-- Timeline -->
             <div class="card">
               <div class="section-hdr"><div class="section-title">Investigation Activity</div></div>
-              <div class="timeline" id="dash-timeline"></div>
+              <div class="timeline" id="dash-timeline">
+                <div style="padding:1rem;color:var(--muted);">Parsing recent tactical event records...</div>
+              </div>
             </div>
           </div>
 
           <!-- Most Wanted -->
           <div>
             <div class="card">
-              <div class="section-hdr"><div class="section-title"> Most Wanted</div></div>
-              <div class="wanted-list" id="wanted-list"></div>
+              <div class="section-hdr"><div class="section-title">Most Wanted Suspects</div></div>
+              <div class="wanted-list" id="wanted-list">
+                <div style="padding:1rem;color:var(--muted);">Scanning local grids for target profiles...</div>
+              </div>
             </div>
           </div>
         </div>
- {% endblock %}
+{% endblock %}
 
- {% block extra_js %}
-    <script>
+{% block extra_js %}
+<script>
+/* Note: profile/rank/score/avatar/username are populated globally by app.js
+   (loadProfile) via the #dash-name, #stat-solved, #stat-score, #stat-rank ids.
+   This script only handles what's specific to the dashboard page:
+   recent cases table, evidence timeline, and the most-wanted list. */
 
-    </script>
-    {% endblock %}
+document.addEventListener('DOMContentLoaded', async function () {
+    const supabase = window.supabaseClient;
+    if (!supabase) {
+        console.error('Supabase client injection failed.');
+        return;
+    }
+
+    // active cases count (dashboard's own stat card, separate from the sidebar badge)
+    try {
+        const { count: activeCount, error } = await supabase
+            .from('cases')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'Active');
+
+        if (error) console.error('active count error:', error);
+        document.getElementById('stat-active').textContent = activeCount || 0;
+    } catch (err) {
+        console.error('Active count block failed:', err);
+    }
+
+    // recent cases log
+    try {
+        const { data: casesData, error } = await supabase
+            .from('cases')
+            .select('case_number, title, location, status, risk_level, loss_value')
+            .order('created_at', { ascending: false })
+            .limit(4);
+
+        if (error) console.error('cases query error:', error);
+
+        const tableBody = document.getElementById('dash-case-table');
+        if (casesData && casesData.length > 0) {
+            tableBody.innerHTML = casesData.map(c => `
+                <tr>
+                    <td><strong>${c.case_number || ''}</strong><br><small style="color:var(--muted)">${c.title || ''}</small></td>
+                    <td>${c.location || 'Unknown'}</td>
+                    <td><span class="badge">${c.status || 'Active'}</span></td>
+                    <td>Level ${c.risk_level || 1}</td>
+                    <td><strong>${c.loss_value || 'N/A'}</strong></td>
+                    <td><button class="btn btn-ghost btn-sm" onclick="viewCaseDetails('${c.case_number}')">View</button></td>
+                </tr>
+            `).join('');
+        } else {
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted)">No operational case files returned.</td></tr>';
+        }
+    } catch (err) {
+        console.error('Cases block failed:', err);
+        document.getElementById('dash-case-table').innerHTML =
+            '<tr><td colspan="6" style="text-align:center;color:var(--muted)">Error loading cases.</td></tr>';
+    }
+
+    // evidence timeline
+    try {
+        const { data: evidenceTimeline, error } = await supabase
+            .from('evidence')
+            .select('item_name, found_at, cases(case_number)')
+            .limit(3);
+
+        if (error) console.error('evidence query error:', error);
+
+        const timelineContainer = document.getElementById('dash-timeline');
+        if (evidenceTimeline && evidenceTimeline.length > 0) {
+            timelineContainer.innerHTML = evidenceTimeline.map(e => `
+                <div class="timeline-item" style="display:flex; gap:1rem; margin-bottom:1rem; font-size:0.82rem;">
+                    <div style="color:var(--orange); font-weight:bold;">[CLUE Found]</div>
+                    <div>
+                        <strong>${e.item_name || 'Evidence Item'}</strong> secured at location "${e.found_at || 'Crime Scene'}".
+                        <br><small style="color:var(--muted)">Assigned Case File: ${e.cases?.case_number || 'Unlinked'}</small>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            timelineContainer.innerHTML = '<div style="padding:1rem;color:var(--muted);font-size:0.85rem;">No recent physical analysis records found.</div>';
+        }
+    } catch (err) {
+        console.error('Timeline block failed:', err);
+        document.getElementById('dash-timeline').innerHTML =
+            '<div style="padding:1rem;color:var(--muted);font-size:0.85rem;">Error loading activity.</div>';
+    }
+
+    // wanted suspects
+    try {
+        const { data: suspectList, error } = await supabase
+            .from('suspects')
+            .select('name, occupation, suspect_status, cases(title)')
+            .eq('suspect_status', 'Wanted')
+            .limit(3);
+
+        if (error) console.error('suspects query error:', error);
+
+        const wantedContainer = document.getElementById('wanted-list');
+        if (suspectList && suspectList.length > 0) {
+            wantedContainer.innerHTML = suspectList.map(s => `
+                <div class="wanted-card" style="background:rgba(255,255,255,0.02); padding:0.75rem; border-left:3px solid var(--orange); margin-bottom:0.75rem; border-radius:4px;">
+                    <div style="font-weight:600; font-size:0.9rem;">${s.name}</div>
+                    <div style="font-size:0.75rem; color:var(--muted);">${s.occupation || 'No Listed Occupation'}</div>
+                    <div style="font-size:0.72rem; margin-top:0.25rem; color:var(--orange);">Linked Matrix: ${s.cases?.title || 'Unknown Case'}</div>
+                </div>
+            `).join('');
+        } else {
+            wantedContainer.innerHTML = '<div style="padding:1rem;color:var(--muted);font-size:0.85rem;">All target suspects accounted for or contained.</div>';
+        }
+    } catch (err) {
+        console.error('Suspects block failed:', err);
+        document.getElementById('wanted-list').innerHTML =
+            '<div style="padding:1rem;color:var(--muted);font-size:0.85rem;">Error loading suspects.</div>';
+    }
+});
+
+function viewCaseDetails(caseNumber) {
+    sessionStorage.setItem('selectedCase', caseNumber);
+    window.location.href = "{% url 'evidence' %}";
+}
+</script>
+{% endblock %}

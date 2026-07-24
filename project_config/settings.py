@@ -30,6 +30,8 @@ ALLOWED_HOSTS = os.environ.get(
     "ALLOWED_HOSTS",
     "127.0.0.1,localhost,the-heist.onrender.com"
 ).split(",")
+SUPABASE_URL = 'https://rtqayebxmnxjihtxofcm.supabase.co'
+SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0cWF5ZWJ4bW54amlodHhvZmNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM4Njg5ODcsImV4cCI6MjA5OTQ0NDk4N30.OEpULRFtb25A-gulXxVd7PbIwHyxYUnCJfifBU6uY4s'
 
 
 
@@ -68,6 +70,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'myapp.context_processors.supabase_settings',
             ],
         },
     },

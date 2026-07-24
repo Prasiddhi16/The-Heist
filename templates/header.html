@@ -1,10 +1,4 @@
-{# header.html #}
-{# Include this file via: {% include 'header.html' %} #}
-{# Requires: root.css #}
-
 <nav class="navbar">
-
-  <!-- Logo / Brand -->
   <a class="nav-logo" href="{% url 'heist' %}">
     <div class="nav-logo-icon">🔍</div>
     <div>
@@ -13,23 +7,20 @@
     </div>
   </a>
 
-  <!-- Search Bar -->
   <div class="nav-search">
     <span class="nav-search-icon">🔍</span>
     <input type="text" placeholder="Search cases, suspects..." id="globalSearch" />
   </div>
 
-  <!-- Right Side: Notif + Avatar -->
   <div class="nav-right">
     <div class="nav-notif" title="Notifications">
       🔔
       <span class="notif-dot"></span>
     </div>
     <div style="text-align:right;line-height:1.25;">
-      <div style="font-size:.78rem;font-weight:600;color:var(--text);">inspector_kane</div>
-      <div style="font-size:.65rem;color:var(--orange);">Senior Detective</div>
+      <div class="js-username" style="font-size:.78rem;font-weight:600;color:var(--text);">Detective</div>
+      <div class="js-rank-plain" style="font-size:.65rem;color:var(--orange);">Rookie Detective</div>
     </div>
-    <div class="nav-avatar" title="inspector_kane">IK</div>
+    <div class="nav-avatar js-avatar" title="Detective">DT</div>
   </div>
-
 </nav>

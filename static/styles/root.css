@@ -143,7 +143,7 @@ a.nav-item { text-decoration: none; display: flex; }
 /* ═══════════════════════════════════════════
    DASHBOARD
 ═══════════════════════════════════════════ */
-.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.25rem, }
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem; }
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.1rem 1.2rem;display:flex;flex-direction:column;gap:.5rem}
 .stat-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.2rem}
 .stat-label{font-size:.68rem;font-weight:600;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
@@ -153,7 +153,7 @@ a.nav-item { text-decoration: none; display: flex; }
 .trend-up{color:var(--green)}
 .trend-dn{color:var(--red)}
 
-.dash-grid{display:grid;grid-template-columns:1fr 320px;gap:1rem}
+.dash-grid{display:grid;grid-template-columns:1fr 320px;gap:1rem;margin-top:1.2em}
 
 /* Recent cases table */
 .section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem}

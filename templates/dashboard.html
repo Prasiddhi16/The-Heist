@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
 function viewCaseDetails(caseNumber) {
     sessionStorage.setItem('selectedCase', caseNumber);
-    window.location.href = "{% url 'evidence' %}";
+    window.location.href = "/case/" + caseNumber + "/evidence/";
 }
 </script>
 {% endblock %}

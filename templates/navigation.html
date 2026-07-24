@@ -36,11 +36,11 @@
 
   <div class="sidebar-section-label">Investigation</div>
 
-  <a href="{% url 'evidence' %}" class="nav-item {% if request.resolver_match.url_name == 'evidence' %}active{% endif %}">
+  <a href="{% url 'cases' %}" class="nav-item {% if request.resolver_match.url_name == 'evidence' %}active{% endif %}">
     <span class="nav-icon"><i class="fa-solid fa-fingerprint"></i></span> Evidence
   </a>
 
-  <a href="{% url 'suspects' %}" class="nav-item {% if request.resolver_match.url_name == 'suspects' %}active{% endif %}">
+  <a href="{% url 'cases' %}" class="nav-item {% if request.resolver_match.url_name == 'suspects' %}active{% endif %}">
     <span class="nav-icon"><i class="fa-solid fa-user-secret"></i></span> Suspects
   </a>
 
@@ -58,7 +58,7 @@
 
   <div class="sidebar-section-label">Records</div>
 
-  <a href="#" class="nav-item"{% if request.resolver_match.url_name == 'casehistory' %}active{% endif %}">
+  <a href="#" class="nav-item {% if request.resolver_match.url_name == 'casehistory' %}active{% endif %}">
     <span class="nav-icon"><i class="fa-solid fa-box-archive"></i></span> Case History
   </a>
 
@@ -75,6 +75,6 @@
       </div>
       <button class="logout-btn" title="Logout" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i></button>
     </div>
-  </div>
+  </div> 
 
 </aside>

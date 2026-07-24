@@ -36,10 +36,10 @@
     });
   }
 
-  function openCase(caseId) {
-    sessionStorage.setItem('selectedCase', caseId);
-    window.location.href = "{% url 'evidence' %}";
-  }
+function openCase(caseId) {
+  sessionStorage.setItem('selectedCase', caseId);
+  window.location.href = "/case/" + caseId + "/evidence/";
+}
 
   function formatDate(isoString) {
     if (!isoString) return '';

@@ -136,25 +136,20 @@ textarea#narrative {
   </div>
 
   <div class="card" style="display:flex; gap:12px; flex-wrap:wrap;">
-    <a href="{% url 'suspects' case.case_id %}" class="btn btn-secondary">Back to Suspects</a>
-    <a href="{% url 'evidence' case.case_id %}" class="btn btn-secondary">Back to Evidence</a>
-
-    <button class="btn btn-primary" onclick="generateReport()">Generate Case Report</button>
-  </div>
+  <a href="{% url 'suspects' case.case_id %}" class="btn btn-secondary">Back to Suspects</a>
+  <a href="{% url 'evidence' case.case_id %}" class="btn btn-secondary">Back to Evidence</a>
+  <button class="btn btn-primary" onclick="generateReport()">Generate Case Report</button>
+  <button class="btn btn-secondary" onclick="goToAnalysis()">Investigate</button>
+</div>
 </div>
 
 <div id="reportOutput">
   <div class="report-paper" id="reportPaper"></div>
   <div class="no-print" style="margin-top:16px; display:flex; gap:12px;">
     <button class="btn btn-primary" onclick="window.print()">Print / Save as PDF</button>
-    <button class="btn btn-secondary" onclick="goToAnalysis()">
-      Investigate
-    </button>
 
   </div>
-  <button class="btn btn-secondary" onclick="goToAnalysis()">
-      Investigate
-    </button>
+  
 
 </div>
 

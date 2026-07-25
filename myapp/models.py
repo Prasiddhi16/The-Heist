@@ -1,18 +1,21 @@
 from django.db import models
 
 class Case(models.Model):
-    # Fixed from 'case_i' to 'case_id'
-    case_id = models.IntegerField(primary_key=True, db_column='case_id') 
+    case_id = models.IntegerField(primary_key=True, db_column='case_id')
     case_number = models.CharField(max_length=20, unique=True)
     title = models.CharField(max_length=200)
+    status = models.CharField(max_length=50, null=True, blank=True)
+    location = models.TextField(null=True, blank=True)
+    loss_value = models.CharField(max_length=100, null=True, blank=True)
+    risk_level = models.IntegerField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         db_table = 'cases'
 
     def __str__(self):
         return self.title
-
-
 class Suspect(models.Model):
     suspect_id = models.IntegerField(primary_key=True, db_column='suspect_id')
     case = models.ForeignKey(Case, related_name="suspects", on_delete=models.CASCADE, db_column='case_id')

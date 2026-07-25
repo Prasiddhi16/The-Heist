@@ -63,51 +63,85 @@
   }
 </style>
 
-<div class="page-hdr">
+<div class="page-hdr" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
   <div>
     <div class="page-title">Suspects — {{ case.title }}</div>
     <div class="page-sub">List of suspects under investigation.</div>
   </div>
+  <a href="{% url 'caseresolution' case.case_id %}" style="text-decoration:none; padding:8px 16px; background:#b3221c; color:#fff; border-radius:3px; font-family:'Courier New',monospace; font-size:0.8rem; letter-spacing:0.5px; text-transform:uppercase;">
+    Go to Case Resolution
+  </a>
 </div>
-
 <div class="card">
   <h3 style="font-family:'Courier New',monospace; color:#c9c1b0; letter-spacing:1px; padding:16px 16px 0;">SUSPECT LIST</h3>
   <table class="data-table">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Occupation</th>
-        <th>Motive</th>
-        <th>Alibi & Status</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for s in suspects %}
-      <tr>
-        <td><strong>{{ s.name }}</strong></td>
-        <td>{{ s.occupation|default:"Unknown" }}</td>
-        <td><small style="color: #bfae93;">{{ s.motive|default:"None logged" }}</small></td>
-        <td>
-          <div>{{ s.alibi|default:"No alibi provided" }}</div>
-          {% if s.alibi_status %}
-            <small style="font-style: italic; color: #9a8f7c;">({{ s.alibi_status }})</small>
-          {% endif %}
-        </td>
-        <td>
-          {% if s.suspect_status == "Prime Suspect" %}
-            <span class="risk-badge risk-prime">Prime Suspect</span>
-          {% elif s.suspect_status == "Person of Interest" %}
-            <span class="risk-badge risk-poi">Person of Interest</span>
-          {% else %}
-            <span class="risk-badge risk-clear">{{ s.suspect_status|default:"Cleared" }}</span>
-          {% endif %}
-        </td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="5" class="stamp-empty">— NO SUSPECTS LOGGED FOR THIS CASE —</td></tr>
-      {% endfor %}
-    </tbody>
+  <th>Name</th>
+  <th>Occupation</th>
+  <th>Motive</th>
+  <th>Alibi & Status</th>
+  <th>Status</th>
+  <th>Action</th>
+</tr>
+</thead>
+<tbody>
+  {% for s in suspects %}
+  <tr>
+    <td><strong>{{ s.name }}</strong></td>
+    <td>{{ s.occupation|default:"Unknown" }}</td>
+    <td><small style="color: #bfae93;">{{ s.motive|default:"None logged" }}</small></td>
+    <td>
+      <div>{{ s.alibi|default:"No alibi provided" }}</div>
+      {% if s.alibi_status %}<small style="font-style: italic; color: #9a8f7c;">({{ s.alibi_status }})</small>{% endif %}
+    </td>
+    <td>
+      {% if s.suspect_status == "Prime Suspect" %}
+        <span class="risk-badge risk-prime">Prime Suspect</span>
+      {% elif s.suspect_status == "Person of Interest" %}
+        <span class="risk-badge risk-poi">Person of Interest</span>
+      {% else %}
+        <span class="risk-badge risk-clear">{{ s.suspect_status|default:"Cleared" }}</span>
+      {% endif %}
+    </td>
+    <td>
+      <button class="btn-add" id="accuse-{{ s.suspect_id }}"
+        style="padding:6px 12px; border-radius:3px; border:1px solid #7a1e19; background:transparent; color:#ff5c52; font-family:'Courier New',monospace; font-size:0.72rem; text-transform:uppercase; cursor:pointer;"
+        onclick='accuseSuspect({{ s.suspect_id }}, "{{ s.name|escapejs }}", "{{ s.occupation|default:""|escapejs }}", "{{ s.motive|default:""|escapejs }}", "{{ s.suspect_status|default:""|escapejs }}", this)'>
+        + Accuse
+      </button>
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="6" class="stamp-empty">— NO SUSPECTS LOGGED FOR THIS CASE —</td></tr>
+  {% endfor %}
+</tbody>
   </table>
 </div>
+<script>
+const CASE_ID = {{ case.case_id }};
+const SUSPECT_KEY = 'resolution_suspect_' + CASE_ID;
+
+function accuseSuspect(id, name, occupation, motive, status, btn) {
+  sessionStorage.setItem(SUSPECT_KEY, JSON.stringify({
+    suspect_id: id, name: name, occupation: occupation, motive: motive, suspect_status: status
+  }));
+  document.querySelectorAll('.btn-add').forEach(function (b) {
+    b.textContent = '+ Accuse';
+    b.disabled = false;
+    b.style.color = '#ff5c52';
+  });
+  btn.textContent = '✓ Accused';
+  btn.disabled = true;
+  btn.style.color = '#5c5346';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  const stored = sessionStorage.getItem(SUSPECT_KEY);
+  if (!stored) return;
+  const accused = JSON.parse(stored);
+  const btn = document.getElementById('accuse-' + accused.suspect_id);
+  if (btn) { btn.textContent = '✓ Accused'; btn.disabled = true; btn.style.color = '#5c5346'; }
+});
+</script>
 {% endblock %}

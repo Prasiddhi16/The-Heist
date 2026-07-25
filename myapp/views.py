@@ -41,8 +41,8 @@ def evidence(request, case_id):
 def case_resolution(request, case_id=None):
     if case_id is None:
         cases = Case.objects.all().order_by('-created_at')
-        return render(request, 'case_resolution.html', {'case': None, 'cases': cases})
+        return render(request, 'caseresolution.html', {'case': None, 'cases': cases})
     case = Case.objects.get(case_id=case_id)
-    return render(request, 'case_resolution.html', {'case': case})
+    return render(request, 'caseresolution.html', {'case': case})
 def casehistory(request):
     return render(request, "casehistory.html")

@@ -1,24 +1,24 @@
 <style>
-  .sidebar{
-    background:#1b1b3d !important;
-    border-right:1px solid rgba(255,255,255,.06) !important;
-  }
-  .sidebar .sidebar-section-label{ color:rgba(255,255,255,.35) !important; }
-  .sidebar .nav-item{ color:rgba(255,255,255,.6) !important; }
-  .sidebar .nav-item:hover{ background:rgba(255,255,255,.06) !important; color:#ffffff !important; }
-  .sidebar .nav-item.active{
-    background:rgba(255,255,255,.12) !important;
-    color:#ffffff !important;
-    border-color:transparent !important;
-    font-weight:600;
-  }
-  .sidebar .nav-count{ background:#F59E0B !important; color:#1b1b3d !important; border:none !important; font-weight:800; }
-  .sidebar .sidebar-footer{ border-top:1px solid rgba(255,255,255,.06) !important; }
-  .sidebar .detective-chip{ background:rgba(255,255,255,.05) !important; }
-  .sidebar .detective-name{ color:#ffffff !important; }
-  .sidebar .detective-rank{ color:#F59E0B !important; }
-  .sidebar .logout-btn{ color:rgba(255,255,255,.5) !important; }
-  .sidebar .logout-btn:hover{ color:#EF4444 !important; }
+.sidebar{
+  background:#1b1b3d !important;
+  border-right:1px solid rgba(255,255,255,.06) !important;
+}
+.sidebar .sidebar-section-label{color:rgba(255,255,255,.35) !important}
+.sidebar .nav-item{color:rgba(255,255,255,.6) !important}
+.sidebar .nav-item:hover{background:rgba(255,255,255,.06) !important;color:#ffffff !important}
+.sidebar .nav-item.active{
+  background:rgba(255,255,255,.12) !important;
+  color:#ffffff !important;
+  border-color:transparent !important;
+  font-weight:600;
+}
+.sidebar .nav-count{background:#F59E0B !important;color:#1b1b3d !important;border:none !important;font-weight:800}
+.sidebar .sidebar-footer{border-top:1px solid rgba(255,255,255,.06) !important}
+.sidebar .detective-chip{background:rgba(255,255,255,.05) !important}
+.sidebar .detective-name{color:#ffffff !important}
+.sidebar .detective-rank{color:#F59E0B !important}
+.sidebar .logout-btn{color:rgba(255,255,255,.5) !important}
+.sidebar .logout-btn:hover{color:#EF4444 !important}
 </style>
 
 <aside class="sidebar">
@@ -44,29 +44,25 @@
     <span class="nav-icon"><i class="fa-solid fa-user-secret"></i></span> Suspects
   </a>
 
-  <a href="{% url 'heist' %}" class="nav-item {% if request.resolver_match.url_name == 'heist' %}active{% endif %}">
+  <a href="{% url 'cases' %}" class="nav-item {% if request.resolver_match.url_name == 'heist' %}active{% endif %}">
     <span class="nav-icon"><i class="fa-solid fa-thumbtack"></i></span> Inv. Board
   </a>
 
-  <<a href="{% url 'analysis' %}" 
-   class="nav-item {% if request.resolver_match.url_name == 'analysis' %}active{% endif %}">
-    <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span> Analysis
-</a>
+  <a href="{% url 'cases' %}" class="nav-item {% if request.resolver_match.url_name == 'analysis' %}active{% endif %}">
+    <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span> Case Analysis
+  </a>
 
-
-  <a href="{% url 'caseresolution' %}" class="nav-item {% if request.resolver_match.url_name == 'caseresolution' %}active{% endif %}">
+  <a href="{% url 'cases' %}" class="nav-item {% if request.resolver_match.url_name == 'caseresolution' %}active{% endif %}">
     <span class="nav-icon"><i class="fa-solid fa-scale-balanced"></i></span> Case Resolution
   </a>
 
   <div class="sidebar-section-label">Records</div>
 
-  <<a href="{% url 'casehistory' %}" 
-   class="nav-item {% if request.resolver_match.url_name == 'casehistory' %}active{% endif %}">
-  <span class="nav-icon"><i class="fa-solid fa-box-archive"></i></span> Case History
-</a>
+  <a href="{% url 'casehistory' %}" class="nav-item {% if request.resolver_match.url_name == 'casehistory' %}active{% endif %}">
+    <span class="nav-icon"><i class="fa-solid fa-box-archive"></i></span> Case History
+  </a>
 
-
-  <a href="#" class="nav-item">
+  <a href="{% url 'leaderboard' %}" class="nav-item {% if request.resolver_match.url_name == 'leaderboard' %}active{% endif %}">
     <span class="nav-icon"><i class="fa-solid fa-trophy"></i></span> Leaderboard
   </a>
 
@@ -79,6 +75,6 @@
       </div>
       <button class="logout-btn" title="Logout" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i></button>
     </div>
-  </div> 
+  </div>
 
 </aside>

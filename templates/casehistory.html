@@ -2,338 +2,278 @@
 {% block title %}Case History{% endblock %}
 {% block content %}
 
-<div class="noir-wrap">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
 <style>
-  /* ---- ambient grain + vignette over the whole section ---- */
-  .noir-wrap { position: relative; }
-  .noir-wrap::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 999;
-    opacity: 0.05;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  .archive {
+    --bg: #0e0c09;
+    --panel: #17140f;
+    --panel-2: #1d1911;
+    --border: #322c22;
+    --ink: #e4dcc8;
+    --muted: #948a74;
+    --brass: #c9a24b;
+    --red: #a8362b;
+    --red-soft: rgba(168,54,43,0.14);
+    --green: #5f9e72;
+    --green-soft: rgba(95,158,114,0.14);
+
+    --f-display: 'Playfair Display', Georgia, serif;
+    --f-body: 'Source Serif 4', Georgia, serif;
+    --f-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+    color: var(--ink);
   }
 
-  .page-hdr {
-    border-left: 3px solid #b3221c;
-    padding-left: 14px;
-    margin-bottom: 18px;
-    animation: flicker 6s infinite;
-  }
-  @keyframes flicker {
-    0%, 92%, 100% { border-left-color: #b3221c; }
-    93% { border-left-color: #5c0f0c; }
-    94% { border-left-color: #b3221c; }
-    95% { border-left-color: #3a0a08; }
-    96% { border-left-color: #b3221c; }
-  }
-  .page-title {
-    font-family: 'Courier New', monospace;
-    letter-spacing: 1px;
+  /* ---------- header ---------- */
+  .archive-hdr { margin-bottom: 28px; }
+  .archive-eyebrow {
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    color: var(--brass);
     text-transform: uppercase;
-    color: #221c0f;
-  }
-  .page-sub { color: #9a8f7c; font-style: italic; }
-
-  .stat-row { display: flex; gap: 26px; margin-bottom: 34px; flex-wrap: wrap; padding-top: 14px; }
-  .stat-chip {
-    position: relative;
-    background: #14120f;
-    background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px);
-    border: 1px solid #2c2620;
-    box-shadow: 0 0 0 1px #000 inset, 0 10px 18px rgba(0,0,0,0.45);
-    padding: 16px 20px 14px;
-    min-width: 150px;
-    transform: rotate(var(--tilt, 0deg));
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-  }
-  .stat-chip:nth-child(1) { --tilt: -1.6deg; }
-  .stat-chip:nth-child(2) { --tilt: 1deg; }
-  .stat-chip:nth-child(3) { --tilt: -0.8deg; }
-  .stat-chip:nth-child(4) { --tilt: 1.4deg; }
-  .stat-chip:hover {
-    transform: rotate(0deg) translateY(-3px);
-    border-color: #b3221c;
-    box-shadow: 0 0 0 1px #000 inset, 0 0 22px rgba(179,34,28,0.35), 0 14px 22px rgba(0,0,0,0.5);
-  }
-  /* pin holding the tag, with a thread up to an implied corkboard */
-  .stat-chip::before {
-    content: '';
-    position: absolute;
-    top: -7px; left: 50%;
-    width: 9px; height: 9px;
-    margin-left: -4.5px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #ff8a80, #b3221c 60%, #6f130f);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.6);
-  }
-  .stat-chip .icon {
-    font-family: 'Courier New', monospace;
-    font-size: 0.85rem;
-    color: #6b6152;
-    letter-spacing: 2px;
     margin-bottom: 6px;
-    display: block;
   }
-  .stat-chip .lbl {
-    font-family: 'Courier New', monospace;
-    font-size: 0.68rem;
+  .archive-title {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: 2rem;
+    color: var(--ink);
+    margin: 0 0 4px;
+  }
+  .archive-sub {
+    font-family: var(--f-body);
+    font-style: italic;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  /* ---------- metrics shelf ---------- */
+  .shelf {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 30px;
+  }
+  .plaque {
+    background: var(--panel);
+    padding: 18px 20px;
+  }
+  .plaque .p-lbl {
+    font-family: var(--f-mono);
+    font-size: 0.65rem;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: #8a7f6e;
-    margin-bottom: 4px;
+    color: var(--muted);
+    margin-bottom: 8px;
   }
-  .stat-chip .val { font-family: 'Courier New', monospace; font-size: 1.6rem; color: #d8d0c0; }
-  .stat-chip .val.green { color: #6fbf8d; }
-  .stat-chip .val.gold { color: #e0a940; }
-  .stat-chip .val.red { color: #ff5c52; }
+  .plaque .p-val {
+    font-family: var(--f-mono);
+    font-weight: 700;
+    font-size: 1.65rem;
+    color: var(--ink);
+  }
+  .plaque .p-val.brass { color: var(--brass); }
+  .plaque .p-val.green { color: var(--green); }
 
-  .card {
-    position: relative;
-    background: #14120f;
-    background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 4px 4px;
-    border: 1px solid #2c2620;
-    box-shadow: 0 0 0 1px #000 inset, 0 8px 24px rgba(0,0,0,0.5);
-    overflow-x: auto;
-  }
-  /* flashlight spotlight that follows the cursor, desk-lamp-in-a-dark-office effect */
-  .card::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 1;
-    background: radial-gradient(circle 260px at var(--mx, 50%) var(--my, 30%), transparent 0%, rgba(0,0,0,0.35) 75%);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-  .card:hover::after { opacity: 1; }
-
-  /* ---- redacted suspect name, revealed on row hover like a classified file ---- */
-  .redacted {
-    background: #0d0b09;
-    color: transparent;
-    border-radius: 2px;
-    padding: 1px 4px;
-    transition: color 0.25s ease, background 0.25s ease;
-  }
-  tr:hover .redacted {
-    color: #d8d0c0;
-    background: transparent;
-  }
-
-  /* ---- toolbar: search / filter / sort, styled like a file-index tab strip ---- */
+  /* ---------- toolbar ---------- */
   .toolbar {
     display: flex;
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
-    padding: 16px 16px 0;
+    margin-bottom: 14px;
   }
-  .toolbar-title {
-    font-family: 'Courier New', monospace;
-    color: #c9c1b0;
-    letter-spacing: 1px;
-    margin-right: auto;
-    white-space: nowrap;
-  }
-  .tb-input, .tb-select {
-    background: #0d0b09;
-    border: 1px solid #3a332a;
-    color: #d8d0c0;
-    font-family: 'Courier New', monospace;
-    font-size: 0.78rem;
-    padding: 7px 10px;
-    letter-spacing: 0.5px;
-  }
-  .tb-input::placeholder { color: #5c5346; }
-  .tb-input:focus, .tb-select:focus {
-    outline: none;
-    border-color: #b3221c;
-  }
-  .tb-input { width: 200px; }
-
-  .data-table { width: 100%; border-collapse: collapse; }
-  .data-table th {
-    font-family: 'Courier New', monospace;
-    font-size: 0.75rem;
+  .toolbar-label {
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: #8a7f6e;
-    border-bottom: 1px solid #3a332a;
-    padding: 10px 12px;
-    text-align: left;
+    color: var(--muted);
+    margin-right: auto;
+  }
+  .tb-input, .tb-select {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--ink);
+    font-family: var(--f-mono);
+    font-size: 0.82rem;
+    padding: 8px 12px;
+  }
+  .tb-input { width: 220px; }
+  .tb-input::placeholder { color: var(--muted); }
+  .tb-input:focus, .tb-select:focus { outline: none; border-color: var(--brass); }
+
+  /* ---------- folder list ---------- */
+  .drawer { border: 1px solid var(--border); }
+  .folder { border-bottom: 1px solid var(--border); background: var(--panel); }
+  .folder:last-child { border-bottom: none; }
+
+  .folder-tab {
+    display: grid;
+    grid-template-columns: 56px 1.6fr 110px 90px 130px 80px 22px;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    cursor: pointer;
     user-select: none;
   }
-  .data-table th.sortable { cursor: pointer; }
-  .data-table th.sortable:hover { color: #d8d0c0; }
-  .data-table th .arrow { display: inline-block; width: 10px; opacity: 0.5; }
-  .data-table th.active .arrow { opacity: 1; color: #ff5c52; }
+  .folder-tab:hover { background: var(--panel-2); }
 
-  .data-table td {
-    padding: 12px;
-    border-bottom: 1px solid #221e19;
-    color: #d8d0c0;
-    font-family: 'Georgia', serif;
-    vertical-align: middle;
-  }
-  .data-table tr { transition: background 0.15s ease; }
-  .data-table tr:hover td { background: rgba(179,34,28,0.06); }
-  .data-table tr.hidden-row { display: none; }
+  .f-idx { font-family: var(--f-mono); color: var(--muted); font-size: 0.78rem; }
+  .f-name { font-family: var(--f-display); font-weight: 700; font-size: 1.02rem; color: var(--ink); }
+  .f-date { font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); }
 
-  .case-idx {
-    font-family: 'Courier New', monospace;
-    color: #5c5346;
-    font-size: 0.72rem;
-    margin-right: 6px;
-  }
-
-  /* ---- accuracy bar ---- */
-  .acc-wrap { display: flex; align-items: center; gap: 8px; }
-  .acc-track {
-    flex: 1;
-    min-width: 60px;
-    height: 6px;
-    background: #221e19;
-    border: 1px solid #2c2620;
-    position: relative;
-    overflow: hidden;
-  }
-  .acc-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #7a1e19, #b3221c);
-  }
-  .acc-fill.high { background: linear-gradient(90deg, #2e5c40, #6fbf8d); }
-  .acc-num {
-    font-family: 'Courier New', monospace;
-    font-size: 0.78rem;
-    color: #a89e8c;
-    min-width: 34px;
-    text-align: right;
-  }
-
-  /* ---- rubber-stamp verdict ---- */
-  .stamp {
-    display: inline-block;
-    padding: 4px 12px;
-    font-size: 0.72rem;
-    font-weight: bold;
+  .seal {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--f-mono);
+    font-size: 0.68rem;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    font-family: 'Courier New', monospace;
-    border: 2px solid currentColor;
-    border-radius: 3px;
-    transform: rotate(-5deg);
-    position: relative;
-    background: transparent;
-  }
-  .stamp::after {
-    content: '';
-    position: absolute;
-    inset: 2px;
-    border: 1px solid currentColor;
+    padding: 4px 8px;
     border-radius: 2px;
-    opacity: 0.5;
   }
-  .stamp-clear { color: #6fbf8d; }
-  .stamp-prime { color: #ff5c52; }
+  .seal-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .seal.correct { color: var(--green); background: var(--green-soft); }
+  .seal.correct .seal-dot { background: var(--green); }
+  .seal.incorrect { color: var(--red); background: var(--red-soft); }
+  .seal.incorrect .seal-dot { background: var(--red); }
 
-  .score-pos { color: #6fbf8d; font-family: 'Courier New', monospace; }
-  .score-neg { color: #ff5c52; font-family: 'Courier New', monospace; }
+  .f-score { font-family: var(--f-mono); font-weight: 700; text-align: right; }
+  .f-score.pos { color: var(--green); }
+  .f-score.neg { color: var(--red); }
 
-  /* ---- empty state ---- */
-  .stamp-empty {
+  .f-chevron {
+    font-family: var(--f-mono);
+    color: var(--muted);
     text-align: center;
-    padding: 46px 20px;
-    color: #5c5346;
+    transition: transform 0.2s ease;
   }
-  .stamp-empty .folder-icon {
-    font-family: 'Courier New', monospace;
-    font-size: 1.8rem;
-    color: #3a332a;
+  .folder.open .f-chevron { transform: rotate(90deg); color: var(--brass); }
+
+  /* ---------- expanded panel ---------- */
+  .folder-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.28s ease;
+    background: var(--panel-2);
+    border-top: 1px solid transparent;
+  }
+  .folder.open .folder-body {
+    max-height: 220px;
+    border-top: 1px solid var(--border);
+  }
+  .folder-body-inner {
+    padding: 18px 18px 20px 90px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 30px;
+  }
+  .fb-block .fb-lbl {
+    font-family: var(--f-mono);
+    font-size: 0.65rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .fb-block .fb-val {
+    font-family: var(--f-body);
+    font-size: 1rem;
+    color: var(--ink);
+  }
+  .fb-block .fb-val.mono { font-family: var(--f-mono); }
+
+  .acc-track {
+    width: 100%;
+    height: 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    margin-top: 6px;
+  }
+  .acc-fill { height: 100%; background: var(--brass); }
+  .acc-fill.high { background: var(--green); }
+
+  /* ---------- empty state ---------- */
+  .drawer-empty {
+    text-align: center;
+    padding: 60px 20px;
+    border: 1px dashed var(--border);
+  }
+  .drawer-empty .e-mark {
+    font-family: var(--f-mono);
+    color: var(--border);
+    font-size: 1.4rem;
     margin-bottom: 10px;
   }
-  .stamp-empty .msg {
-    font-family: 'Courier New', monospace;
-    letter-spacing: 1px;
-    color: #6b6152;
+  .drawer-empty .e-msg {
+    font-family: var(--f-mono);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-size: 0.8rem;
   }
-  .stamp-empty .hint {
-    font-family: 'Georgia', serif;
+  .drawer-empty .e-hint {
+    font-family: var(--f-body);
     font-style: italic;
-    font-size: 0.85rem;
-    color: #4a4234;
+    color: #6b6152;
+    font-size: 0.88rem;
     margin-top: 6px;
   }
 
-  /* ---- responsive: stack into case cards below 720px ---- */
-  @media (max-width: 720px) {
-    .toolbar { flex-direction: column; align-items: stretch; }
-    .toolbar-title { margin-right: 0; }
-    .tb-input { width: 100%; }
-
-    .data-table thead { display: none; }
-    .data-table, .data-table tbody, .data-table tr, .data-table td { display: block; width: 100%; }
-    .data-table tr {
-      border: 1px solid #221e19;
-      margin: 12px 0;
-      padding: 10px 4px;
+  /* ---------- responsive ---------- */
+  @media (max-width: 760px) {
+    .shelf { grid-template-columns: repeat(2, 1fr); }
+    .folder-tab {
+      grid-template-columns: 32px 1fr auto;
+      grid-template-areas: "idx name chev" "idx date date" "idx seal score";
+      row-gap: 6px;
     }
-    .data-table td {
-      border-bottom: none;
-      padding: 6px 8px;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .data-table td::before {
-      content: attr(data-label);
-      font-family: 'Courier New', monospace;
-      font-size: 0.68rem;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      color: #8a7f6e;
-      flex-shrink: 0;
-    }
+    .f-idx { grid-area: idx; }
+    .f-name { grid-area: name; }
+    .f-date { grid-area: date; }
+    .f-score { grid-area: score; text-align: left; }
+    .f-chevron { grid-area: chev; }
+    .folder-tab > .seal { grid-area: seal; }
+    .folder-body-inner { padding-left: 18px; grid-template-columns: 1fr; }
   }
 </style>
 
-<div class="page-hdr">
-  <div class="page-title">Case History</div>
-  <div class="page-sub">Archive of all closed investigations.</div>
-</div>
+<div class="archive">
 
-<div class="stat-row">
-  <div class="stat-chip">
-    <span class="icon">◎</span>
-    <div class="lbl">Conviction Rate</div>
-    <div class="val green"><span class="count" data-target="{{ conviction_rate }}">0</span>%</div>
+  <div class="archive-hdr">
+    <div class="archive-eyebrow">Detective Records Division</div>
+    <h1 class="archive-title">Case File Archive</h1>
+    <div class="archive-sub">Every investigation you've closed, on the record.</div>
   </div>
-  <div class="stat-chip">
-    <span class="icon">▣</span>
-    <div class="lbl">Avg. Score</div>
-    <div class="val"><span class="count" data-target="{{ avg_score }}">0</span></div>
-  </div>
-  <div class="stat-chip">
-    <span class="icon">★</span>
-    <div class="lbl">Best Score</div>
-    <div class="val gold">+<span class="count" data-target="{{ best_score }}">0</span></div>
-  </div>
-  <div class="stat-chip">
-    <span class="icon">▭</span>
-    <div class="lbl">Cases Closed</div>
-    <div class="val"><span class="count" data-target="{{ cases|length }}">0</span></div>
-  </div>
-</div>
 
-<div class="card">
+  <div class="shelf">
+    <div class="plaque">
+      <div class="p-lbl">Conviction Rate</div>
+      <div class="p-val green">{{ conviction_rate }}%</div>
+    </div>
+    <div class="plaque">
+      <div class="p-lbl">Avg. Score</div>
+      <div class="p-val">{{ avg_score }}</div>
+    </div>
+    <div class="plaque">
+      <div class="p-lbl">Best Score</div>
+      <div class="p-val brass">+{{ best_score }}</div>
+    </div>
+    <div class="plaque">
+      <div class="p-lbl">Cases Closed</div>
+      <div class="p-val">{{ cases|length }}</div>
+    </div>
+  </div>
+
   <div class="toolbar">
-    <h3 class="toolbar-title">CASE LOG</h3>
+    <span class="toolbar-label">{{ cases|length }} record{{ cases|length|pluralize }}</span>
     <input id="caseSearch" class="tb-input" type="text" placeholder="Search case or suspect…" autocomplete="off">
     <select id="outcomeFilter" class="tb-select">
       <option value="all">All outcomes</option>
@@ -341,124 +281,78 @@
       <option value="incorrect">Incorrect only</option>
     </select>
   </div>
-  <table class="data-table" id="caseTable">
-    <thead>
-      <tr>
-        <th class="sortable" data-key="name">Case <span class="arrow">▾</span></th>
-        <th class="sortable" data-key="date">Date Solved <span class="arrow">▾</span></th>
-        <th>Suspect Accused</th>
-        <th data-key="outcome">Outcome</th>
-        <th class="sortable" data-key="accuracy">Accuracy <span class="arrow">▾</span></th>
-        <th class="sortable active" data-key="score">Score <span class="arrow">▾</span></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for c in cases %}
-      <tr data-name="{{ c.name|lower }}" data-suspect="{{ c.suspect_name|lower }}"
-          data-outcome="{{ c.outcome }}" data-date="{{ c.date_solved }}"
-          data-accuracy="{{ c.accuracy }}" data-score="{{ c.score }}">
-        <td data-label="Case"><span class="case-idx">#{{ forloop.counter|stringformat:"03d" }}</span><strong>{{ c.name }}</strong></td>
-        <td data-label="Date Solved">{{ c.date_solved }}</td>
-        <td data-label="Suspect Accused"><span class="redacted">{{ c.suspect_name }}</span></td>
-        <td data-label="Outcome">
-          {% if c.outcome == "correct" %}
-            <span class="stamp stamp-clear">Correct</span>
-          {% else %}
-            <span class="stamp stamp-prime">Incorrect</span>
-          {% endif %}
-        </td>
-        <td data-label="Accuracy">
-          <div class="acc-wrap">
-            <div class="acc-track"><div class="acc-fill{% if c.accuracy >= 70 %} high{% endif %}" style="width: {{ c.accuracy }}%;"></div></div>
-            <span class="acc-num">{{ c.accuracy }}%</span>
+
+  {% if cases %}
+  <div class="drawer" id="drawer">
+    {% for c in cases %}
+    <div class="folder" data-name="{{ c.name|lower }}" data-suspect="{{ c.suspect_name|lower }}" data-outcome="{{ c.outcome }}">
+      <div class="folder-tab" role="button" tabindex="0">
+        <span class="f-idx">#{{ forloop.counter|stringformat:"03d" }}</span>
+        <span class="f-name">{{ c.name }}</span>
+        <span class="f-date">{{ c.date_solved }}</span>
+        {% if c.outcome == "correct" %}
+          <span class="seal correct"><span class="seal-dot"></span>Correct</span>
+        {% else %}
+          <span class="seal incorrect"><span class="seal-dot"></span>Incorrect</span>
+        {% endif %}
+        <span class="f-score {% if c.score >= 0 %}pos{% else %}neg{% endif %}">{% if c.score >= 0 %}+{% endif %}{{ c.score }}</span>
+        <span class="f-chevron">▶</span>
+      </div>
+      <div class="folder-body">
+        <div class="folder-body-inner">
+          <div class="fb-block">
+            <div class="fb-lbl">Suspect Accused</div>
+            <div class="fb-val">{{ c.suspect_name }}</div>
           </div>
-        </td>
-        <td data-label="Score" class="{% if c.score >= 0 %}score-pos{% else %}score-neg{% endif %}">{% if c.score >= 0 %}+{% endif %}{{ c.score }}</td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="6">
-        <div class="stamp-empty">
-          <div class="folder-icon">▭ ▭ ▭</div>
-          <div class="msg">— NO CASES CLOSED YET —</div>
-          <div class="hint">Solve your first case to start the file.</div>
+          <div class="fb-block">
+            <div class="fb-lbl">Accuracy</div>
+            <div class="fb-val mono">{{ c.accuracy }}%</div>
+            <div class="acc-track"><div class="acc-fill{% if c.accuracy >= 70 %} high{% endif %}" style="width: {{ c.accuracy }}%;"></div></div>
+          </div>
         </div>
-      </td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="drawer-empty">
+    <div class="e-mark">▭ ▭ ▭</div>
+    <div class="e-msg">Archive Empty</div>
+    <div class="e-hint">Solve your first case to start the file.</div>
+  </div>
+  {% endif %}
+
 </div>
 
 <script>
 (function () {
-  document.querySelectorAll('.count').forEach(el => {
-    const target = parseFloat(el.dataset.target) || 0;
-    const duration = 700;
-    const start = performance.now();
-    function tick(now) {
-      const p = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      el.textContent = Math.round(target * eased);
-      if (p < 1) requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
+  const drawer = document.getElementById('drawer');
+  if (!drawer) return;
+
+  drawer.querySelectorAll('.folder-tab').forEach(tab => {
+    const toggle = () => tab.closest('.folder').classList.toggle('open');
+    tab.addEventListener('click', toggle);
+    tab.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+    });
   });
 
   const search = document.getElementById('caseSearch');
   const filter = document.getElementById('outcomeFilter');
-  const table = document.getElementById('caseTable');
-  if (!table) return;
-  const tbody = table.querySelector('tbody');
-  const rows = Array.from(tbody.querySelectorAll('tr[data-name]'));
-  const headers = table.querySelectorAll('th.sortable');
+  const folders = Array.from(drawer.querySelectorAll('.folder'));
 
   function applyFilters() {
-    const q = (search.value || '').toLowerCase().trim();
+    const q = search.value.toLowerCase().trim();
     const oc = filter.value;
-    rows.forEach(row => {
-      const matchesText = !q || row.dataset.name.includes(q) || row.dataset.suspect.includes(q);
-      const matchesOutcome = oc === 'all' || row.dataset.outcome === oc;
-      row.classList.toggle('hidden-row', !(matchesText && matchesOutcome));
+    folders.forEach(f => {
+      const matchesText = !q || f.dataset.name.includes(q) || f.dataset.suspect.includes(q);
+      const matchesOutcome = oc === 'all' || f.dataset.outcome === oc;
+      f.style.display = (matchesText && matchesOutcome) ? '' : 'none';
     });
   }
-
-  let sortKey = 'score', sortDir = -1;
-  function applySort() {
-    const sorted = [...rows].sort((a, b) => {
-      let av = a.dataset[sortKey], bv = b.dataset[sortKey];
-      if (sortKey === 'accuracy' || sortKey === 'score') {
-        av = parseFloat(av); bv = parseFloat(bv);
-      }
-      if (av < bv) return -1 * sortDir;
-      if (av > bv) return 1 * sortDir;
-      return 0;
-    });
-    sorted.forEach(row => tbody.appendChild(row));
-  }
-
-  headers.forEach(th => {
-    th.addEventListener('click', () => {
-      const key = th.dataset.key;
-      sortDir = (sortKey === key) ? sortDir * -1 : -1;
-      sortKey = key;
-      headers.forEach(h => { h.classList.remove('active'); h.querySelector('.arrow').textContent = '▾'; });
-      th.classList.add('active');
-      th.querySelector('.arrow').textContent = sortDir === -1 ? '▾' : '▴';
-      applySort();
-    });
-  });
 
   search.addEventListener('input', applyFilters);
   filter.addEventListener('change', applyFilters);
-  applySort();
-
-  const card = table.closest('.card');
-  card.addEventListener('mousemove', e => {
-    const r = card.getBoundingClientRect();
-    card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
-    card.style.setProperty('--my', (e.clientY - r.top) + 'px');
-  });
 })();
 </script>
-
-</div>
 {% endblock %}

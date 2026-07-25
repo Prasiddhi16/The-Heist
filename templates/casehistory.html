@@ -2,8 +2,35 @@
 {% block title %}Case History{% endblock %}
 {% block content %}
 
+<div class="noir-wrap">
+
 <style>
-  .page-hdr { border-left: 3px solid #b3221c; padding-left: 14px; margin-bottom: 18px; }
+  /* ---- ambient grain + vignette over the whole section ---- */
+  .noir-wrap { position: relative; }
+  .noir-wrap::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  .page-hdr {
+    border-left: 3px solid #b3221c;
+    padding-left: 14px;
+    margin-bottom: 18px;
+    animation: flicker 6s infinite;
+  }
+  @keyframes flicker {
+    0%, 92%, 100% { border-left-color: #b3221c; }
+    93% { border-left-color: #5c0f0c; }
+    94% { border-left-color: #b3221c; }
+    95% { border-left-color: #3a0a08; }
+    96% { border-left-color: #b3221c; }
+  }
   .page-title {
     font-family: 'Courier New', monospace;
     letter-spacing: 1px;
@@ -12,23 +39,45 @@
   }
   .page-sub { color: #9a8f7c; font-style: italic; }
 
-  .stat-row { display: flex; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+  .stat-row { display: flex; gap: 26px; margin-bottom: 34px; flex-wrap: wrap; padding-top: 14px; }
   .stat-chip {
     position: relative;
     background: #14120f;
+    background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px);
     border: 1px solid #2c2620;
-    box-shadow: 0 0 0 1px #000 inset;
-    padding: 12px 18px;
-    min-width: 140px;
+    box-shadow: 0 0 0 1px #000 inset, 0 10px 18px rgba(0,0,0,0.45);
+    padding: 16px 20px 14px;
+    min-width: 150px;
+    transform: rotate(var(--tilt, 0deg));
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   }
-  /* manila tab notch, top-right corner of each chip */
+  .stat-chip:nth-child(1) { --tilt: -1.6deg; }
+  .stat-chip:nth-child(2) { --tilt: 1deg; }
+  .stat-chip:nth-child(3) { --tilt: -0.8deg; }
+  .stat-chip:nth-child(4) { --tilt: 1.4deg; }
+  .stat-chip:hover {
+    transform: rotate(0deg) translateY(-3px);
+    border-color: #b3221c;
+    box-shadow: 0 0 0 1px #000 inset, 0 0 22px rgba(179,34,28,0.35), 0 14px 22px rgba(0,0,0,0.5);
+  }
+  /* pin holding the tag, with a thread up to an implied corkboard */
   .stat-chip::before {
     content: '';
     position: absolute;
-    top: -1px; right: 10px;
-    width: 22px; height: 6px;
-    background: #b3221c;
-    opacity: 0.55;
+    top: -7px; left: 50%;
+    width: 9px; height: 9px;
+    margin-left: -4.5px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ff8a80, #b3221c 60%, #6f130f);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  }
+  .stat-chip .icon {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: #6b6152;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    display: block;
   }
   .stat-chip .lbl {
     font-family: 'Courier New', monospace;
@@ -38,18 +87,44 @@
     color: #8a7f6e;
     margin-bottom: 4px;
   }
-  .stat-chip .val { font-family: 'Courier New', monospace; font-size: 1.4rem; color: #d8d0c0; }
+  .stat-chip .val { font-family: 'Courier New', monospace; font-size: 1.6rem; color: #d8d0c0; }
   .stat-chip .val.green { color: #6fbf8d; }
   .stat-chip .val.gold { color: #e0a940; }
   .stat-chip .val.red { color: #ff5c52; }
 
   .card {
+    position: relative;
     background: #14120f;
     background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
     background-size: 4px 4px;
     border: 1px solid #2c2620;
     box-shadow: 0 0 0 1px #000 inset, 0 8px 24px rgba(0,0,0,0.5);
     overflow-x: auto;
+  }
+  /* flashlight spotlight that follows the cursor, desk-lamp-in-a-dark-office effect */
+  .card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background: radial-gradient(circle 260px at var(--mx, 50%) var(--my, 30%), transparent 0%, rgba(0,0,0,0.35) 75%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .card:hover::after { opacity: 1; }
+
+  /* ---- redacted suspect name, revealed on row hover like a classified file ---- */
+  .redacted {
+    background: #0d0b09;
+    color: transparent;
+    border-radius: 2px;
+    padding: 1px 4px;
+    transition: color 0.25s ease, background 0.25s ease;
+  }
+  tr:hover .redacted {
+    color: #d8d0c0;
+    background: transparent;
   }
 
   /* ---- toolbar: search / filter / sort, styled like a file-index tab strip ---- */
@@ -118,6 +193,7 @@
     margin-right: 6px;
   }
 
+  /* ---- accuracy bar ---- */
   .acc-wrap { display: flex; align-items: center; gap: 8px; }
   .acc-track {
     flex: 1;
@@ -141,6 +217,7 @@
     text-align: right;
   }
 
+  /* ---- rubber-stamp verdict ---- */
   .stamp {
     display: inline-block;
     padding: 4px 12px;
@@ -169,7 +246,7 @@
   .score-pos { color: #6fbf8d; font-family: 'Courier New', monospace; }
   .score-neg { color: #ff5c52; font-family: 'Courier New', monospace; }
 
-
+  /* ---- empty state ---- */
   .stamp-empty {
     text-align: center;
     padding: 46px 20px;
@@ -194,6 +271,7 @@
     margin-top: 6px;
   }
 
+  /* ---- responsive: stack into case cards below 720px ---- */
   @media (max-width: 720px) {
     .toolbar { flex-direction: column; align-items: stretch; }
     .toolbar-title { margin-right: 0; }
@@ -232,20 +310,24 @@
 
 <div class="stat-row">
   <div class="stat-chip">
+    <span class="icon">◎</span>
     <div class="lbl">Conviction Rate</div>
-    <div class="val green">{{ conviction_rate }}%</div>
+    <div class="val green"><span class="count" data-target="{{ conviction_rate }}">0</span>%</div>
   </div>
   <div class="stat-chip">
+    <span class="icon">▣</span>
     <div class="lbl">Avg. Score</div>
-    <div class="val">{{ avg_score }}</div>
+    <div class="val"><span class="count" data-target="{{ avg_score }}">0</span></div>
   </div>
   <div class="stat-chip">
+    <span class="icon">★</span>
     <div class="lbl">Best Score</div>
-    <div class="val gold">+{{ best_score }}</div>
+    <div class="val gold">+<span class="count" data-target="{{ best_score }}">0</span></div>
   </div>
   <div class="stat-chip">
+    <span class="icon">▭</span>
     <div class="lbl">Cases Closed</div>
-    <div class="val">{{ cases|length }}</div>
+    <div class="val"><span class="count" data-target="{{ cases|length }}">0</span></div>
   </div>
 </div>
 
@@ -277,7 +359,7 @@
           data-accuracy="{{ c.accuracy }}" data-score="{{ c.score }}">
         <td data-label="Case"><span class="case-idx">#{{ forloop.counter|stringformat:"03d" }}</span><strong>{{ c.name }}</strong></td>
         <td data-label="Date Solved">{{ c.date_solved }}</td>
-        <td data-label="Suspect Accused">{{ c.suspect_name }}</td>
+        <td data-label="Suspect Accused"><span class="redacted">{{ c.suspect_name }}</span></td>
         <td data-label="Outcome">
           {% if c.outcome == "correct" %}
             <span class="stamp stamp-clear">Correct</span>
@@ -308,6 +390,19 @@
 
 <script>
 (function () {
+  document.querySelectorAll('.count').forEach(el => {
+    const target = parseFloat(el.dataset.target) || 0;
+    const duration = 700;
+    const start = performance.now();
+    function tick(now) {
+      const p = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * eased);
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+
   const search = document.getElementById('caseSearch');
   const filter = document.getElementById('outcomeFilter');
   const table = document.getElementById('caseTable');
@@ -355,6 +450,15 @@
   search.addEventListener('input', applyFilters);
   filter.addEventListener('change', applyFilters);
   applySort();
+
+  const card = table.closest('.card');
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+    card.style.setProperty('--my', (e.clientY - r.top) + 'px');
+  });
 })();
 </script>
+
+</div>
 {% endblock %}

@@ -138,6 +138,7 @@ textarea#narrative {
   <div class="card" style="display:flex; gap:12px; flex-wrap:wrap;">
     <a href="{% url 'suspects' case.case_id %}" class="btn btn-secondary">Back to Suspects</a>
     <a href="{% url 'evidence' case.case_id %}" class="btn btn-secondary">Back to Evidence</a>
+
     <button class="btn btn-primary" onclick="generateReport()">Generate Case Report</button>
   </div>
 </div>
@@ -147,6 +148,7 @@ textarea#narrative {
   <div class="no-print" style="margin-top:16px; display:flex; gap:12px;">
     <button class="btn btn-primary" onclick="window.print()">Print / Save as PDF</button>
     <button class="btn btn-secondary" onclick="document.getElementById('reportOutput').classList.remove('show')">Back to Editing</button>
+    <a href="{% url 'evidence' case.case_id %}" class="btn btn-secondary">Investigate</a>
   </div>
 </div>
 

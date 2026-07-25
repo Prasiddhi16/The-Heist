@@ -48,9 +48,12 @@
     <span class="nav-icon"><i class="fa-solid fa-thumbtack"></i></span> Inv. Board
   </a>
 
-  <a href="#" class="nav-item">
     <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span> Analysis
-  </a>
+  <<a href="{% url 'analysis' %}" 
+   class="nav-item {% if request.resolver_match.url_name == 'analysis' %}active{% endif %}">
+    <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span> Analysis
+</a>
+
 
   <a href="{% url 'caseresolution' %}" class="nav-item {% if request.resolver_match.url_name == 'caseresolution' %}active{% endif %}">
     <span class="nav-icon"><i class="fa-solid fa-scale-balanced"></i></span> Case Resolution

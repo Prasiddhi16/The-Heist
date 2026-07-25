@@ -134,18 +134,18 @@
   <div class="case-file" id="case-file"></div>
 </div>
 
-{# ------------------------------------------------------------
-   DATA: pass a list of dicts as `cases_json` from your view.
-   Shape expected per case:
-   {
-     "id": 1, "case_id": "HS-2026-005", "title": "The Clockmaker's Murder",
-     "date_solved": "2026-05-12", "status": "closed" | "active",
-     "outcome": "correct" | "incorrect", "accuracy": 94, "score": 310,
-     "suspect": {"name": "Dr. Felix Orr", "occupation": "Watchmaker",
-                 "motive": "Inheritance dispute"},
-     "evidence": ["Bloodstained glove found in workshop", "Pawn shop receipt, dated night of murder"]
-   }
------------------------------------------------------------- #}
+{% comment %}
+  DATA: pass a list of dicts as `cases_json` from your view.
+  Shape expected per case:
+  {
+    "id": 1, "case_id": "HS-2026-005", "title": "The Clockmaker's Murder",
+    "date_solved": "2026-05-12", "status": "closed" | "active",
+    "outcome": "correct" | "incorrect", "accuracy": 94, "score": 310,
+    "suspect": {"name": "Dr. Felix Orr", "occupation": "Watchmaker",
+                "motive": "Inheritance dispute"},
+    "evidence": ["Bloodstained glove found in workshop", "Pawn shop receipt, dated night of murder"]
+  }
+{% endcomment %}
 {{ cases_json|json_script:"cases-data" }}
 
 <script>

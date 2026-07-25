@@ -81,6 +81,7 @@ class CaseSubmission(models.Model):
     reviewed = models.BooleanField(default=False)
     is_correct = models.BooleanField(null=True)
     reviewer_notes = models.TextField(null=True, blank=True)
+    score = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'case_submissions'

@@ -10,14 +10,12 @@
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-
 body{
     font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif;
     background:linear-gradient(135deg,#111827,#1f2937 50%,#111827);
     color:#e5e7eb;
     min-height:100vh;
 }
-
 .header{
     background:rgba(17,24,39,.96);
     border-bottom:1px solid #374151;
@@ -29,9 +27,7 @@ body{
     top:0;
     z-index:100;
 }
-
 .brand{display:flex;align-items:center;gap:14px}
-
 .brand-icon{
     width:44px;
     height:44px;
@@ -44,32 +40,26 @@ body{
     font-size:22px;
     font-weight:bold;
 }
-
 .brand-text h1{
     font-size:20px;
     color:#f9fafb;
     letter-spacing:1px;
 }
-
 .brand-text p{
     color:#9ca3af;
     font-size:12px;
     margin-top:3px;
 }
-
 .case-number{font-size:13px;color:#d1d5db}
 .case-number strong{color:#d4af37}
-
 .container{
     max-width:1250px;
     margin:auto;
     padding:40px 24px 70px;
 }
-
 .page-heading{margin-bottom:30px}
 .page-heading h2{font-size:32px;color:#f9fafb;margin-bottom:8px}
 .page-heading p{color:#9ca3af;font-size:15px}
-
 .case-summary{
     background:rgba(31,41,55,.9);
     border:1px solid #374151;
@@ -77,22 +67,18 @@ body{
     padding:24px;
     margin-bottom:28px;
 }
-
 .case-summary-header{
     display:flex;
     justify-content:space-between;
     align-items:flex-start;
     gap:20px;
 }
-
 .case-title h3{
     color:#f9fafb;
     font-size:24px;
     margin-bottom:8px;
 }
-
 .case-title p{color:#9ca3af;font-size:14px}
-
 .status-badge{
     padding:7px 14px;
     border-radius:20px;
@@ -103,7 +89,6 @@ body{
     text-transform:uppercase;
     letter-spacing:1px;
 }
-
 .case-description{
     margin-top:18px;
     padding-top:18px;
@@ -112,14 +97,12 @@ body{
     line-height:1.7;
     font-size:14px;
 }
-
 .analysis-grid{
     display:grid;
     grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);
     gap:24px;
     align-items:start;
 }
-
 .card{
     background:rgba(31,41,55,.9);
     border:1px solid #374151;
@@ -127,9 +110,7 @@ body{
     padding:24px;
     margin-bottom:24px;
 }
-
 .card:last-child{margin-bottom:0}
-
 .card h3{
     color:#f9fafb;
     font-size:18px;
@@ -138,7 +119,6 @@ body{
     align-items:center;
     gap:10px;
 }
-
 .card h3::before{
     content:"";
     width:4px;
@@ -146,14 +126,12 @@ body{
     background:#b8860b;
     border-radius:4px;
 }
-
 .suspect-box{
     background:rgba(17,24,39,.8);
     border:1px solid #4b5563;
     border-radius:10px;
     padding:20px;
 }
-
 .suspect-header{
     display:flex;
     align-items:center;
@@ -161,7 +139,6 @@ body{
     gap:15px;
     margin-bottom:15px;
 }
-
 .suspect-name{
     color:#d4af37;
     font-size:21px;
@@ -219,13 +196,11 @@ body{
     margin-top:-12px;
     margin-bottom:18px;
 }
-
 .evidence-list{
     display:flex;
     flex-direction:column;
     gap:12px;
 }
-
 .evidence-item{
     background:rgba(17,24,39,.8);
     border:1px solid #374151;
@@ -233,7 +208,6 @@ body{
     padding:16px;
     transition:border-color .2s,transform .2s;
 }
-
 .evidence-item:hover{
     border-color:#b8860b;
     transform:translateY(-1px);
@@ -275,29 +249,24 @@ body{
     font-size:13px;
     line-height:1.5;
 }
-
 .readiness-card{text-align:center}
 .readiness-card h3{text-align:left}
-
 .ring-wrap{
     position:relative;
     width:190px;
     height:190px;
     margin:10px auto 25px;
 }
-
 .ring-wrap svg{
     width:190px;
     height:190px;
     transform:rotate(-90deg);
 }
-
 .ring-track{
     fill:none;
     stroke:#374151;
     stroke-width:12;
 }
-
 .ring-fill{
     fill:none;
     stroke:#b8860b;
@@ -305,7 +274,6 @@ body{
     stroke-linecap:round;
     transition:stroke-dashoffset .8s ease;
 }
-
 .ring-center{
     position:absolute;
     inset:0;
@@ -314,13 +282,11 @@ body{
     align-items:center;
     justify-content:center;
 }
-
 .ring-pct{
     color:#f9fafb;
     font-size:34px;
     font-weight:700;
 }
-
 .ring-label{
     color:#9ca3af;
     font-size:12px;
@@ -328,14 +294,12 @@ body{
     letter-spacing:1px;
     margin-top:3px;
 }
-
 .checklist{
     display:flex;
     flex-direction:column;
     gap:10px;
     margin-top:15px;
 }
-
 .check-row{
     display:flex;
     justify-content:space-between;
@@ -738,18 +702,27 @@ body{
                 your deduction against the hidden case solution.
             </div>
             <form
-                method="post"
-                action="{% url 'solve_case' case.case_id %}"
-            >
-                {% csrf_token %}
-                <button
-                    type="submit"
-                    class="btn-solve"
-                    {% if not can_file_verdict %}disabled{% endif %}
-                >
-                    🔒 File Verdict
-                </button>
-            </form>
+    method="post"
+    action="{% url 'solve_case' case.case_id %}"
+>
+    {% csrf_token %}
+
+    {% if submission %}
+        <input
+            type="hidden"
+            name="submission_id"
+            value="{{ submission.submission_id }}"
+        >
+    {% endif %}
+
+    <button
+        type="submit"
+        class="btn-solve"
+        {% if not can_file_verdict %}disabled{% endif %}
+    >
+        🔒 File Verdict
+    </button>
+</form>
             {% if not selected_suspect %}
                 <div class="warning-text">
                     Select a suspect before filing your verdict.

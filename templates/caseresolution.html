@@ -147,8 +147,10 @@ textarea#narrative {
   <div class="report-paper" id="reportPaper"></div>
   <div class="no-print" style="margin-top:16px; display:flex; gap:12px;">
     <button class="btn btn-primary" onclick="window.print()">Print / Save as PDF</button>
-    <button class="btn btn-secondary" onclick="document.getElementById('reportOutput').classList.remove('show')">Back to Editing</button>
-    <a href="{% url 'evidence' case.case_id %}" class="btn btn-secondary">Investigate</a>
+    <button class="btn btn-secondary" onclick="goToAnalysis()">
+      Investigate
+    </button>
+
   </div>
 </div>
 
@@ -269,6 +271,46 @@ function renderEvidence() {
   }).join('');
 }
 
+async function goToAnalysis() {
+  const submissionId = sessionStorage.getItem(SUBMISSION_KEY);
+
+  if (!submissionId) {
+    alert('No active case submission found.');
+    return;
+  }
+
+  const narrative = document.getElementById('narrative').value.trim();
+
+  try {
+    
+    const response = await fetch(
+      '/case/' + CASE_ID + '/save-narrative/',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+          submission_id: submissionId,
+          narrative: narrative
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to save narrative');
+    }
+    window.location.href =
+      "{% url 'analysis' case.case_id %}" +
+      "?submission_id=" +
+      encodeURIComponent(submissionId);
+
+  } catch (error) {
+    console.error('Failed to save narrative:', error);
+    alert('Could not save your investigation narrative. Please try again.');
+  }
+}
 function generateReport() {
   const suspect = currentState.accused_suspect_id != null ? SUSPECTS_BY_ID[currentState.accused_suspect_id] : null;
   const evidenceList = (currentState.selected_evidence_ids || []).map(id => EVIDENCE_BY_ID[id]).filter(Boolean);

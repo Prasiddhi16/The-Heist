@@ -107,7 +107,7 @@
     <td>
       <button class="btn-add" id="accuse-{{ s.suspect_id }}"
         style="padding:6px 12px; border-radius:3px; border:1px solid #7a1e19; background:transparent; color:#ff5c52; font-family:'Courier New',monospace; font-size:0.72rem; text-transform:uppercase; cursor:pointer;"
-        onclick='accuseSuspect({{ s.suspect_id }}, "{{ s.name|escapejs }}", "{{ s.occupation|default:""|escapejs }}", "{{ s.motive|default:""|escapejs }}", "{{ s.suspect_status|default:""|escapejs }}", this)'>
+        onclick="accuseSuspect({{ s.suspect_id }}, this)">
         + Accuse
       </button>
     </td>
@@ -120,28 +120,37 @@
 </div>
 <script>
 const CASE_ID = {{ case.case_id }};
-const SUSPECT_KEY = 'resolution_suspect_' + CASE_ID;
+const SUB_KEY = 'submission_id_' + CASE_ID;
 
-function accuseSuspect(id, name, occupation, motive, status, btn) {
-  sessionStorage.setItem(SUSPECT_KEY, JSON.stringify({
-    suspect_id: id, name: name, occupation: occupation, motive: motive, suspect_status: status
-  }));
+function getSubmissionId() { return sessionStorage.getItem(SUB_KEY); }
+function setSubmissionId(id) { sessionStorage.setItem(SUB_KEY, id); }
+
+async function accuseSuspect(suspectId, btn) {
+  const resp = await fetch(`/case/${CASE_ID}/suspects/${suspectId}/accuse/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ submission_id: getSubmissionId() })
+  });
+  const data = await resp.json();
+  setSubmissionId(data.submission_id);
+
   document.querySelectorAll('.btn-add').forEach(function (b) {
     b.textContent = '+ Accuse';
-    b.disabled = false;
     b.style.color = '#ff5c52';
   });
   btn.textContent = '✓ Accused';
-  btn.disabled = true;
   btn.style.color = '#5c5346';
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  const stored = sessionStorage.getItem(SUSPECT_KEY);
-  if (!stored) return;
-  const accused = JSON.parse(stored);
-  const btn = document.getElementById('accuse-' + accused.suspect_id);
-  if (btn) { btn.textContent = '✓ Accused'; btn.disabled = true; btn.style.color = '#5c5346'; }
+document.addEventListener('DOMContentLoaded', async function () {
+  const subId = getSubmissionId();
+  if (!subId) return;
+  const resp = await fetch(`/case/${CASE_ID}/submission-state/?submission_id=${subId}`);
+  const data = await resp.json();
+  if (data.accused_suspect_id) {
+    const btn = document.getElementById('accuse-' + data.accused_suspect_id);
+    if (btn) { btn.textContent = '✓ Accused'; btn.style.color = '#5c5346'; }
+  }
 });
 </script>
 {% endblock %}

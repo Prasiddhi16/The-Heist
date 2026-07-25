@@ -65,11 +65,14 @@
   }
 </style>
 
-<div class="page-hdr">
+<div class="page-hdr" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
   <div>
     <div class="page-title">Evidence — {{ case.title }}</div>
     <div class="page-sub">View and manage all collected evidence.</div>
   </div>
+  <a href="{% url 'suspects' case.case_id %}" class="btn btn-primary" style="text-decoration:none; padding:8px 16px; background:#b3221c; color:#fff; border-radius:3px; font-family:'Courier New',monospace; font-size:0.8rem; letter-spacing:0.5px; text-transform:uppercase;">
+    View Suspects
+  </a>
 </div>
 
 <div class="card">
@@ -77,29 +80,63 @@
   <table class="data-table">
     <thead>
       <tr><th>ID</th><th>Evidence</th><th>Collected At</th><th>Type</th></tr>
-    </thead>
-    <tbody>
-      {% for e in evidence_items %}
-      <tr>
-        <td class="evidence-id">EV-{{ e.evidence_id }}</td>
-        <td><strong>{{ e.item_name }}</strong></td>
-        <td>{{ e.found_at }}</td>
-        <td>
-          {% if e.evidence_type == "Physical" %}
-            <span class="tag tag-physical">Physical</span>
-          {% elif e.evidence_type == "Digital" %}
-            <span class="tag tag-digital">Digital</span>
-          {% elif e.evidence_type == "Forensic" %}
-            <span class="tag tag-forensic">Forensic</span>
-          {% else %}
-            <span class="tag tag-testimonial">{{ e.evidence_type }}</span>
-          {% endif %}
-        </td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="4" class="stamp-empty">— NO EVIDENCE LOGGED FOR THIS CASE —</td></tr>
-      {% endfor %}
-    </tbody>
+    <thead>
+<tr><th>ID</th><th>Evidence</th><th>Collected At</th><th>Type</th><th>Action</th></tr>
+</thead>
+<tbody>
+  {% for e in evidence_items %}
+  <tr>
+    <td class="evidence-id">EV-{{ e.evidence_id }}</td>
+    <td><strong>{{ e.item_name }}</strong></td>
+    <td>{{ e.found_at }}</td>
+    <td>
+      {% if e.evidence_type == "Physical" %}
+        <span class="tag tag-physical">Physical</span>
+      {% elif e.evidence_type == "Digital" %}
+        <span class="tag tag-digital">Digital</span>
+      {% elif e.evidence_type == "Forensic" %}
+        <span class="tag tag-forensic">Forensic</span>
+      {% else %}
+        <span class="tag tag-testimonial">{{ e.evidence_type }}</span>
+      {% endif %}
+    </td>
+    <td>
+      <button class="btn-add" id="add-ev-{{ e.evidence_id }}"
+        style="padding:6px 12px; border-radius:3px; border:1px solid #3a332a; background:transparent; color:#6fbf8d; font-family:'Courier New',monospace; font-size:0.72rem; text-transform:uppercase; cursor:pointer;"
+        onclick='addEvidence({{ e.evidence_id }}, "{{ e.item_name|escapejs }}", "{{ e.evidence_type|escapejs }}", "{{ e.found_at|escapejs }}", "{{ e.details|default:""|escapejs }}", this)'>
+        + Add to Case
+      </button>
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="5" class="stamp-empty">— NO EVIDENCE LOGGED FOR THIS CASE —</td></tr>
+  {% endfor %}
+</tbody>
   </table>
 </div>
+<script>
+const CASE_ID = {{ case.case_id }};
+const EV_KEY = 'resolution_evidence_' + CASE_ID;
+
+function getStoredEvidence() {
+  return JSON.parse(sessionStorage.getItem(EV_KEY) || '[]');
+}
+
+function addEvidence(id, name, type, foundAt, details, btn) {
+  const list = getStoredEvidence();
+  if (list.some(function (ev) { return ev.evidence_id === id; })) return;
+  list.push({ evidence_id: id, item_name: name, evidence_type: type, found_at: foundAt, details: details });
+  sessionStorage.setItem(EV_KEY, JSON.stringify(list));
+  btn.textContent = '✓ Added';
+  btn.disabled = true;
+  btn.style.color = '#5c5346';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  getStoredEvidence().forEach(function (ev) {
+    const btn = document.getElementById('add-ev-' + ev.evidence_id);
+    if (btn) { btn.textContent = '✓ Added'; btn.disabled = true; btn.style.color = '#5c5346'; }
+  });
+});
+</script>
 {% endblock %}

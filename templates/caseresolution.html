@@ -1,18 +1,277 @@
 {% extends 'index.html' %}
-
 {% block title %}Case Resolution{% endblock %}
-
 {% block content %}
 
-<div class="page-hdr">
+<style>
+.page-hdr { border-left: 3px solid #b3221c; padding-left: 14px; margin-bottom: 18px; }
+.page-title { font-family: 'Courier New', monospace; letter-spacing: 1px; text-transform: uppercase; color: #221c0f; }
+.page-sub { color: #9a8f7c; font-style: italic; }
+
+.card {
+  background: #14120f;
+  background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 4px 4px;
+  border: 1px solid #2c2620;
+  box-shadow: 0 0 0 1px #000 inset, 0 8px 24px rgba(0,0,0,0.5);
+  padding: 18px;
+  margin-bottom: 20px;
+}
+.card h3 {
+  font-family: 'Courier New', monospace;
+  color: #c9c1b0;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 16px; border-radius: 3px; border: 1px solid #3a332a;
+  font-family: 'Courier New', monospace; font-size: 0.8rem; letter-spacing: 0.5px;
+  text-transform: uppercase; cursor: pointer; text-decoration: none;
+}
+.btn-primary { background: #b3221c; color: #fff; border-color: #7a1e19; }
+.btn-primary:hover { background: #931c17; }
+.btn-secondary { background: #2c2620; color: #d8d0c0; }
+.btn-remove { background: transparent; color: #ff5c52; border-color: #7a1e19; padding: 6px 12px; font-size: 0.72rem; }
+.btn-remove:hover { background: rgba(179,34,28,0.12); }
+
+.empty-slot {
+  text-align: center; padding: 24px; color: #5c5346;
+  font-family: 'Courier New', monospace; letter-spacing: 1px;
+  border: 1px dashed #3a332a; border-radius: 4px;
+}
+
+.accused-row, .evidence-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 12px; border-bottom: 1px solid #221e19; color: #d8d0c0; font-family: 'Georgia', serif;
+}
+.accused-row:last-child, .evidence-row:last-child { border-bottom: none; }
+
+textarea#narrative {
+  width: 100%; min-height: 140px; background: #0e0c0a; color: #d8d0c0;
+  border: 1px solid #3a332a; border-radius: 4px; padding: 12px; font-family: 'Georgia', serif;
+  font-size: 0.95rem; resize: vertical; box-sizing: border-box;
+}
+
+/* Printable report */
+#reportOutput { display: none; }
+#reportOutput.show { display: block; }
+.report-paper {
+  background: #f5f1e8; color: #1a1610; padding: 40px; border-radius: 2px;
+  font-family: 'Georgia', serif; line-height: 1.6;
+}
+.report-paper h2 {
+  font-family: 'Courier New', monospace; letter-spacing: 1px; text-transform: uppercase;
+  border-bottom: 2px solid #1a1610; padding-bottom: 10px; margin-bottom: 20px;
+}
+.report-meta { font-size: 0.85rem; color: #4a4436; margin-bottom: 20px; }
+.report-section { margin-bottom: 22px; }
+.report-section h4 {
+  font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.5px;
+  font-size: 0.85rem; color: #6b1712; margin-bottom: 8px; border-bottom: 1px solid #ccc3ad; padding-bottom: 4px;
+}
+.report-evidence-item { padding: 6px 0; border-bottom: 1px dotted #ccc3ad; }
+.report-sign { margin-top: 40px; display: flex; justify-content: space-between; font-size: 0.85rem; }
+
+@media print {
+  body * { visibility: hidden; }
+  #reportOutput, #reportOutput * { visibility: visible; }
+  #reportOutput { position: absolute; left: 0; top: 0; width: 100%; }
+  .no-print { display: none !important; }
+}
+</style>
+
+{% if not case %}
+
+<div class="page-hdr no-print">
   <div>
     <div class="page-title">Case Resolution</div>
-    <div class="page-sub">Select suspect and method, then close the case.</div>
+    <div class="page-sub">Select a case to review or close.</div>
   </div>
 </div>
 
 <div class="card">
-  SELECT A CASE
+  {% if cases %}
+    {% for c in cases %}
+      <div class="accused-row">
+        <div>
+          <strong>{{ c.case_number }}</strong> — {{ c.title }}<br>
+          <small style="color:#9a8f7c;">{{ c.status }} &middot; {{ c.location }}</small>
+        </div>
+        <a href="{% url 'caseresolution' c.case_id %}" class="btn btn-primary">Open</a>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-slot">No cases found.</div>
+  {% endif %}
 </div>
 
+{% else %}
+
+<div class="page-hdr no-print">
+  <div>
+    <div class="page-title">Case Resolution — {{ case.title }}</div>
+    <div class="page-sub">Accuse a suspect, attach evidence, and finalize the case report.</div>
+  </div>
+</div>
+
+<div class="no-print">
+  <div class="card">
+    <h3>ACCUSED SUSPECT</h3>
+    <div id="accusedContainer">
+      <div class="empty-slot">No suspect accused yet — go to the Suspects page and click "Accuse".</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>SUPPORTING EVIDENCE</h3>
+    <div id="evidenceContainer">
+      <div class="empty-slot">No evidence attached yet — go to the Evidence page and click "Add to Case".</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>INVESTIGATOR'S NARRATIVE</h3>
+    <textarea id="narrative" placeholder="Summarize how the evidence ties the accused to the crime..."></textarea>
+  </div>
+
+  <div class="card" style="display:flex; gap:12px; flex-wrap:wrap;">
+    <a href="{% url 'suspects' case.case_id %}" class="btn btn-secondary">Back to Suspects</a>
+    <a href="{% url 'evidence' case.case_id %}" class="btn btn-secondary">Back to Evidence</a>
+    <button class="btn btn-primary" onclick="generateReport()">Generate Case Report</button>
+  </div>
+</div>
+
+<div id="reportOutput">
+  <div class="report-paper" id="reportPaper"></div>
+  <div class="no-print" style="margin-top:16px; display:flex; gap:12px;">
+    <button class="btn btn-primary" onclick="window.print()">Print / Save as PDF</button>
+    <button class="btn btn-secondary" onclick="document.getElementById('reportOutput').classList.remove('show')">Back to Editing</button>
+  </div>
+</div>
+
+<script>
+const CASE_ID = {{ case.case_id }};
+const CASE_TITLE = "{{ case.title|escapejs }}";
+const CASE_NUMBER = "{{ case.case_number|escapejs }}";
+const CASE_LOCATION = "{{ case.location|default:""|escapejs }}";
+
+const SUSPECT_KEY = 'resolution_suspect_' + CASE_ID;
+const EVIDENCE_KEY = 'resolution_evidence_' + CASE_ID;
+
+function getAccused() {
+  const raw = sessionStorage.getItem(SUSPECT_KEY);
+  return raw ? JSON.parse(raw) : null;
+}
+function getEvidenceList() {
+  return JSON.parse(sessionStorage.getItem(EVIDENCE_KEY) || '[]');
+}
+function saveEvidenceList(list) {
+  sessionStorage.setItem(EVIDENCE_KEY, JSON.stringify(list));
+}
+
+function removeAccused() {
+  sessionStorage.removeItem(SUSPECT_KEY);
+  renderAccused();
+}
+function removeEvidence(evidenceId) {
+  saveEvidenceList(getEvidenceList().filter(function (e) { return e.evidence_id !== evidenceId; }));
+  renderEvidence();
+}
+
+function renderAccused() {
+  const container = document.getElementById('accusedContainer');
+  const accused = getAccused();
+  if (!accused) {
+    container.innerHTML = '<div class="empty-slot">No suspect accused yet — go to the Suspects page and click "Accuse".</div>';
+    return;
+  }
+  container.innerHTML =
+    '<div class="accused-row">' +
+      '<div>' +
+        '<strong>' + accused.name + '</strong><br>' +
+        '<small style="color:#9a8f7c;">' + (accused.occupation || 'Unknown') + ' &middot; ' + (accused.suspect_status || '') + '</small><br>' +
+        '<small style="color:#bfae93;">Motive: ' + (accused.motive || 'None logged') + '</small>' +
+      '</div>' +
+      '<button class="btn-remove" onclick="removeAccused()">Remove</button>' +
+    '</div>';
+}
+
+function renderEvidence() {
+  const container = document.getElementById('evidenceContainer');
+  const list = getEvidenceList();
+  if (!list.length) {
+    container.innerHTML = '<div class="empty-slot">No evidence attached yet — go to the Evidence page and click "Add to Case".</div>';
+    return;
+  }
+  container.innerHTML = list.map(function (e) {
+    return '<div class="evidence-row">' +
+      '<div>' +
+        '<strong>EV-' + e.evidence_id + ': ' + e.item_name + '</strong><br>' +
+        '<small style="color:#9a8f7c;">' + e.evidence_type + ' &middot; found at ' + e.found_at + '</small>' +
+      '</div>' +
+      '<button class="btn-remove" onclick="removeEvidence(' + e.evidence_id + ')">Remove</button>' +
+    '</div>';
+  }).join('');
+}
+
+function generateReport() {
+  const accused = getAccused();
+  const evidenceList = getEvidenceList();
+  const narrative = document.getElementById('narrative').value.trim();
+
+  if (!accused) {
+    alert('You must accuse a suspect before generating the report.');
+    return;
+  }
+  if (!evidenceList.length) {
+    alert('Attach at least one piece of evidence before generating the report.');
+    return;
+  }
+
+  const today = new Date().toLocaleDateString();
+
+  const evidenceHtml = evidenceList.map(function (e) {
+    return '<div class="report-evidence-item"><strong>EV-' + e.evidence_id + '</strong> — ' +
+      e.item_name + ' (' + e.evidence_type + ', found at ' + e.found_at + ')' +
+      (e.details ? ': ' + e.details : '') + '</div>';
+  }).join('');
+
+  document.getElementById('reportPaper').innerHTML =
+    '<h2>Case Resolution Report</h2>' +
+    '<div class="report-meta">' +
+      'Case: <strong>' + CASE_NUMBER + '</strong> — ' + CASE_TITLE + '<br>' +
+      'Location: ' + CASE_LOCATION + '<br>' +
+      'Date Closed: ' + today +
+    '</div>' +
+    '<div class="report-section">' +
+      '<h4>Accused</h4>' +
+      '<p><strong>' + accused.name + '</strong> (' + (accused.occupation || 'Unknown') + ')<br>' +
+      'Motive: ' + (accused.motive || 'None logged') + '<br>' +
+      'Prior Status: ' + (accused.suspect_status || 'N/A') + '</p>' +
+    '</div>' +
+    '<div class="report-section">' +
+      '<h4>Supporting Evidence (' + evidenceList.length + ')</h4>' +
+      evidenceHtml +
+    '</div>' +
+    '<div class="report-section">' +
+      '<h4>Investigator\'s Findings</h4>' +
+      '<p>' + (narrative ? narrative.replace(/\n/g, '<br>') : 'No additional narrative provided.') + '</p>' +
+    '</div>' +
+    '<div class="report-sign">' +
+      '<div>Investigator\'s Signature: ______________________</div>' +
+      '<div>Date: ' + today + '</div>' +
+    '</div>';
+
+  document.getElementById('reportOutput').classList.add('show');
+  document.getElementById('reportOutput').scrollIntoView({ behavior: 'smooth' });
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  renderAccused();
+  renderEvidence();
+});
+</script>
+
+{% endif %}
 {% endblock %}

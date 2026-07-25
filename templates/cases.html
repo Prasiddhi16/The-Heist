@@ -59,7 +59,7 @@ function openCase(caseId) {
     grid.innerHTML = cases.map(function (c) {
       const status = (c.status || '').toLowerCase();
       return `
-        <div class="case-card" data-status="${status}" onclick="openCase('${c.case_number}')">
+        <div class="case-card" data-status="${status}" onclick="openCase('${c.case_id}')">
           <div class="case-card-top">
             <div>
               <div class="case-num">${c.case_number || ''}</div>
@@ -74,7 +74,7 @@ function openCase(caseId) {
           <div class="case-meta">
             <div class="case-loss">Loss: <strong>${c.loss_value || 'N/A'}</strong> · ${formatDate(c.created_at)}</div>
           </div>
-          <button class="btn btn-primary btn-full" onclick="event.stopPropagation(); openCase('${c.case_number}')">
+          <button class="btn btn-primary btn-full" onclick="event.stopPropagation(); openCase('${c.case_id}')">
             <i class="fa-solid fa-magnifying-glass"></i> Investigate
           </button>
         </div>

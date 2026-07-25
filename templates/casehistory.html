@@ -2,357 +2,227 @@
 {% block title %}Case History{% endblock %}
 {% block content %}
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-
 <style>
-  .archive {
-    --bg: #0e0c09;
-    --panel: #17140f;
-    --panel-2: #1d1911;
-    --border: #322c22;
-    --ink: #e4dcc8;
-    --muted: #948a74;
-    --brass: #c9a24b;
-    --red: #a8362b;
-    --red-soft: rgba(168,54,43,0.14);
-    --green: #5f9e72;
-    --green-soft: rgba(95,158,114,0.14);
+  .page-hdr { border-left: 3px solid #b3221c; padding-left: 14px; margin-bottom: 20px; }
+  .page-title { font-family: 'Courier New', monospace; letter-spacing: 1px; text-transform: uppercase; color: #221c0f; font-size: 1.3rem; margin: 0 0 4px; }
+  .page-sub { color: #9a8f7c; font-style: italic; margin: 0; }
 
-    --f-display: 'Playfair Display', Georgia, serif;
-    --f-body: 'Source Serif 4', Georgia, serif;
-    --f-mono: 'JetBrains Mono', 'Courier New', monospace;
+  /* ---------- Stat boxes: individual, rounded ---------- */
+  .stat-row { display: flex; gap: 16px; margin-bottom: 26px; flex-wrap: wrap; }
+  .stat-box {
+    flex: 1; min-width: 160px;
+    background: #14120f;
+    border: 1px solid #2c2620;
+    border-radius: 14px;
+    box-shadow: 0 0 0 1px #000 inset, 0 6px 16px rgba(0,0,0,0.4);
+    padding: 16px 20px;
+  }
+  .stat-box .lbl { font-family: 'Courier New', monospace; font-size: 0.68rem; letter-spacing: 2px; text-transform: uppercase; color: #8a7f6e; margin-bottom: 6px; }
+  .stat-box .val { font-family: 'Courier New', monospace; font-size: 1.6rem; color: #d8d0c0; }
+  .stat-box .val.green { color: #6fbf8d; }
+  .stat-box .val.gold { color: #e0a940; }
+  .stat-box .val.blue { color: #7d8fd6; }
 
-    color: var(--ink);
-  }
-
-  /* ---------- header ---------- */
-  .archive-hdr { margin-bottom: 28px; }
-  .archive-eyebrow {
-    font-family: var(--f-mono);
-    font-size: 0.7rem;
-    letter-spacing: 3px;
-    color: var(--brass);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-  .archive-title {
-    font-family: var(--f-display);
-    font-weight: 700;
-    font-size: 2rem;
-    color: var(--ink);
-    margin: 0 0 4px;
-  }
-  .archive-sub {
-    font-family: var(--f-body);
-    font-style: italic;
-    color: var(--muted);
-    font-size: 0.95rem;
-  }
-
-  /* ---------- metrics shelf ---------- */
-  .shelf {
+  /* ---------- Folder grid ---------- */
+  .folder-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    margin-bottom: 30px;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 30px 24px;
   }
-  .plaque {
-    background: var(--panel);
-    padding: 18px 20px;
+  .folder { cursor: pointer; text-align: center; user-select: none; }
+  .folder-icon {
+    position: relative;
+    width: 120px; height: 88px;
+    margin: 0 auto 10px;
+    background: linear-gradient(180deg, #a5713f 0%, #7c522c 100%);
+    border: 1px solid #4a2f18;
+    border-radius: 2px 10px 10px 10px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    transition: transform .12s ease, box-shadow .12s ease;
   }
-  .plaque .p-lbl {
-    font-family: var(--f-mono);
-    font-size: 0.65rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
+  .folder-icon::before {
+    content: "";
+    position: absolute; top: -13px; left: 0;
+    width: 56px; height: 15px;
+    background: #a5713f;
+    border: 1px solid #4a2f18; border-bottom: none;
+    border-radius: 6px 8px 0 0;
   }
-  .plaque .p-val {
-    font-family: var(--f-mono);
-    font-weight: 700;
-    font-size: 1.65rem;
-    color: var(--ink);
+  .folder-icon::after {
+    content: "";
+    position: absolute; inset: 8px 6px 6px 6px;
+    border: 1px dashed rgba(0,0,0,0.18);
+    border-radius: 2px 6px 6px 6px;
   }
-  .plaque .p-val.brass { color: var(--brass); }
-  .plaque .p-val.green { color: var(--green); }
+  .folder:hover .folder-icon { transform: translateY(-3px); box-shadow: 0 12px 22px rgba(0,0,0,0.6); }
+  .folder-dot {
+    position: absolute; top: 6px; right: 6px;
+    width: 9px; height: 9px; border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(0,0,0,0.3);
+  }
+  .folder-dot.active { background: #ff5c52; }
+  .folder-dot.closed { background: #6fbf8d; }
+  .folder-label { font-family: 'Courier New', monospace; font-size: 0.78rem; color: #c9c1b0; letter-spacing: 0.5px; }
+  .folder-id { display: block; font-size: 0.68rem; color: #8a7f6e; margin-top: 2px; }
 
-  /* ---------- toolbar ---------- */
-  .toolbar {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 14px;
-  }
-  .toolbar-label {
-    font-family: var(--f-mono);
-    font-size: 0.7rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-right: auto;
-  }
-  .tb-input, .tb-select {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    color: var(--ink);
-    font-family: var(--f-mono);
-    font-size: 0.82rem;
-    padding: 8px 12px;
-  }
-  .tb-input { width: 220px; }
-  .tb-input::placeholder { color: var(--muted); }
-  .tb-input:focus, .tb-select:focus { outline: none; border-color: var(--brass); }
+  .stamp-empty { text-align: center; padding: 40px; color: #5c5346; font-family: 'Courier New', monospace; letter-spacing: 1px; font-style: italic; }
 
-  /* ---------- folder list ---------- */
-  .drawer { border: 1px solid var(--border); }
-  .folder { border-bottom: 1px solid var(--border); background: var(--panel); }
-  .folder:last-child { border-bottom: none; }
+  /* ---------- Opened folder (modal) ---------- */
+  .overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.65); z-index: 50;
+    align-items: center; justify-content: center; padding: 24px;
+  }
+  .overlay.open { display: flex; }
+  .case-file {
+    background: #14120f;
+    background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 4px 4px;
+    border: 1px solid #2c2620;
+    border-radius: 8px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    width: 100%; max-width: 640px; max-height: 85vh;
+    overflow-y: auto; padding: 26px 28px; position: relative;
+  }
+  .case-file .close-btn {
+    position: absolute; top: 16px; right: 18px;
+    background: transparent; border: 1px solid #3a332a; color: #8a7f6e;
+    font-family: 'Courier New', monospace; font-size: 0.8rem;
+    width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+  }
+  .case-file .close-btn:hover { color: #d8d0c0; border-color: #8a7f6e; }
+  .case-file h2 { font-family: 'Courier New', monospace; color: #c9c1b0; letter-spacing: 1px; margin: 0 0 4px; font-size: 1.15rem; }
+  .case-file .case-file-id { font-family: 'Courier New', monospace; color: #8a7f6e; font-size: 0.78rem; margin-bottom: 18px; }
 
-  .folder-tab {
-    display: grid;
-    grid-template-columns: 56px 1.6fr 110px 90px 130px 80px 22px;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 18px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .folder-tab:hover { background: var(--panel-2); }
+  .risk-badge { display: inline-block; padding: 3px 10px; border-radius: 2px; font-size: 0.7rem; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase; font-family: 'Courier New', monospace; }
+  .risk-clear { background: rgba(70,140,100,0.15); color: #6fbf8d; border: 1px solid #2e5c40; }
+  .risk-prime { background: rgba(179,34,28,0.18); color: #ff5c52; border: 1px solid #7a1e19; }
 
-  .f-idx { font-family: var(--f-mono); color: var(--muted); font-size: 0.78rem; }
-  .f-name { font-family: var(--f-display); font-weight: 700; font-size: 1.02rem; color: var(--ink); }
-  .f-date { font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); }
+  .cf-stats { display: flex; gap: 12px; margin-bottom: 22px; flex-wrap: wrap; }
+  .cf-stat { background: rgba(255,255,255,0.03); border: 1px solid #2c2620; border-radius: 8px; padding: 10px 14px; }
+  .cf-stat .lbl { font-family: 'Courier New', monospace; font-size: 0.62rem; letter-spacing: 1.5px; text-transform: uppercase; color: #8a7f6e; }
+  .cf-stat .val { font-family: 'Courier New', monospace; font-size: 1.1rem; color: #d8d0c0; }
 
-  .seal {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--f-mono);
-    font-size: 0.68rem;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 4px 8px;
-    border-radius: 2px;
+  .cf-section { margin-bottom: 20px; }
+  .cf-section h4 { font-family: 'Courier New', monospace; font-size: 0.72rem; letter-spacing: 2px; text-transform: uppercase; color: #8a7f6e; border-bottom: 1px solid #2c2620; padding-bottom: 6px; margin: 0 0 10px; }
+  .cf-suspect strong { font-family: 'Georgia', serif; color: #d8d0c0; font-size: 1rem; }
+  .cf-suspect .meta { font-family: 'Georgia', serif; color: #9a8f7c; font-size: 0.85rem; margin-top: 4px; }
+  .cf-evidence { list-style: none; margin: 0; padding: 0; }
+  .cf-evidence li {
+    font-family: 'Georgia', serif; color: #d8d0c0; font-size: 0.9rem;
+    padding: 8px 0 8px 16px; border-bottom: 1px solid #221e19; position: relative;
   }
-  .seal-dot { width: 7px; height: 7px; border-radius: 50%; }
-  .seal.correct { color: var(--green); background: var(--green-soft); }
-  .seal.correct .seal-dot { background: var(--green); }
-  .seal.incorrect { color: var(--red); background: var(--red-soft); }
-  .seal.incorrect .seal-dot { background: var(--red); }
-
-  .f-score { font-family: var(--f-mono); font-weight: 700; text-align: right; }
-  .f-score.pos { color: var(--green); }
-  .f-score.neg { color: var(--red); }
-
-  .f-chevron {
-    font-family: var(--f-mono);
-    color: var(--muted);
-    text-align: center;
-    transition: transform 0.2s ease;
-  }
-  .folder.open .f-chevron { transform: rotate(90deg); color: var(--brass); }
-
-  /* ---------- expanded panel ---------- */
-  .folder-body {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.28s ease;
-    background: var(--panel-2);
-    border-top: 1px solid transparent;
-  }
-  .folder.open .folder-body {
-    max-height: 220px;
-    border-top: 1px solid var(--border);
-  }
-  .folder-body-inner {
-    padding: 18px 18px 20px 90px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px 30px;
-  }
-  .fb-block .fb-lbl {
-    font-family: var(--f-mono);
-    font-size: 0.65rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 6px;
-  }
-  .fb-block .fb-val {
-    font-family: var(--f-body);
-    font-size: 1rem;
-    color: var(--ink);
-  }
-  .fb-block .fb-val.mono { font-family: var(--f-mono); }
-
-  .acc-track {
-    width: 100%;
-    height: 6px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    margin-top: 6px;
-  }
-  .acc-fill { height: 100%; background: var(--brass); }
-  .acc-fill.high { background: var(--green); }
-
-  /* ---------- empty state ---------- */
-  .drawer-empty {
-    text-align: center;
-    padding: 60px 20px;
-    border: 1px dashed var(--border);
-  }
-  .drawer-empty .e-mark {
-    font-family: var(--f-mono);
-    color: var(--border);
-    font-size: 1.4rem;
-    margin-bottom: 10px;
-  }
-  .drawer-empty .e-msg {
-    font-family: var(--f-mono);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-size: 0.8rem;
-  }
-  .drawer-empty .e-hint {
-    font-family: var(--f-body);
-    font-style: italic;
-    color: #6b6152;
-    font-size: 0.88rem;
-    margin-top: 6px;
-  }
-
-  /* ---------- responsive ---------- */
-  @media (max-width: 760px) {
-    .shelf { grid-template-columns: repeat(2, 1fr); }
-    .folder-tab {
-      grid-template-columns: 32px 1fr auto;
-      grid-template-areas: "idx name chev" "idx date date" "idx seal score";
-      row-gap: 6px;
-    }
-    .f-idx { grid-area: idx; }
-    .f-name { grid-area: name; }
-    .f-date { grid-area: date; }
-    .f-score { grid-area: score; text-align: left; }
-    .f-chevron { grid-area: chev; }
-    .folder-tab > .seal { grid-area: seal; }
-    .folder-body-inner { padding-left: 18px; grid-template-columns: 1fr; }
-  }
+  .cf-evidence li::before { content: "—"; position: absolute; left: 0; color: #5c5346; }
+  .cf-evidence li:last-child { border-bottom: none; }
 </style>
 
-<div class="archive">
-
-  <div class="archive-hdr">
-    <div class="archive-eyebrow">Detective Records Division</div>
-    <h1 class="archive-title">Case File Archive</h1>
-    <div class="archive-sub">Every investigation you've closed, on the record.</div>
-  </div>
-
-  <div class="shelf">
-    <div class="plaque">
-      <div class="p-lbl">Conviction Rate</div>
-      <div class="p-val green">{{ conviction_rate }}%</div>
-    </div>
-    <div class="plaque">
-      <div class="p-lbl">Avg. Score</div>
-      <div class="p-val">{{ avg_score }}</div>
-    </div>
-    <div class="plaque">
-      <div class="p-lbl">Best Score</div>
-      <div class="p-val brass">+{{ best_score }}</div>
-    </div>
-    <div class="plaque">
-      <div class="p-lbl">Cases Closed</div>
-      <div class="p-val">{{ cases|length }}</div>
-    </div>
-  </div>
-
-  <div class="toolbar">
-    <span class="toolbar-label">{{ cases|length }} record{{ cases|length|pluralize }}</span>
-    <input id="caseSearch" class="tb-input" type="text" placeholder="Search case or suspect…" autocomplete="off">
-    <select id="outcomeFilter" class="tb-select">
-      <option value="all">All outcomes</option>
-      <option value="correct">Correct only</option>
-      <option value="incorrect">Incorrect only</option>
-    </select>
-  </div>
-
-  {% if cases %}
-  <div class="drawer" id="drawer">
-    {% for c in cases %}
-    <div class="folder" data-name="{{ c.name|lower }}" data-suspect="{{ c.suspect_name|lower }}" data-outcome="{{ c.outcome }}">
-      <div class="folder-tab" role="button" tabindex="0">
-        <span class="f-idx">#{{ forloop.counter|stringformat:"03d" }}</span>
-        <span class="f-name">{{ c.name }}</span>
-        <span class="f-date">{{ c.date_solved }}</span>
-        {% if c.outcome == "correct" %}
-          <span class="seal correct"><span class="seal-dot"></span>Correct</span>
-        {% else %}
-          <span class="seal incorrect"><span class="seal-dot"></span>Incorrect</span>
-        {% endif %}
-        <span class="f-score {% if c.score >= 0 %}pos{% else %}neg{% endif %}">{% if c.score >= 0 %}+{% endif %}{{ c.score }}</span>
-        <span class="f-chevron">▶</span>
-      </div>
-      <div class="folder-body">
-        <div class="folder-body-inner">
-          <div class="fb-block">
-            <div class="fb-lbl">Suspect Accused</div>
-            <div class="fb-val">{{ c.suspect_name }}</div>
-          </div>
-          <div class="fb-block">
-            <div class="fb-lbl">Accuracy</div>
-            <div class="fb-val mono">{{ c.accuracy }}%</div>
-            <div class="acc-track"><div class="acc-fill{% if c.accuracy >= 70 %} high{% endif %}" style="width: {{ c.accuracy }}%;"></div></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-  {% else %}
-  <div class="drawer-empty">
-    <div class="e-mark">▭ ▭ ▭</div>
-    <div class="e-msg">Archive Empty</div>
-    <div class="e-hint">Solve your first case to start the file.</div>
-  </div>
-  {% endif %}
-
+<div class="page-hdr">
+  <div class="page-title">Case History</div>
+  <div class="page-sub">Archive of all closed investigations. Click a folder to open the file.</div>
 </div>
 
+<div class="stat-row">
+  <div class="stat-box"><div class="lbl">Conviction Rate</div><div class="val green">{{ conviction_rate }}%</div></div>
+  <div class="stat-box"><div class="lbl">Avg. Score</div><div class="val blue">{{ avg_score }}</div></div>
+  <div class="stat-box"><div class="lbl">Best Score</div><div class="val gold">+{{ best_score }}</div></div>
+</div>
+
+<div id="folder-grid" class="folder-grid"></div>
+<div id="empty-state" class="stamp-empty" style="display:none;">— NO CASES CLOSED YET —</div>
+
+<div class="overlay" id="overlay">
+  <div class="case-file" id="case-file"></div>
+</div>
+
+{# ------------------------------------------------------------
+   DATA: pass a list of dicts as `cases_json` from your view.
+   Shape expected per case:
+   {
+     "id": 1, "case_id": "HS-2026-005", "title": "The Clockmaker's Murder",
+     "date_solved": "2026-05-12", "status": "closed" | "active",
+     "outcome": "correct" | "incorrect", "accuracy": 94, "score": 310,
+     "suspect": {"name": "Dr. Felix Orr", "occupation": "Watchmaker",
+                 "motive": "Inheritance dispute"},
+     "evidence": ["Bloodstained glove found in workshop", "Pawn shop receipt, dated night of murder"]
+   }
+------------------------------------------------------------ #}
+{{ cases_json|json_script:"cases-data" }}
+
 <script>
-(function () {
-  const drawer = document.getElementById('drawer');
-  if (!drawer) return;
+  const cases = JSON.parse(document.getElementById("cases-data").textContent || "[]");
+  const grid = document.getElementById("folder-grid");
+  const emptyState = document.getElementById("empty-state");
 
-  drawer.querySelectorAll('.folder-tab').forEach(tab => {
-    const toggle = () => tab.closest('.folder').classList.toggle('open');
-    tab.addEventListener('click', toggle);
-    tab.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
-    });
-  });
+  function riskBadge(outcome) {
+    return outcome === "correct"
+      ? '<span class="risk-badge risk-clear">Correct</span>'
+      : '<span class="risk-badge risk-prime">Incorrect</span>';
+  }
 
-  const search = document.getElementById('caseSearch');
-  const filter = document.getElementById('outcomeFilter');
-  const folders = Array.from(drawer.querySelectorAll('.folder'));
+  function renderFolders() {
+    if (!cases.length) {
+      emptyState.style.display = "block";
+      return;
+    }
+    grid.innerHTML = cases.map(c => `
+      <div class="folder" data-id="${c.id}">
+        <div class="folder-icon">
+          <div class="folder-dot ${c.status === 'closed' ? 'closed' : 'active'}"></div>
+        </div>
+        <div class="folder-label">${c.title}</div>
+        <span class="folder-id">${c.case_id}</span>
+      </div>
+    `).join("");
 
-  function applyFilters() {
-    const q = search.value.toLowerCase().trim();
-    const oc = filter.value;
-    folders.forEach(f => {
-      const matchesText = !q || f.dataset.name.includes(q) || f.dataset.suspect.includes(q);
-      const matchesOutcome = oc === 'all' || f.dataset.outcome === oc;
-      f.style.display = (matchesText && matchesOutcome) ? '' : 'none';
+    grid.querySelectorAll(".folder").forEach(el => {
+      el.addEventListener("click", () => openCase(el.dataset.id));
     });
   }
 
-  search.addEventListener('input', applyFilters);
-  filter.addEventListener('change', applyFilters);
-})();
+  function openCase(id) {
+    const c = cases.find(x => String(x.id) === String(id));
+    if (!c) return;
+
+    document.getElementById("case-file").innerHTML = `
+      <button class="close-btn" onclick="closeCase()">✕</button>
+      <h2>${c.title}</h2>
+      <div class="case-file-id">${c.case_id} — Solved ${c.date_solved}</div>
+
+      <div class="cf-stats">
+        <div class="cf-stat"><div class="lbl">Outcome</div><div class="val">${riskBadge(c.outcome)}</div></div>
+        <div class="cf-stat"><div class="lbl">Accuracy</div><div class="val">${c.accuracy}%</div></div>
+        <div class="cf-stat"><div class="lbl">Score</div><div class="val">${c.score >= 0 ? "+" : ""}${c.score}</div></div>
+      </div>
+
+      <div class="cf-section">
+        <h4>Suspect Accused</h4>
+        <div class="cf-suspect">
+          <strong>${c.suspect?.name ?? "Unknown"}</strong>
+          <div class="meta">${c.suspect?.occupation ?? ""}${c.suspect?.motive ? " — " + c.suspect.motive : ""}</div>
+        </div>
+      </div>
+
+      <div class="cf-section">
+        <h4>Evidence Log</h4>
+        <ul class="cf-evidence">
+          ${(c.evidence && c.evidence.length ? c.evidence : ["No evidence logged."]).map(e => `<li>${e}</li>`).join("")}
+        </ul>
+      </div>
+    `;
+    document.getElementById("overlay").classList.add("open");
+  }
+
+  function closeCase() {
+    document.getElementById("overlay").classList.remove("open");
+  }
+
+  document.getElementById("overlay").addEventListener("click", e => {
+    if (e.target.id === "overlay") closeCase();
+  });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeCase();
+  });
+
+  renderFolders();
 </script>
 {% endblock %}

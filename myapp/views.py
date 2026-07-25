@@ -45,4 +45,34 @@ def case_resolution(request, case_id=None):
     case = Case.objects.get(case_id=case_id)
     return render(request, 'caseresolution.html', {'case': case})
 def casehistory(request):
-    return render(request, "casehistory.html")
+    # Dummy case list
+    cases = [
+        {
+            "name": "Bank Heist",
+            "date_solved": "2026-07-20",
+            "suspect_name": "John Doe",
+            "outcome": "correct",
+            "accuracy": 85,
+            "score": 120,
+        },
+        {
+            "name": "Museum Theft",
+            "date_solved": "2026-07-18",
+            "suspect_name": "Jane Smith",
+            "outcome": "incorrect",
+            "accuracy": 60,
+            "score": -40,
+        },
+    ]
+
+    # Dummy stats
+    conviction_rate = 50
+    avg_score = 40
+    best_score = 120
+
+    return render(request, "casehistory.html", {
+        "cases": cases,
+        "conviction_rate": conviction_rate,
+        "avg_score": avg_score,
+        "best_score": best_score,
+    })

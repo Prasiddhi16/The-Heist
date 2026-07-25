@@ -158,42 +158,94 @@ const CASE_TITLE = "{{ case.title|escapejs }}";
 const CASE_NUMBER = "{{ case.case_number|escapejs }}";
 const CASE_LOCATION = "{{ case.location|default:""|escapejs }}";
 
-const SUSPECT_KEY = 'resolution_suspect_' + CASE_ID;
-const EVIDENCE_KEY = 'resolution_evidence_' + CASE_ID;
+const SUBMISSION_KEY = 'submission_id_' + CASE_ID;
 
-function getAccused() {
-  const raw = sessionStorage.getItem(SUSPECT_KEY);
-  return raw ? JSON.parse(raw) : null;
-}
-function getEvidenceList() {
-  return JSON.parse(sessionStorage.getItem(EVIDENCE_KEY) || '[]');
-}
-function saveEvidenceList(list) {
-  sessionStorage.setItem(EVIDENCE_KEY, JSON.stringify(list));
+const SUSPECTS_BY_ID = {};
+{% for s in suspects %}
+SUSPECTS_BY_ID[{{ s.suspect_id }}] = {
+  name: "{{ s.name|escapejs }}",
+  occupation: "{{ s.occupation|default:""|escapejs }}",
+  motive: "{{ s.motive|default:""|escapejs }}",
+  suspect_status: "{{ s.suspect_status|default:""|escapejs }}"
+};
+{% endfor %}
+
+const EVIDENCE_BY_ID = {};
+{% for e in evidence_items %}
+EVIDENCE_BY_ID[{{ e.evidence_id }}] = {
+  evidence_id: {{ e.evidence_id }},
+  item_name: "{{ e.item_name|escapejs }}",
+  evidence_type: "{{ e.evidence_type|escapejs }}",
+  found_at: "{{ e.found_at|escapejs }}",
+  details: "{{ e.details|default:""|escapejs }}"
+};
+{% endfor %}
+
+let currentState = { accused_suspect_id: null, selected_evidence_ids: [], narrative: '' };
+
+function getCsrfToken() {
+  const match = document.cookie.match(/csrftoken=([^;]+)/);
+  return match ? match[1] : '';
 }
 
-function removeAccused() {
-  sessionStorage.removeItem(SUSPECT_KEY);
+async function loadState() {
+  const submissionId = sessionStorage.getItem(SUBMISSION_KEY);
+  if (!submissionId) {
+    currentState = { accused_suspect_id: null, selected_evidence_ids: [], narrative: '' };
+    renderAll();
+    return;
+  }
+  try {
+    const res = await fetch('/case/' + CASE_ID + '/submission-state/?submission_id=' + submissionId);
+    currentState = await res.json();
+  } catch (err) {
+    console.error('Failed to load submission state', err);
+    currentState = { accused_suspect_id: null, selected_evidence_ids: [], narrative: '' };
+  }
+  renderAll();
+}
+
+function renderAll() {
   renderAccused();
-}
-function removeEvidence(evidenceId) {
-  saveEvidenceList(getEvidenceList().filter(function (e) { return e.evidence_id !== evidenceId; }));
   renderEvidence();
+  document.getElementById('narrative').value = currentState.narrative || '';
+}
+
+async function removeAccused() {
+  const submissionId = sessionStorage.getItem(SUBMISSION_KEY);
+  if (!submissionId || currentState.accused_suspect_id == null) return;
+  await fetch('/case/' + CASE_ID + '/suspects/' + currentState.accused_suspect_id + '/accuse/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+    body: JSON.stringify({ submission_id: submissionId, unset: true })
+  });
+  await loadState();
+}
+
+async function removeEvidence(evidenceId) {
+  const submissionId = sessionStorage.getItem(SUBMISSION_KEY);
+  if (!submissionId) return;
+  await fetch('/case/' + CASE_ID + '/evidence/' + evidenceId + '/toggle/', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+    body: JSON.stringify({ submission_id: submissionId })
+  });
+  await loadState();
 }
 
 function renderAccused() {
   const container = document.getElementById('accusedContainer');
-  const accused = getAccused();
-  if (!accused) {
+  const suspect = currentState.accused_suspect_id != null ? SUSPECTS_BY_ID[currentState.accused_suspect_id] : null;
+  if (!suspect) {
     container.innerHTML = '<div class="empty-slot">No suspect accused yet — go to the Suspects page and click "Accuse".</div>';
     return;
   }
   container.innerHTML =
     '<div class="accused-row">' +
       '<div>' +
-        '<strong>' + accused.name + '</strong><br>' +
-        '<small style="color:#9a8f7c;">' + (accused.occupation || 'Unknown') + ' &middot; ' + (accused.suspect_status || '') + '</small><br>' +
-        '<small style="color:#bfae93;">Motive: ' + (accused.motive || 'None logged') + '</small>' +
+        '<strong>' + suspect.name + '</strong><br>' +
+        '<small style="color:#9a8f7c;">' + (suspect.occupation || 'Unknown') + ' &middot; ' + (suspect.suspect_status || '') + '</small><br>' +
+        '<small style="color:#bfae93;">Motive: ' + (suspect.motive || 'None logged') + '</small>' +
       '</div>' +
       '<button class="btn-remove" onclick="removeAccused()">Remove</button>' +
     '</div>';
@@ -201,7 +253,7 @@ function renderAccused() {
 
 function renderEvidence() {
   const container = document.getElementById('evidenceContainer');
-  const list = getEvidenceList();
+  const list = (currentState.selected_evidence_ids || []).map(id => EVIDENCE_BY_ID[id]).filter(Boolean);
   if (!list.length) {
     container.innerHTML = '<div class="empty-slot">No evidence attached yet — go to the Evidence page and click "Add to Case".</div>';
     return;
@@ -218,11 +270,11 @@ function renderEvidence() {
 }
 
 function generateReport() {
-  const accused = getAccused();
-  const evidenceList = getEvidenceList();
+  const suspect = currentState.accused_suspect_id != null ? SUSPECTS_BY_ID[currentState.accused_suspect_id] : null;
+  const evidenceList = (currentState.selected_evidence_ids || []).map(id => EVIDENCE_BY_ID[id]).filter(Boolean);
   const narrative = document.getElementById('narrative').value.trim();
 
-  if (!accused) {
+  if (!suspect) {
     alert('You must accuse a suspect before generating the report.');
     return;
   }
@@ -248,9 +300,9 @@ function generateReport() {
     '</div>' +
     '<div class="report-section">' +
       '<h4>Accused</h4>' +
-      '<p><strong>' + accused.name + '</strong> (' + (accused.occupation || 'Unknown') + ')<br>' +
-      'Motive: ' + (accused.motive || 'None logged') + '<br>' +
-      'Prior Status: ' + (accused.suspect_status || 'N/A') + '</p>' +
+      '<p><strong>' + suspect.name + '</strong> (' + (suspect.occupation || 'Unknown') + ')<br>' +
+      'Motive: ' + (suspect.motive || 'None logged') + '<br>' +
+      'Prior Status: ' + (suspect.suspect_status || 'N/A') + '</p>' +
     '</div>' +
     '<div class="report-section">' +
       '<h4>Supporting Evidence (' + evidenceList.length + ')</h4>' +
@@ -270,8 +322,7 @@ function generateReport() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-  renderAccused();
-  renderEvidence();
+  loadState();
 });
 </script>
 

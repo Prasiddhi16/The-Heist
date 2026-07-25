@@ -13,4 +13,10 @@ urlpatterns = [
     path("heist/", views.heist, name="heist"),
     path('resolution/', views.case_resolution, name='caseresolution'),
     path('case/<int:case_id>/resolution/', views.case_resolution, name='caseresolution'),
+    path('case/<int:case_id>/suspects/<int:suspect_id>/accuse/', views.toggle_accuse, name='toggle_accuse'),
+    path('case/<int:case_id>/evidence/<int:evidence_id>/toggle/', views.toggle_evidence, name='toggle_evidence'),
+    path('case/<int:case_id>/submission-state/', views.submission_state, name='submission_state'),
+    path('case/<int:case_id>/narrative/', views.save_narrative, name='save_narrative'),
+    path('analysis/', views.analysis, name='analysis'),
+    path('analysis/<int:submission_id>/', views.review_submission, name='review_submission'),
 ]

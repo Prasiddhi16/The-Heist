@@ -161,34 +161,132 @@ def case_resolution(request, case_id=None):
         'suspects': Suspect.objects.filter(case_id=case_id),
         'evidence_items': Evidence.objects.filter(case_id=case_id),
     })
-def casehistory(request):
-    # Dummy case list
-    cases = [
-        {
-            "name": "Bank Heist",
-            "date_solved": "2026-07-20",
-            "suspect_name": "John Doe",
-            "outcome": "correct",
-            "accuracy": 85,
-            "score": 120,
-        },
-        {
-            "name": "Museum Theft",
-            "date_solved": "2026-07-18",
-            "suspect_name": "Jane Smith",
-            "outcome": "incorrect",
-            "accuracy": 60,
-            "score": -40,
-        },
-    ]
 
-    # Dummy stats
-    conviction_rate = 50
-    avg_score = 40
-    best_score = 120
+def analysis(request, case_id):
+    case = get_object_or_404(Case, case_id=case_id)
+
+    submission = (
+        CaseSubmission.objects
+        .filter(case_id=case_id)
+        .order_by('-submission_id')
+        .first()
+    )
+
+    selected_suspect = None
+    selected_evidence = []
+
+    if submission:
+   
+        accused_row = (
+            SubmissionSuspect.objects
+            .filter(submission=submission, is_accused=True)
+            .select_related('suspect')
+            .first()
+        )
+        if accused_row:
+            selected_suspect = accused_row.suspect
+
+        selected_evidence_ids = SubmissionEvidence.objects.filter(
+            submission=submission, is_selected=True
+        ).values_list('evidence_id', flat=True)
+
+        selected_evidence = list(
+            Evidence.objects.filter(evidence_id__in=selected_evidence_ids)
+        )
+
+
+    evidence_total = Evidence.objects.filter(case_id=case_id).count()
+    evidence_collected = len(selected_evidence)
+
+    evidence_score = (evidence_collected / evidence_total) * 70 if evidence_total > 0 else 0
+    suspect_score = 30 if selected_suspect else 0
+    readiness_score = round(evidence_score + suspect_score)
+
+    can_file_verdict = selected_suspect is not None and evidence_collected > 0
+
+    top_suspect = (
+        Suspect.objects.filter(case_id=case_id).order_by('suspect_id').first()
+    )
+
+    return render(request, 'analysis.html', {
+        'case': case,
+        'submission': submission,
+        'selected_suspect': selected_suspect,
+        'selected_evidence': selected_evidence,
+        'evidence_collected': evidence_collected,
+        'evidence_total': evidence_total,
+        'readiness_score': readiness_score,
+        'top_suspect': top_suspect,
+        'can_file_verdict': can_file_verdict
+    })
+
+def casehistory(request):
+    submissions = (
+        CaseSubmission.objects
+        .select_related('case')
+        .order_by('-submitted_at')
+    )
+
+    cases_json = []
+    for sub in submissions:
+        accused = (
+            SubmissionSuspect.objects
+            .filter(submission=sub, is_accused=True)
+            .select_related('suspect')
+            .first()
+        )
+
+        selected_evidence = SubmissionEvidence.objects.filter(
+            submission=sub, is_selected=True
+        ).select_related('evidence')
+
+        evidence_list = [row.evidence.item_name for row in selected_evidence]
+
+        evidence_total = Evidence.objects.filter(case_id=sub.case_id).count()
+
+        if sub.is_correct is True:
+            outcome = "correct"
+        elif sub.is_correct is False:
+            outcome = "incorrect"
+        else:
+            outcome = "pending"
+
+        evidence_accuracy = round((len(evidence_list) / evidence_total) * 100) if evidence_total else 0
+        suspect_accuracy = 100 if sub.is_correct else 0
+        accuracy = round((evidence_accuracy + suspect_accuracy) / 2)
+
+        if sub.is_correct is True:
+            score = accuracy
+        elif sub.is_correct is False:
+            score = -(100 - accuracy)
+        else:
+            score = 0
+
+        cases_json.append({
+            "id": sub.submission_id,
+            "case_id": sub.case.case_number,
+            "title": sub.case.title,
+            "date_solved": sub.submitted_at.strftime("%Y-%m-%d"),
+            "status": "closed" if sub.reviewed else "active",
+            "outcome": outcome,
+            "accuracy": accuracy,
+            "score": score,
+            "suspect": {
+                "name": accused.suspect.name if accused else None,
+                "occupation": accused.suspect.occupation if accused else None,
+                "motive": accused.suspect.motive if accused else None,
+            } if accused else None,
+            "evidence": evidence_list,
+        })
+    completed = [c for c in cases_json if c["outcome"] in ["correct", "incorrect"]]
+    correct_count = sum(1 for c in completed if c["outcome"] == "correct")
+
+    conviction_rate = round((correct_count / len(completed)) * 100) if completed else 0
+    avg_score = round(sum(c["score"] for c in completed) / len(completed)) if completed else 0
+    best_score = max((c["score"] for c in completed), default=0)
 
     return render(request, "casehistory.html", {
-        "cases": cases,
+        "cases_json": mark_safe(json.dumps(cases_json)),
         "conviction_rate": conviction_rate,
         "avg_score": avg_score,
         "best_score": best_score,

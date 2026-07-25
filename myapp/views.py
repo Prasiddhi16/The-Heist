@@ -620,3 +620,5 @@ def review_submission(request, submission_id):
             'evidence_compare': evidence_compare,
         }
     )
+def leaderboard(request):
+    return render(request, "leaderboard.html")

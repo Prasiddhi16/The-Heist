@@ -76,6 +76,7 @@ class SolutionEvidence(models.Model):
 class CaseSubmission(models.Model):
     submission_id = models.BigAutoField(primary_key=True)
     case = models.ForeignKey(Case, related_name='submissions', on_delete=models.CASCADE, db_column='case_id')
+    user_id = models.IntegerField(null=True, blank=True, db_column='user_id')  # ← add this line
     narrative = models.TextField(null=True, blank=True)
     submitted_at = models.DateTimeField(auto_now_add=True)
     reviewed = models.BooleanField(default=False)
@@ -85,8 +86,6 @@ class CaseSubmission(models.Model):
     class Meta:
         db_table = 'case_submissions'
         ordering = ['-submitted_at']
-
-
 class SubmissionSuspect(models.Model):
     id = models.BigAutoField(primary_key=True)
     submission = models.ForeignKey(CaseSubmission, on_delete=models.CASCADE, db_column='submission_id')

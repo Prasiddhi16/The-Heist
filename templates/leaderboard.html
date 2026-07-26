@@ -1,0 +1,116 @@
+{% extends 'index.html' %}
+{% block title %}Leaderboard{% endblock %}
+{% block content %}
+
+<style>
+.page-hdr{border-left:3px solid #b3221c;padding-left:14px;margin-bottom:24px}
+.page-title{font-family:'Courier New',monospace;letter-spacing:1px;text-transform:uppercase;color:#221c0f;font-size:1.3rem;margin-bottom:4px}
+.page-sub{color:#9a8f7c;font-style:italic}
+.leaderboard-card{background:#14120f;background-image:radial-gradient(rgba(255,255,255,0.02) 1px,transparent 1px);background-size:4px 4px;border:1px solid #2c2620;box-shadow:0 0 0 1px #000 inset,0 10px 30px rgba(0,0,0,0.5);padding:20px;margin-bottom:24px;overflow-x:auto}
+.podium{display:flex;justify-content:center;align-items:flex-end;gap:18px;margin-bottom:35px;padding:20px 0}
+.podium-item{text-align:center;width:180px}
+.podium-rank{font-family:'Courier New',monospace;font-size:.75rem;letter-spacing:2px;color:#8a7f6e;text-transform:uppercase;margin-bottom:8px}
+.podium-icon{width:70px;height:70px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid #5c5346;font-family:'Courier New',monospace;font-size:1.5rem;font-weight:bold;background:#211d18;color:#d8d0c0;box-shadow:0 5px 15px rgba(0,0,0,.5)}
+.podium-item.first .podium-icon{width:86px;height:86px;border-color:#e0a940;color:#e0a940;font-size:1.8rem}
+.podium-item.second .podium-icon{border-color:#a9a9a9;color:#c7c7c7}
+.podium-item.third .podium-icon{border-color:#a5713f;color:#b9824d}
+.podium-name{color:#d8d0c0;font-family:'Courier New',monospace;font-size:.85rem;margin-bottom:5px;word-break:break-word}
+.podium-score{color:#6fbf8d;font-family:'Courier New',monospace;font-size:1.1rem;font-weight:bold}
+.podium-cases{color:#8a7f6e;font-family:'Courier New',monospace;font-size:.65rem;margin-top:4px}
+.leaderboard-table{width:100%;border-collapse:collapse;min-width:650px}
+.leaderboard-table thead{border-bottom:1px solid #3a332a}
+.leaderboard-table th{text-align:left;padding:13px 12px;color:#8a7f6e;font-family:'Courier New',monospace;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase}
+.leaderboard-table td{padding:15px 12px;border-bottom:1px solid #221e19;color:#d8d0c0;font-family:'Georgia',serif;font-size:.9rem}
+.leaderboard-table tbody tr{transition:background .15s ease,transform .15s ease}
+.leaderboard-table tbody tr:hover{background:rgba(255,255,255,.025)}
+.rank{width:60px;font-family:'Courier New',monospace;color:#8a7f6e;font-weight:bold}
+.rank.top{color:#e0a940}
+.case-number{color:#9a8f7c;font-family:'Courier New',monospace;font-size:.75rem}
+.case-title{color:#d8d0c0;font-weight:bold}
+.score-positive{color:#6fbf8d;font-family:'Courier New',monospace;font-weight:bold}
+.score-negative{color:#ff5c52;font-family:'Courier New',monospace;font-weight:bold}
+.accuracy{font-family:'Courier New',monospace;color:#7d8fd6}
+.status{display:inline-block;padding:4px 9px;border-radius:3px;font-family:'Courier New',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:1px}
+.status-correct{color:#6fbf8d;background:rgba(70,140,100,.12);border:1px solid #2e5c40}
+.status-incorrect{color:#ff5c52;background:rgba(179,34,28,.12);border:1px solid #7a1e19}
+.status-pending{color:#e0a940;background:rgba(224,169,64,.1);border:1px solid #705523}
+.empty-state{text-align:center;padding:60px 20px;color:#5c5346;font-family:'Courier New',monospace;letter-spacing:1px;font-style:italic}
+@media(max-width:700px){.podium{gap:8px}.podium-item{width:30%}.podium-icon{width:55px;height:55px;font-size:1rem}.podium-item.first .podium-icon{width:65px;height:65px;font-size:1.2rem}.podium-name{font-size:.7rem}}
+</style>
+
+<div class="page-hdr">
+<div class="page-title">Investigator Leaderboard</div>
+<div class="page-sub">Ranked record of case-solving performance.</div>
+</div>
+<div class="leaderboard-card">
+{% if leaderboard %}
+{% if leaderboard|length >= 3 %}
+<div class="podium">
+<div class="podium-item second">
+<div class="podium-rank">2nd Place</div>
+<div class="podium-icon">2</div>
+<div class="podium-name">Case #{{ leaderboard.1.case_id }}</div>
+<div class="podium-score">{% if leaderboard.1.score >= 0 %}+{{ leaderboard.1.score }}{% else %}{{ leaderboard.1.score }}{% endif %}</div>
+<div class="podium-cases">{{ leaderboard.1.title }}</div>
+</div>
+<div class="podium-item first">
+<div class="podium-rank">1st Place</div>
+<div class="podium-icon">1</div>
+<div class="podium-name">Case #{{ leaderboard.0.case_id }}</div>
+<div class="podium-score">{% if leaderboard.0.score >= 0 %}+{{ leaderboard.0.score }}{% else %}{{ leaderboard.0.score }}{% endif %}</div>
+<div class="podium-cases">{{ leaderboard.0.title }}</div>
+</div>
+<div class="podium-item third">
+<div class="podium-rank">3rd Place</div>
+<div class="podium-icon">3</div>
+<div class="podium-name">Case #{{ leaderboard.2.case_id }}</div>
+<div class="podium-score">{% if leaderboard.2.score >= 0 %}+{{ leaderboard.2.score }}{% else %}{{ leaderboard.2.score }}{% endif %}</div>
+<div class="podium-cases">{{ leaderboard.2.title }}</div>
+</div>
+</div>
+{% endif %}
+<table class="leaderboard-table">
+<thead>
+<tr>
+<th>Rank</th>
+<th>Case</th>
+<th>Investigator</th>
+<th>Outcome</th>
+<th>Accuracy</th>
+<th>Score</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody>
+{% for entry in leaderboard %}
+<tr>
+<td class="rank {% if forloop.counter <= 3 %}top{% endif %}">#{{ forloop.counter }}</td>
+<td><div class="case-title">{{ entry.title }}</div><div class="case-number">{{ entry.case_id }}</div></td>
+<td>{{ entry.investigator }}</td>
+<td>
+{% if entry.outcome == "correct" %}
+<span class="status status-correct">Correct</span>
+{% elif entry.outcome == "incorrect" %}
+<span class="status status-incorrect">Incorrect</span>
+{% else %}
+<span class="status status-pending">Pending</span>
+{% endif %}
+</td>
+<td class="accuracy">{{ entry.accuracy }}%</td>
+<td>
+{% if entry.score >= 0 %}
+<span class="score-positive">+{{ entry.score }}</span>
+{% else %}
+<span class="score-negative">{{ entry.score }}</span>
+{% endif %}
+</td>
+<td>{{ entry.date_solved }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}
+<div class="empty-state">— NO INVESTIGATION RECORDS YET —<br><br>Solve a case to appear on the leaderboard.</div>
+{% endif %}
+</div>
+{% endblock %}

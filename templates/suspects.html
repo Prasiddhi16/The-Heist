@@ -10,28 +10,23 @@
     50% { box-shadow: inset 0 0 70px #300, 0 0 45px rgba(255, 0, 0, 0.8); }
   }
 
-  /* Full Perimeter Film Reel Outer Enclosure */
   .murder-wrapper {
     position: relative;
     padding: 60px 65px;
     background: #040202;
     background-image: 
-      /* CSS Fingerprints */
       radial-gradient(ellipse 35px 50px at 85% 22%, transparent 0%, rgba(180,0,0,0.5) 5%, transparent 10%, rgba(180,0,0,0.6) 15%, transparent 20%),
       radial-gradient(ellipse 30px 45px at 15% 78%, transparent 0%, rgba(160,0,0,0.5) 4%, transparent 8%, rgba(160,0,0,0.6) 12%, transparent 16%),
       radial-gradient(ellipse 28px 42px at 22% 42%, transparent 0%, rgba(200,0,0,0.4) 6%, transparent 12%, rgba(200,0,0,0.3) 18%),
-      /* Blood Splatters */
       radial-gradient(circle at 88% 18%, rgba(180, 0, 0, 0.5) 0%, transparent 22%),
       radial-gradient(circle at 12% 82%, rgba(150, 0, 0, 0.45) 0%, transparent 25%),
       radial-gradient(circle at 50% 50%, rgba(120, 0, 0, 0.3) 0%, transparent 50%),
-      /* Horror Film Grain & Scanlines */
       repeating-linear-gradient(0deg, rgba(0,0,0,0.4) 0px, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px);
     border-radius: 4px;
     animation: flickering 6.5s infinite, pulseGlow 3s infinite alternate;
     overflow: hidden;
   }
 
-  /* TOP & BOTTOM Film Reel Borders */
   .murder-wrapper::before {
     content: '';
     position: absolute;
@@ -64,7 +59,6 @@
     z-index: 10;
   }
 
-  /* LEFT & RIGHT Film Reel Borders */
   .reel-side-left,
   .reel-side-right {
     position: absolute;
@@ -88,7 +82,6 @@
     box-shadow: -5px 0 15px rgba(0,0,0,0.9);
   }
 
-  /* Dripping Blood Divider Effect */
   .blood-drips {
     position: absolute;
     top: 40px;
@@ -100,7 +93,6 @@
     z-index: 9;
   }
 
-  /* Header Section */
   .page-hdr { 
     position: relative;
     border-left: 5px solid #ff0000; 
@@ -114,7 +106,7 @@
     font-family: 'Nosifer', cursive;
     font-size: 2rem;
     letter-spacing: 2px;
-    color: #ff0000;
+    color: black;
     text-shadow: 0 0 12px rgba(255, 0, 0, 0.9), 3px 3px 6px #000;
     margin: 0;
     line-height: 1.2;
@@ -128,12 +120,10 @@
     text-shadow: 0 0 4px #000;
   }
 
-  /* Card Container */
   .card {
     position: relative;
     background: #080404;
     background-image: 
-      /* Inner Latent Fingerprint Overlay */
       radial-gradient(ellipse 38px 55px at 10% 88%, transparent 0%, rgba(200,0,0,0.25) 5%, transparent 10%, rgba(200,0,0,0.3) 15%, transparent 20%),
       radial-gradient(ellipse at bottom left, rgba(180,0,0,0.25) 0%, transparent 70%),
       radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
@@ -214,7 +204,6 @@
 </style>
 
 <div class="murder-wrapper">
-  <!-- Side Film Reels to form complete perimeter reel border -->
   <div class="reel-side-left"></div>
   <div class="reel-side-right"></div>
   <div class="blood-drips"></div>
@@ -222,10 +211,10 @@
   <div class="page-hdr" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
     <div>
       <h1 class="page-title">SUSPECTS — {{ case.title }}</h1>
-      <div class="page-sub">Which monster left their mark?</div>
+      <div class="page-sub">Who left their mark?</div>
     </div>
     <a href="{% url 'caseresolution' case.case_id %}" class="btn-resolve-nav">
-      Go to Case Resolution 🩸
+      Go to Case Resolution 
     </a>
   </div>
 

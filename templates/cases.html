@@ -169,7 +169,7 @@
     border-radius: 4px;
     border: none;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
   }
 
   .btn-primary {
@@ -181,9 +181,128 @@
     background-color: var(--accent-red-hover);
   }
 
+  .btn-secondary {
+    background-color: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--card-border);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--gold-accent);
+  }
+
   .btn-full {
     width: 100%;
     margin-top: 6px;
+  }
+
+  /* Case Detail Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.82);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s ease-in-out;
+    padding: 16px;
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .case-modal {
+    background: var(--card-bg);
+    border: 1px solid var(--gold-accent);
+    border-radius: 8px;
+    width: 100%;
+    max-width: 650px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    transform: translateY(20px);
+    transition: transform 0.25s ease-in-out;
+  }
+
+  .modal-overlay.active .case-modal {
+    transform: translateY(0);
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+
+  .modal-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .modal-close-btn:hover {
+    color: var(--accent-red);
+  }
+
+  .modal-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    background: rgba(0, 0, 0, 0.25);
+    padding: 16px;
+    border-radius: 6px;
+    border: 1px solid var(--card-border);
+    margin-bottom: 16px;
+  }
+
+  .detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .detail-label {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: var(--gold-accent);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .detail-val {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    font-weight: bold;
+  }
+
+  .modal-description {
+    background: rgba(0, 0, 0, 0.2);
+    border-left: 3px solid var(--gold-accent);
+    padding: 14px;
+    font-size: 0.88rem;
+    color: var(--text-primary);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
   }
 </style>
 
@@ -208,7 +327,57 @@
 </div>
 <!-- /case-grid -->
 
+<!-- Structured Case Detail Modal -->
+<div class="modal-overlay" id="caseDetailModal">
+  <div class="case-modal">
+    <div class="modal-header">
+      <div>
+        <div class="case-num" id="modalCaseNum">CS-000</div>
+        <div class="case-title" id="modalCaseTitle" style="font-size: 1.4rem;">Case Title</div>
+      </div>
+      <button class="modal-close-btn" onclick="closeCaseModal()">&times;</button>
+    </div>
+
+    <div class="modal-details-grid">
+      <div class="detail-item">
+        <span class="detail-label">Status</span>
+        <span class="detail-val" id="modalCaseStatus">OPEN</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Risk Level</span>
+        <span class="detail-val" id="modalCaseRisk">Level 1</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Total Loss Value</span>
+        <span class="detail-val" id="modalCaseLoss">$0</span>
+      </div>
+      <div class="detail-item">
+        <span class="detail-label">Incident Location</span>
+        <span class="detail-val" id="modalCaseLoc">Unknown</span>
+      </div>
+      <div class="detail-item" style="grid-column: span 2;">
+        <span class="detail-label">Date Reported</span>
+        <span class="detail-val" id="modalCaseDate">YYYY-MM-DD</span>
+      </div>
+    </div>
+
+    <div class="detail-label" style="margin-bottom: 6px;">Case Synopsis & Description</div>
+    <div class="modal-description" id="modalCaseDesc">
+      No description recorded for this case.
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeCaseModal()">Close Overview</button>
+      <button class="btn btn-primary" id="modalInvestigateBtn">
+        <i class="fa-solid fa-magnifying-glass"></i> Investigate Evidence
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
+  let loadedCasesData = [];
+
   function filterCases(status, btn) {
     document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
     btn.classList.add('active');
@@ -231,6 +400,31 @@
     return isoString.split('T')[0];
   }
 
+  function showCaseDetailsModal(caseId) {
+    const selected = loadedCasesData.find(c => c.case_id == caseId);
+    if (!selected) return;
+
+    document.getElementById('modalCaseNum').textContent = selected.case_number || 'N/A';
+    document.getElementById('modalCaseTitle').textContent = selected.title || 'Untitled Case';
+    document.getElementById('modalCaseStatus').textContent = (selected.status || 'ACTIVE').toUpperCase();
+    document.getElementById('modalCaseRisk').textContent = selected.risk_level ? `Level ${selected.risk_level}` : 'Level 1';
+    document.getElementById('modalCaseLoss').textContent = selected.loss_value || 'N/A';
+    document.getElementById('modalCaseLoc').textContent = selected.location || 'Unknown';
+    document.getElementById('modalCaseDate').textContent = formatDate(selected.created_at) || 'N/A';
+    document.getElementById('modalCaseDesc').textContent = selected.description || 'No detailed description provided.';
+
+    const invBtn = document.getElementById('modalInvestigateBtn');
+    invBtn.onclick = function () {
+      openCase(selected.case_id);
+    };
+
+    document.getElementById('caseDetailModal').classList.add('active');
+  }
+
+  function closeCaseModal() {
+    document.getElementById('caseDetailModal').classList.remove('active');
+  }
+
   function renderCases(cases) {
     const grid = document.getElementById('caseGrid');
 
@@ -242,7 +436,7 @@
     grid.innerHTML = cases.map(function (c) {
       const status = (c.status || '').toLowerCase();
       return `
-        <div class="case-card" data-status="${status}" onclick="openCase('${c.case_id}')">
+        <div class="case-card" data-status="${status}" onclick="showCaseDetailsModal('${c.case_id}')">
           <div class="case-card-top">
             <div>
               <div class="case-num">${c.case_number || ''}</div>
@@ -251,14 +445,11 @@
             <span class="badge">${c.status || ''}</span>
           </div>
           <div class="case-loc"><i class="fa-solid fa-location-dot"></i> ${c.location || ''}</div>
-          <p style="font-size:.78rem;color:var(--text-muted);line-height:1.55;">
-            ${c.description || ''}
-          </p>
           <div class="case-meta">
             <div class="case-loss">Loss: <strong>${c.loss_value || 'N/A'}</strong> · ${formatDate(c.created_at)}</div>
           </div>
-          <button class="btn btn-primary btn-full" onclick="event.stopPropagation(); openCase('${c.case_id}')">
-            <i class="fa-solid fa-magnifying-glass"></i> Investigate
+          <button class="btn btn-primary btn-full" onclick="event.stopPropagation(); showCaseDetailsModal('${c.case_id}')">
+            <i class="fa-solid fa-eye"></i> View Case Details
           </button>
         </div>
       `;
@@ -285,7 +476,8 @@
       return;
     }
 
-    renderCases(data);
+    loadedCasesData = data || [];
+    renderCases(loadedCasesData);
   });
 </script>
 

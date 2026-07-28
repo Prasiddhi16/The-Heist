@@ -1,74 +1,338 @@
 {% extends 'index.html' %}
 {% load static %}
 {% block title %} Dashboard page {% endblock %}
+
 {% block content %}
-        <div class="page-hdr">
-          <div>
-            <div class="page-title">Welcome, <span id="dash-name">Detective</span> </div>
-            <div class="page-sub">Here's your intelligence overview for today.</div>
-          </div>
-          <a href="{% url 'cases' %}" class="btn btn-primary">Browse Cases</a>
-        </div>
 
-        <div class="stat-grid">
-          <div class="stat-card">
-            <div class="stat-top"><div class="stat-label">Cases Solved</div><div class="stat-icon-wrap" style="background:var(--green-d)"><i class="fa-solid fa-check-double" style="color:var(--green)"></i></div></div>
-            <div class="stat-value" id="stat-solved" style="color:var(--green)">0</div>
-            <div class="stat-trend"><span class="trend-up">▲ Live</span> from dossier</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-top"><div class="stat-label">Active Cases</div><div class="stat-icon-wrap" style="background:var(--blue-d)"><i class="fa-solid fa-folder-open" style="color:var(--blue)"></i></div></div>
-            <div class="stat-value" id="stat-active" style="color:var(--blue)">0</div>
-            <div class="stat-trend"><span class="trend-up">▲ System</span> monitored</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-top"><div class="stat-label">Detective Score</div><div class="stat-icon-wrap" style="background:var(--orange-d)"><i class="fa-solid fa-star" style="color:var(--orange)"></i></div></div>
-            <div class="stat-value" id="stat-score" style="color:var(--orange)">0</div>
-            <div class="stat-trend">Points accumulated</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-top"><div class="stat-label">Assigned Rank</div><div class="stat-icon-wrap" style="background:rgba(139,92,246,.15)"><i class="fa-solid fa-shield-halved" style="color:#8B5CF6"></i></div></div>
-            <div class="stat-value" id="stat-rank" style="color:#8B5CF6; font-size: 1.5rem; padding-top: 0.35rem;">Rookie</div>
-            <div class="stat-trend">Security clearance</div>
-          </div>
-        </div>
+<style>
+  :root {
+    --bg-dark: #121110;
+    --card-bg: #1c1a18;
+    --card-border: #2e2a25;
+    --accent-red: #b92b27;
+    --accent-red-hover: #d32f2f;
+    --text-primary: #f0ece1;
+    --text-muted: #8c857b;
+    --gold-accent: #c49a45;
+  }
 
-        <div class="dash-grid">
-          <div>
-            <!-- Recent Cases -->
-            <div class="card" style="margin-bottom:1rem">
-              <div class="section-hdr">
-                <div class="section-title">Recent Cases</div>
-                <a href="{% url 'cases' %}" class="btn btn-ghost btn-sm">View All →</a>
-              </div>
-              <div style="overflow-x:auto">
-                <table class="data-table">
-                  <thead><tr><th>Case</th><th>Location</th><th>Status</th><th>Risk Level</th><th>Loss</th><th></th></tr></thead>
-                  <tbody id="dash-case-table">
-                    <tr><td colspan="6" style="text-align:center;color:var(--muted);">Loading central database files...</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <!-- Timeline -->
-            <div class="card">
-              <div class="section-hdr"><div class="section-title">Investigation Activity</div></div>
-              <div class="timeline" id="dash-timeline">
-                <div style="padding:1rem;color:var(--muted);">Parsing recent tactical event records...</div>
-              </div>
-            </div>
-          </div>
+  /* Page Header Styles */
+  .page-hdr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-left: 12px;
+    border-left: 3px solid var(--accent-red);
+  }
 
-          <!-- Most Wanted -->
-          <div>
-            <div class="card">
-              <div class="section-hdr"><div class="section-title">Most Wanted Suspects</div></div>
-              <div class="wanted-list" id="wanted-list">
-                <div style="padding:1rem;color:var(--muted);">Scanning local grids for target profiles...</div>
-              </div>
-            </div>
-          </div>
-        </div>
+  .page-title {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #000000;
+  }
+
+  .page-sub {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* Stats Grid & Cards */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: radial-gradient(circle at top left, #24201c, var(--card-bg));
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    padding: 18px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--gold-accent);
+  }
+
+  .stat-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .stat-label {
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .stat-icon-wrap {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .stat-value {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  .stat-trend {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .trend-up {
+    font-weight: bold;
+  }
+
+  /* Main Dashboard Layout */
+  .dash-grid {
+    display: grid;
+    grid-template-columns: 2.2fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 992px) {
+    .dash-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Generic Card Styles */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  .section-hdr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--card-border);
+  }
+
+  .section-title {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Tables */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+  }
+
+  .data-table th {
+    font-family: monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gold-accent);
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--card-border);
+    font-size: 0.75rem;
+  }
+
+  .data-table td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    vertical-align: middle;
+  }
+
+  /* Badges & Buttons */
+  .badge {
+    background: rgba(196, 154, 69, 0.1);
+    color: var(--gold-accent);
+    border: 1px solid var(--gold-accent);
+    font-family: monospace;
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .btn-primary {
+    background-color: var(--accent-red);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--accent-red-hover);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--card-border);
+  }
+
+  .btn-ghost:hover {
+    color: var(--text-primary);
+    border-color: var(--gold-accent);
+  }
+
+  .btn-sm {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+  }
+
+  /* Timeline & Wanted Cards Overrides */
+  .timeline-item {
+    padding: 8px 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+  }
+
+  .timeline-item:last-child {
+    border-bottom: none;
+  }
+
+  .wanted-card {
+    background: radial-gradient(circle at top left, #24201c, var(--card-bg)) !important;
+    border-top: 1px solid var(--card-border);
+    border-right: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--card-border);
+  }
+</style>
+
+<div class="page-hdr">
+  <div>
+    <div class="page-title">Welcome, <span id="dash-name">Detective</span> </div>
+    <div class="page-sub">Here's your intelligence overview for today.</div>
+  </div>
+  <a href="{% url 'cases' %}" class="btn btn-primary">Browse Cases</a>
+</div>
+
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-top">
+      <div class="stat-label">Cases Solved</div>
+      <div class="stat-icon-wrap" style="background:var(--green-d)"><i class="fa-solid fa-check-double" style="color:var(--green)"></i></div>
+    </div>
+    <div class="stat-value" id="stat-solved" style="color:var(--green)">0</div>
+    <div class="stat-trend"><span class="trend-up">▲ Live</span> from dossier</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-top">
+      <div class="stat-label">Active Cases</div>
+      <div class="stat-icon-wrap" style="background:var(--blue-d)"><i class="fa-solid fa-folder-open" style="color:var(--blue)"></i></div>
+    </div>
+    <div class="stat-value" id="stat-active" style="color:var(--blue)">0</div>
+    <div class="stat-trend"><span class="trend-up">▲ System</span> monitored</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-top">
+      <div class="stat-label">Detective Score</div>
+      <div class="stat-icon-wrap" style="background:var(--orange-d)"><i class="fa-solid fa-star" style="color:var(--orange)"></i></div>
+    </div>
+    <div class="stat-value" id="stat-score" style="color:var(--orange)">0</div>
+    <div class="stat-trend">Points accumulated</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-top">
+      <div class="stat-label">Assigned Rank</div>
+      <div class="stat-icon-wrap" style="background:rgba(139,92,246,.15)"><i class="fa-solid fa-shield-halved" style="color:#8B5CF6"></i></div>
+    </div>
+    <div class="stat-value" id="stat-rank" style="color:#8B5CF6; font-size: 1.5rem; padding-top: 0.35rem;">Rookie</div>
+    <div class="stat-trend">Security clearance</div>
+  </div>
+</div>
+
+<div class="dash-grid">
+  <div>
+    <!-- Recent Cases -->
+    <div class="card" style="margin-bottom:1rem">
+      <div class="section-hdr">
+        <div class="section-title">Recent Cases</div>
+        <a href="{% url 'cases' %}" class="btn btn-ghost btn-sm">View All →</a>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Case</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Risk Level</th>
+              <th>Loss</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="dash-case-table">
+            <tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Loading central database files...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Timeline -->
+    <div class="card">
+      <div class="section-hdr"><div class="section-title">Investigation Activity</div></div>
+      <div class="timeline" id="dash-timeline">
+        <div style="padding:1rem;color:var(--text-muted);">Parsing recent tactical event records...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Most Wanted -->
+  <div>
+    <div class="card">
+      <div class="section-hdr"><div class="section-title">Most Wanted Suspects</div></div>
+      <div class="wanted-list" id="wanted-list">
+        <div style="padding:1rem;color:var(--text-muted);">Scanning local grids for target profiles...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}
@@ -112,7 +376,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (casesData && casesData.length > 0) {
             tableBody.innerHTML = casesData.map(c => `
                 <tr>
-                    <td><strong>${c.case_number || ''}</strong><br><small style="color:var(--muted)">${c.title || ''}</small></td>
+                    <td><strong>${c.case_number || ''}</strong><br><small style="color:var(--text-muted)">${c.title || ''}</small></td>
                     <td>${c.location || 'Unknown'}</td>
                     <td><span class="badge">${c.status || 'Active'}</span></td>
                     <td>Level ${c.risk_level || 1}</td>
@@ -121,12 +385,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                 </tr>
             `).join('');
         } else {
-            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted)">No operational case files returned.</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted)">No operational case files returned.</td></tr>';
         }
     } catch (err) {
         console.error('Cases block failed:', err);
         document.getElementById('dash-case-table').innerHTML =
-            '<tr><td colspan="6" style="text-align:center;color:var(--muted)">Error loading cases.</td></tr>';
+            '<tr><td colspan="6" style="text-align:center;color:var(--text-muted)">Error loading cases.</td></tr>';
     }
 
     // evidence timeline
@@ -142,20 +406,20 @@ document.addEventListener('DOMContentLoaded', async function () {
         if (evidenceTimeline && evidenceTimeline.length > 0) {
             timelineContainer.innerHTML = evidenceTimeline.map(e => `
                 <div class="timeline-item" style="display:flex; gap:1rem; margin-bottom:1rem; font-size:0.82rem;">
-                    <div style="color:var(--orange); font-weight:bold;">[CLUE Found]</div>
+                    <div style="color:var(--gold-accent); font-weight:bold;">[CLUE Found]</div>
                     <div>
                         <strong>${e.item_name || 'Evidence Item'}</strong> secured at location "${e.found_at || 'Crime Scene'}".
-                        <br><small style="color:var(--muted)">Assigned Case File: ${e.cases?.case_number || 'Unlinked'}</small>
+                        <br><small style="color:var(--text-muted)">Assigned Case File: ${e.cases?.case_number || 'Unlinked'}</small>
                     </div>
                 </div>
             `).join('');
         } else {
-            timelineContainer.innerHTML = '<div style="padding:1rem;color:var(--muted);font-size:0.85rem;">No recent physical analysis records found.</div>';
+            timelineContainer.innerHTML = '<div style="padding:1rem;color:var(--text-muted);font-size:0.85rem;">No recent physical analysis records found.</div>';
         }
     } catch (err) {
         console.error('Timeline block failed:', err);
         document.getElementById('dash-timeline').innerHTML =
-            '<div style="padding:1rem;color:var(--muted);font-size:0.85rem;">Error loading activity.</div>';
+            '<div style="padding:1rem;color:var(--text-muted);font-size:0.85rem;">Error loading activity.</div>';
     }
 
     // wanted suspects
@@ -171,19 +435,19 @@ document.addEventListener('DOMContentLoaded', async function () {
         const wantedContainer = document.getElementById('wanted-list');
         if (suspectList && suspectList.length > 0) {
             wantedContainer.innerHTML = suspectList.map(s => `
-                <div class="wanted-card" style="background:rgba(255,255,255,0.02); padding:0.75rem; border-left:3px solid var(--orange); margin-bottom:0.75rem; border-radius:4px;">
-                    <div style="font-weight:600; font-size:0.9rem;">${s.name}</div>
-                    <div style="font-size:0.75rem; color:var(--muted);">${s.occupation || 'No Listed Occupation'}</div>
-                    <div style="font-size:0.72rem; margin-top:0.25rem; color:var(--orange);">Linked Matrix: ${s.cases?.title || 'Unknown Case'}</div>
+                <div class="wanted-card" style="padding:0.75rem; border-left:3px solid var(--accent-red); margin-bottom:0.75rem; border-radius:4px;">
+                    <div style="font-weight:600; font-size:0.9rem; color:var(--text-primary);">${s.name}</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">${s.occupation || 'No Listed Occupation'}</div>
+                    <div style="font-size:0.72rem; margin-top:0.25rem; color:var(--gold-accent);">Linked Matrix: ${s.cases?.title || 'Unknown Case'}</div>
                 </div>
             `).join('');
         } else {
-            wantedContainer.innerHTML = '<div style="padding:1rem;color:var(--muted);font-size:0.85rem;">All target suspects accounted for or contained.</div>';
+            wantedContainer.innerHTML = '<div style="padding:1rem;color:var(--text-muted);font-size:0.85rem;">All target suspects accounted for or contained.</div>';
         }
     } catch (err) {
         console.error('Suspects block failed:', err);
         document.getElementById('wanted-list').innerHTML =
-            '<div style="padding:1rem;color:var(--muted);font-size:0.85rem;">Error loading suspects.</div>';
+            '<div style="padding:1rem;color:var(--text-muted);font-size:0.85rem;">Error loading suspects.</div>';
     }
 });
 

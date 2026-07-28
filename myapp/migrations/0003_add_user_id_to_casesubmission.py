@@ -11,6 +11,10 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='casesubmission',
             name='user_id',
-            field=models.IntegerField(blank=True, null=True, db_column='user_id'),
+            field=models.IntegerField(
+                blank=True,
+                null=True,
+                db_column='user_id',
+            ),
         ),
     ]

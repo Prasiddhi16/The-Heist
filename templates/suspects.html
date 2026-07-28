@@ -3,121 +3,279 @@
 {% block content %}
 
 <style>
-  .page-hdr { border-left: 3px solid #b3221c; padding-left: 14px; margin-bottom: 18px; }
-  .page-title {
-    font-family: 'Courier New', monospace;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: #221c0f;
-  }
-  .page-sub { color: #9a8f7c; font-style: italic; }
+  @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&family=Nosifer&display=swap');
 
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: inset 0 0 50px #000, 0 0 25px rgba(255, 0, 0, 0.4); }
+    50% { box-shadow: inset 0 0 70px #300, 0 0 45px rgba(255, 0, 0, 0.8); }
+  }
+
+  /* Full Perimeter Film Reel Outer Enclosure */
+  .murder-wrapper {
+    position: relative;
+    padding: 60px 65px;
+    background: #040202;
+    background-image: 
+      /* CSS Fingerprints */
+      radial-gradient(ellipse 35px 50px at 85% 22%, transparent 0%, rgba(180,0,0,0.5) 5%, transparent 10%, rgba(180,0,0,0.6) 15%, transparent 20%),
+      radial-gradient(ellipse 30px 45px at 15% 78%, transparent 0%, rgba(160,0,0,0.5) 4%, transparent 8%, rgba(160,0,0,0.6) 12%, transparent 16%),
+      radial-gradient(ellipse 28px 42px at 22% 42%, transparent 0%, rgba(200,0,0,0.4) 6%, transparent 12%, rgba(200,0,0,0.3) 18%),
+      /* Blood Splatters */
+      radial-gradient(circle at 88% 18%, rgba(180, 0, 0, 0.5) 0%, transparent 22%),
+      radial-gradient(circle at 12% 82%, rgba(150, 0, 0, 0.45) 0%, transparent 25%),
+      radial-gradient(circle at 50% 50%, rgba(120, 0, 0, 0.3) 0%, transparent 50%),
+      /* Horror Film Grain & Scanlines */
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.4) 0px, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px);
+    border-radius: 4px;
+    animation: flickering 6.5s infinite, pulseGlow 3s infinite alternate;
+    overflow: hidden;
+  }
+
+  /* TOP & BOTTOM Film Reel Borders */
+  .murder-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background-color: #0b0706;
+    background-image: radial-gradient(#261715 35%, #000 45%, transparent 46%);
+    background-size: 28px 20px;
+    background-position: 8px center;
+    border-bottom: 3px solid #800000;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.9);
+    z-index: 10;
+  }
+
+  .murder-wrapper::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background-color: #0b0706;
+    background-image: radial-gradient(#261715 35%, #000 45%, transparent 46%);
+    background-size: 28px 20px;
+    background-position: 8px center;
+    border-top: 3px solid #800000;
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.9);
+    z-index: 10;
+  }
+
+  /* LEFT & RIGHT Film Reel Borders */
+  .reel-side-left,
+  .reel-side-right {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40px;
+    background-color: #0b0706;
+    background-image: radial-gradient(#261715 35%, #000 45%, transparent 46%);
+    background-size: 20px 28px;
+    background-position: center 8px;
+    z-index: 11;
+  }
+  .reel-side-left {
+    left: 0;
+    border-right: 3px solid #800000;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.9);
+  }
+  .reel-side-right {
+    right: 0;
+    border-left: 3px solid #800000;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.9);
+  }
+
+  /* Dripping Blood Divider Effect */
+  .blood-drips {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+    right: 40px;
+    height: 12px;
+    background: linear-gradient(180deg, #800000 0%, transparent 100%);
+    opacity: 0.7;
+    z-index: 9;
+  }
+
+  /* Header Section */
+  .page-hdr { 
+    position: relative;
+    border-left: 5px solid #ff0000; 
+    padding: 15px 0 15px 20px; 
+    margin-bottom: 30px; 
+    background: linear-gradient(90deg, rgba(180,0,0,0.35) 0%, transparent 100%);
+    box-shadow: inset 10px 0 20px rgba(255, 0, 0, 0.2);
+  }
+
+  .page-title {
+    font-family: 'Nosifer', cursive;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    color: #ff0000;
+    text-shadow: 0 0 12px rgba(255, 0, 0, 0.9), 3px 3px 6px #000;
+    margin: 0;
+    line-height: 1.2;
+  }
+  .page-sub { 
+    color: #cca485; 
+    font-family: 'Special Elite', cursive; 
+    font-style: italic; 
+    font-size: 1rem;
+    margin-top: 8px;
+    text-shadow: 0 0 4px #000;
+  }
+
+  /* Card Container */
   .card {
-    background: #14120f;
-    background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 4px 4px;
-    border: 1px solid #2c2620;
-    box-shadow: 0 0 0 1px #000 inset, 0 8px 24px rgba(0,0,0,0.5);
-    overflow-x: auto; /* Prevents tables with many columns from breaking layout */
+    position: relative;
+    background: #080404;
+    background-image: 
+      /* Inner Latent Fingerprint Overlay */
+      radial-gradient(ellipse 38px 55px at 10% 88%, transparent 0%, rgba(200,0,0,0.25) 5%, transparent 10%, rgba(200,0,0,0.3) 15%, transparent 20%),
+      radial-gradient(ellipse at bottom left, rgba(180,0,0,0.25) 0%, transparent 70%),
+      radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 3px 3px;
+    border: 2px solid #660000;
+    box-shadow: 0 0 30px rgba(139, 0, 0, 0.5), inset 0 0 30px #000;
+    z-index: 8;
+    overflow-x: auto;
   }
 
   .data-table { width: 100%; border-collapse: collapse; }
   .data-table th {
-    font-family: 'Courier New', monospace;
-    font-size: 0.75rem;
-    letter-spacing: 2px;
+    font-family: 'Creepster', cursive;
+    font-size: 1.1rem;
+    letter-spacing: 3px;
     text-transform: uppercase;
-    color: #8a7f6e;
-    border-bottom: 1px solid #3a332a;
-    padding: 10px 12px;
+    color: #ff3333;
+    border-bottom: 2px solid #800000;
+    padding: 14px;
     text-align: left;
+    background: rgba(30, 0, 0, 0.9);
+    text-shadow: 0 0 5px rgba(255,0,0,0.5);
   }
   .data-table td {
-    padding: 12px;
-    border-bottom: 1px solid #221e19;
-    color: #d8d0c0;
-    font-family: 'Georgia', serif;
+    padding: 16px 14px;
+    border-bottom: 1px solid #3d0c0c;
+    color: #e6d3be;
+    font-family: 'Special Elite', serif;
   }
-  .data-table tr:hover td { background: rgba(179,34,28,0.06); }
+  .data-table tr:hover td { 
+    background: rgba(220, 0, 0, 0.25); 
+    box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.3);
+  }
 
   .risk-badge {
     display: inline-block;
-    padding: 3px 10px;
+    padding: 4px 10px;
     border-radius: 2px;
-    font-size: 0.72rem;
+    font-size: 0.75rem;
     font-weight: bold;
-    letter-spacing: 0.5px;
+    letter-spacing: 1px;
     text-transform: uppercase;
     font-family: 'Courier New', monospace;
   }
-  .risk-prime { background: rgba(179,34,28,0.18); color: #ff5c52; border: 1px solid #7a1e19; }
-  .risk-poi   { background: rgba(214,158,46,0.18); color: #e0a940; border: 1px solid #7a5c15; }
-  .risk-clear { background: rgba(70,140,100,0.15); color: #6fbf8d; border: 1px solid #2e5c40; }
+  .risk-prime { background: rgba(220, 0, 0, 0.45); color: #ff3333; border: 1px solid #ff0000; box-shadow: 0 0 12px rgba(255, 0, 0, 0.7); }
+  .risk-poi   { background: rgba(214, 158, 46, 0.3); color: #ffca58; border: 1px solid #b38000; }
+  .risk-clear { background: rgba(50, 150, 80, 0.25); color: #80ffaa; border: 1px solid #008033; }
 
   .stamp-empty {
     text-align: center;
-    padding: 30px;
-    color: #5c5346;
-    font-family: 'Courier New', monospace;
-    letter-spacing: 1px;
+    padding: 40px;
+    color: #ff0000;
+    font-family: 'Nosifer', cursive;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(255,0,0,0.8);
+  }
+
+  .btn-resolve-nav {
+    text-decoration: none;
+    padding: 12px 22px;
+    background: linear-gradient(180deg, #b30000 0%, #4a0000 100%);
+    color: #fff;
+    border-radius: 2px;
+    font-family: 'Creepster', cursive;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: 1px solid #ff3333;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+    transition: all 0.2s ease;
+  }
+  .btn-resolve-nav:hover {
+    background: #e60000;
+    box-shadow: 0 0 25px rgba(255, 0, 0, 1);
+    transform: scale(1.03);
   }
 </style>
 
-<div class="page-hdr" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
-  <div>
-    <div class="page-title">Suspects — {{ case.title }}</div>
-    <div class="page-sub">List of suspects under investigation.</div>
+<div class="murder-wrapper">
+  <!-- Side Film Reels to form complete perimeter reel border -->
+  <div class="reel-side-left"></div>
+  <div class="reel-side-right"></div>
+  <div class="blood-drips"></div>
+
+  <div class="page-hdr" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
+    <div>
+      <h1 class="page-title">SUSPECTS — {{ case.title }}</h1>
+      <div class="page-sub">Which monster left their mark?</div>
+    </div>
+    <a href="{% url 'caseresolution' case.case_id %}" class="btn-resolve-nav">
+      Go to Case Resolution 🩸
+    </a>
   </div>
-  <a href="{% url 'caseresolution' case.case_id %}" style="text-decoration:none; padding:8px 16px; background:#b3221c; color:#fff; border-radius:3px; font-family:'Courier New',monospace; font-size:0.8rem; letter-spacing:0.5px; text-transform:uppercase;">
-    Go to Case Resolution
-  </a>
+
+  <div class="card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Occupation</th>
+          <th>Motive</th>
+          <th>Alibi & Status</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in suspects %}
+        <tr>
+          <td><strong>{{ s.name }}</strong></td>
+          <td>{{ s.occupation|default:"Unknown" }}</td>
+          <td><small style="color: #cca485;">{{ s.motive|default:"None logged" }}</small></td>
+          <td>
+            <div>{{ s.alibi|default:"No alibi provided" }}</div>
+            {% if s.alibi_status %}<small style="font-style: italic; color: #a38c75;">({{ s.alibi_status }})</small>{% endif %}
+          </td>
+          <td>
+            {% if s.suspect_status == "Prime Suspect" %}
+              <span class="risk-badge risk-prime">Prime Suspect</span>
+            {% elif s.suspect_status == "Person of Interest" %}
+              <span class="risk-badge risk-poi">Person of Interest</span>
+            {% else %}
+              <span class="risk-badge risk-clear">{{ s.suspect_status|default:"Cleared" }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <button class="btn-add" id="accuse-{{ s.suspect_id }}"
+              style="padding:8px 14px; border-radius:2px; border:1px solid #ff0000; background:rgba(40,0,0,0.9); color:#ff4d4d; font-family:'Special Elite',monospace; font-size:0.8rem; text-transform:uppercase; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 8px rgba(255,0,0,0.4);"
+              onclick="accuseSuspect({{ s.suspect_id }}, this)">
+              + Accuse
+            </button>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="stamp-empty">NO SUSPECTS LOGGED IN THIS NIGHTMARE</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
-<div class="card">
-  <h3 style="font-family:'Courier New',monospace; color:#c9c1b0; letter-spacing:1px; padding:16px 16px 0;">SUSPECT LIST</h3>
-  <table class="data-table">
-    <thead>
-      <tr>
-  <th>Name</th>
-  <th>Occupation</th>
-  <th>Motive</th>
-  <th>Alibi & Status</th>
-  <th>Status</th>
-  <th>Action</th>
-</tr>
-</thead>
-<tbody>
-  {% for s in suspects %}
-  <tr>
-    <td><strong>{{ s.name }}</strong></td>
-    <td>{{ s.occupation|default:"Unknown" }}</td>
-    <td><small style="color: #bfae93;">{{ s.motive|default:"None logged" }}</small></td>
-    <td>
-      <div>{{ s.alibi|default:"No alibi provided" }}</div>
-      {% if s.alibi_status %}<small style="font-style: italic; color: #9a8f7c;">({{ s.alibi_status }})</small>{% endif %}
-    </td>
-    <td>
-      {% if s.suspect_status == "Prime Suspect" %}
-        <span class="risk-badge risk-prime">Prime Suspect</span>
-      {% elif s.suspect_status == "Person of Interest" %}
-        <span class="risk-badge risk-poi">Person of Interest</span>
-      {% else %}
-        <span class="risk-badge risk-clear">{{ s.suspect_status|default:"Cleared" }}</span>
-      {% endif %}
-    </td>
-    <td>
-      <button class="btn-add" id="accuse-{{ s.suspect_id }}"
-        style="padding:6px 12px; border-radius:3px; border:1px solid #7a1e19; background:transparent; color:#ff5c52; font-family:'Courier New',monospace; font-size:0.72rem; text-transform:uppercase; cursor:pointer;"
-        onclick="accuseSuspect({{ s.suspect_id }}, this)">
-        + Accuse
-      </button>
-    </td>
-  </tr>
-  {% empty %}
-  <tr><td colspan="6" class="stamp-empty">— NO SUSPECTS LOGGED FOR THIS CASE —</td></tr>
-  {% endfor %}
-</tbody>
-  </table>
-</div>
+
 <script>
 const CASE_ID = {{ case.case_id }};
 const SUB_KEY = 'submission_id_' + CASE_ID;
@@ -136,10 +294,14 @@ async function accuseSuspect(suspectId, btn) {
 
   document.querySelectorAll('.btn-add').forEach(function (b) {
     b.textContent = '+ Accuse';
-    b.style.color = '#ff5c52';
+    b.style.color = '#ff4d4d';
+    b.style.borderColor = '#ff0000';
+    b.style.boxShadow = '0 0 8px rgba(255,0,0,0.4)';
   });
   btn.textContent = '✓ Accused';
-  btn.style.color = '#5c5346';
+  btn.style.color = '#777';
+  btn.style.borderColor = '#444';
+  btn.style.boxShadow = 'none';
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
@@ -149,7 +311,12 @@ document.addEventListener('DOMContentLoaded', async function () {
   const data = await resp.json();
   if (data.accused_suspect_id) {
     const btn = document.getElementById('accuse-' + data.accused_suspect_id);
-    if (btn) { btn.textContent = '✓ Accused'; btn.style.color = '#5c5346'; }
+    if (btn) { 
+      btn.textContent = '✓ Accused'; 
+      btn.style.color = '#777'; 
+      btn.style.borderColor = '#444';
+      btn.style.boxShadow = 'none';
+    }
   }
 });
 </script>

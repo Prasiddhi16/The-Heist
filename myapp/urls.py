@@ -33,10 +33,10 @@ urlpatterns = [
     ),
 
     path(
-        "case/<int:case_id>/solve/",
-        views.case_resolution,
-        name="solve_case"
-    ),
+    "case/<int:case_id>/solve/",
+    views.solve_case,
+    name="solve_case"
+),
 
     path(
         "case/<int:case_id>/suspects/<int:suspect_id>/accuse/",

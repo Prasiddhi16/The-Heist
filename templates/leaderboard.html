@@ -46,27 +46,63 @@
 {% if leaderboard %}
 {% if leaderboard|length >= 3 %}
 <div class="podium">
-<div class="podium-item second">
-<div class="podium-rank">2nd Place</div>
-<div class="podium-icon">2</div>
-<div class="podium-name">Case #{{ leaderboard.1.case_id }}</div>
-<div class="podium-score">{% if leaderboard.1.score >= 0 %}+{{ leaderboard.1.score }}{% else %}{{ leaderboard.1.score }}{% endif %}</div>
-<div class="podium-cases">{{ leaderboard.1.title }}</div>
+    {% if leaderboard|length >= 3 %}
+    <div class="podium-item second">
+        <div class="podium-rank">2nd Place</div>
+        <div class="podium-icon">2</div>
+        <div class="podium-name">
+            {{ leaderboard.1.investigator }}
+        </div>
+        <div class="podium-score">
+            {% if leaderboard.1.score >= 0 %}
+                +{{ leaderboard.1.score }}
+            {% else %}
+                {{ leaderboard.1.score }}
+            {% endif %}
+        </div>
+        <div class="podium-cases">
+            {{ leaderboard.1.title }}
+        </div>
+    </div>
+
+    <div class="podium-item first">
+        <div class="podium-rank">1st Place</div>
+        <div class="podium-icon">1</div>
+        <div class="podium-name">
+            {{ leaderboard.0.investigator }}
+        </div>
+        <div class="podium-score">
+            {% if leaderboard.0.score >= 0 %}
+                +{{ leaderboard.0.score }}
+            {% else %}
+                {{ leaderboard.0.score }}
+            {% endif %}
+        </div>
+        <div class="podium-cases">
+            {{ leaderboard.0.title }}
+        </div>
+    </div>
+
+    <div class="podium-item third">
+        <div class="podium-rank">3rd Place</div>
+        <div class="podium-icon">3</div>
+        <div class="podium-name">
+            {{ leaderboard.2.investigator }}
+        </div>
+        <div class="podium-score">
+            {% if leaderboard.2.score >= 0 %}
+                +{{ leaderboard.2.score }}
+            {% else %}
+                {{ leaderboard.2.score }}
+            {% endif %}
+        </div>
+        <div class="podium-cases">
+            {{ leaderboard.2.title }}
+        </div>
+    </div>
+    {% endif %}
 </div>
-<div class="podium-item first">
-<div class="podium-rank">1st Place</div>
-<div class="podium-icon">1</div>
-<div class="podium-name">Case #{{ leaderboard.0.case_id }}</div>
-<div class="podium-score">{% if leaderboard.0.score >= 0 %}+{{ leaderboard.0.score }}{% else %}{{ leaderboard.0.score }}{% endif %}</div>
-<div class="podium-cases">{{ leaderboard.0.title }}</div>
-</div>
-<div class="podium-item third">
-<div class="podium-rank">3rd Place</div>
-<div class="podium-icon">3</div>
-<div class="podium-name">Case #{{ leaderboard.2.case_id }}</div>
-<div class="podium-score">{% if leaderboard.2.score >= 0 %}+{{ leaderboard.2.score }}{% else %}{{ leaderboard.2.score }}{% endif %}</div>
-<div class="podium-cases">{{ leaderboard.2.title }}</div>
-</div>
+
 </div>
 {% endif %}
 <table class="leaderboard-table">

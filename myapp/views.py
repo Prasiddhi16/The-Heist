@@ -247,164 +247,279 @@ def case_resolution(request, case_id=None):
         }
     )
 def analysis(request, case_id):
-    case = get_object_or_404(Case, case_id=case_id)
-    submission_id = request.GET.get('submission_id')
+    case = get_object_or_404(
+        Case,
+        case_id=case_id
+    )
+
+    submission_id = request.GET.get("submission_id")
+
     submission = None
+
     if submission_id:
-        submission = CaseSubmission.objects.filter(
-            submission_id=submission_id,
-            case_id=case_id
-        ).first()
+        submission = (
+            CaseSubmission.objects
+            .filter(
+                submission_id=submission_id,
+                case_id=case_id
+            )
+            .first()
+        )
+
     if not submission:
         submission = (
             CaseSubmission.objects
-            .filter(case_id=case_id)
-            .order_by('-submission_id')
+            .filter(
+                case_id=case_id
+            )
+            .order_by("-submission_id")
             .first()
         )
+
     selected_suspect = None
     selected_evidence = []
+
     if submission:
         accused_row = (
             SubmissionSuspect.objects
-            .filter(submission=submission, is_accused=True)
-            .select_related('suspect')
+            .filter(
+                submission=submission,
+                is_accused=True
+            )
+            .select_related("suspect")
             .first()
         )
+
         if accused_row:
             selected_suspect = accused_row.suspect
-        selected_evidence_ids = SubmissionEvidence.objects.filter(
-            submission=submission,
-            is_selected=True
-        ).values_list('evidence_id', flat=True)
+
+        selected_evidence_ids = (
+            SubmissionEvidence.objects
+            .filter(
+                submission=submission,
+                is_selected=True
+            )
+            .values_list(
+                "evidence_id",
+                flat=True
+            )
+        )
+
         selected_evidence = list(
             Evidence.objects.filter(
                 case_id=case_id,
                 evidence_id__in=selected_evidence_ids
             )
         )
-    evidence_total = Evidence.objects.filter(case_id=case_id).count()
+
+    evidence_total = (
+        Evidence.objects
+        .filter(case_id=case_id)
+        .count()
+    )
+
     evidence_collected = len(selected_evidence)
-    evidence_score = (evidence_collected / evidence_total) * 70 if evidence_total > 0 else 0
-    suspect_score = 30 if selected_suspect else 0
-    readiness_score = round(evidence_score + suspect_score)
-    can_file_verdict = selected_suspect is not None and evidence_collected > 0
+
+    evidence_score = (
+        (evidence_collected / evidence_total) * 70
+        if evidence_total > 0
+        else 0
+    )
+
+    suspect_score = (
+        30
+        if selected_suspect
+        else 0
+    )
+
+    readiness_score = round(
+        evidence_score + suspect_score
+    )
+
+    can_file_verdict = (
+        selected_suspect is not None
+        and evidence_collected > 0
+        and submission is not None
+        and submission.is_correct is None
+    )
+
     top_suspect = (
         Suspect.objects
         .filter(case_id=case_id)
-        .order_by('suspect_id')
+        .order_by("suspect_id")
         .first()
     )
-    return render(request, 'analysis.html', {
-        'case': case,
-        'submission': submission,
-        'selected_suspect': selected_suspect,
-        'selected_evidence': selected_evidence,
-        'evidence_collected': evidence_collected,
-        'evidence_total': evidence_total,
-        'readiness_score': readiness_score,
-        'top_suspect': top_suspect,
-        'can_file_verdict': can_file_verdict
-    })
+
+    verdict_done = (
+        submission is not None
+        and submission.is_correct is not None
+    )
+
+    verdict_correct = (
+        bool(submission.is_correct)
+        if verdict_done
+        else False
+    )
+
+    verdict_score = (
+        submission.score
+        if verdict_done
+        else 0
+    )
+
+    verdict_notes = (
+        submission.reviewer_notes
+        if verdict_done
+        else ""
+    )
+
+    return render(
+        request,
+        "analysis.html",
+        {
+            "case": case,
+            "submission": submission,
+            "selected_suspect": selected_suspect,
+            "selected_evidence": selected_evidence,
+            "evidence_collected": evidence_collected,
+            "evidence_total": evidence_total,
+            "readiness_score": readiness_score,
+            "top_suspect": top_suspect,
+            "can_file_verdict": can_file_verdict,
+            "verdict_done": verdict_done,
+            "verdict_correct": verdict_correct,
+            "verdict_score": verdict_score,
+            "verdict_notes": verdict_notes,
+        }
+    )
 @transaction.atomic
 def solve_case(request, case_id):
-    if request.method != 'POST':
-        return redirect(
-            'analysis',
-            case_id=case_id
-        )
-    case = get_object_or_404(
-        Case,
-        case_id=case_id
+    case = get_object_or_404(Case, case_id=case_id)
+
+    if request.method != "POST":
+        return redirect("analysis", case_id=case_id)
+
+    submission_id = request.POST.get("submission_id")
+
+    if not submission_id:
+        return redirect("analysis", case_id=case_id)
+
+    submission = get_object_or_404(
+        CaseSubmission,
+        submission_id=submission_id,
+        case=case
     )
-    submission_id = request.POST.get(
-        'submission_id'
+
+    accused = (
+        SubmissionSuspect.objects
+        .filter(
+            submission=submission,
+            is_accused=True
+        )
+        .first()
     )
-    if submission_id:
-        submission = CaseSubmission.objects.filter(
-            submission_id=submission_id,
-            case_id=case_id
-        ).first()
-    else:
-        submission = (
-            CaseSubmission.objects
-            .filter(case_id=case_id)
-            .order_by('-submitted_at')
-            .first()
+
+    guilty = (
+        SolutionSuspect.objects
+        .filter(
+            case=case,
+            is_guilty=True
         )
-    if not submission:
-        return redirect(
-            'caseresolution',
-            case_id=case_id
-        )
-    if submission.reviewed:
-        return redirect(
-            'analysis',
-            case_id=case_id
-        )
-    accused = SubmissionSuspect.objects.filter(
-        submission=submission,
-        is_accused=True
-    ).select_related(
-        'suspect'
-    ).first()
-    selected_evidence = SubmissionEvidence.objects.filter(
-        submission=submission,
-        is_selected=True
-    ).select_related(
-        'evidence'
+        .first()
     )
-    if not accused or not selected_evidence.exists():
-        return redirect(
-            f"{reverse('analysis', kwargs={'case_id': case_id})}?submission_id={submission.submission_id}"
+
+    suspect_correct = False
+
+    if accused and guilty:
+        suspect_correct = (
+            accused.suspect_id == guilty.suspect_id
         )
-    correct_suspect = SolutionSuspect.objects.filter(
-        case_id=case_id,
-        is_guilty=True
-    ).first()
-    correct_evidence_ids = set(
-        SolutionEvidence.objects.filter(
-            case_id=case_id,
+
+    user_evidence = set(
+        SubmissionEvidence.objects
+        .filter(
+            submission=submission,
+            is_selected=True
+        )
+        .values_list(
+            "evidence_id",
+            flat=True
+        )
+    )
+
+    correct_evidence = set(
+        SolutionEvidence.objects
+        .filter(
+            case=case,
             is_key_evidence=True
-        ).values_list(
-            'evidence_id',
+        )
+        .values_list(
+            "evidence_id",
             flat=True
         )
     )
-    suspect_correct = (
-        correct_suspect is not None
-        and accused.suspect_id == correct_suspect.suspect_id
-    )
-    selected_evidence_ids = set(
-        selected_evidence.values_list(
-            'evidence_id',
-            flat=True
-        )
-    )
+
     evidence_correct = (
-        selected_evidence_ids == correct_evidence_ids
+        user_evidence == correct_evidence
     )
-    submission.is_correct = (
-        suspect_correct
-        and evidence_correct
-    )
-    submission.reviewed = True
-    submission.reviewer_notes = (
-        f"Suspect selection: "
-        f"{'Correct' if suspect_correct else 'Incorrect'}. "
-        f"Evidence selection: "
-        f"{'Correct' if evidence_correct else 'Incorrect'}."
-    )
+
+    if suspect_correct and evidence_correct:
+        submission.is_correct = True
+        submission.score = 100
+        submission.reviewer_notes = (
+            "Correct suspect and correct evidence selected."
+        )
+    else:
+        submission.is_correct = False
+
+        score = 0
+
+        if suspect_correct:
+            score += 50
+
+        if evidence_correct:
+            score += 50
+
+        submission.score = score
+
+        if suspect_correct and not evidence_correct:
+            submission.reviewer_notes = (
+                "Correct suspect, but the selected evidence "
+                "does not completely match the key evidence."
+            )
+
+        elif not suspect_correct and evidence_correct:
+            submission.reviewer_notes = (
+                "Correct evidence selected, but the accused "
+                "suspect does not match the official solution."
+            )
+
+        else:
+            submission.reviewer_notes = (
+                "The selected suspect and evidence do not "
+                "completely match the official solution."
+            )
+
     submission.save(
         update_fields=[
-            'is_correct',
-            'reviewed',
-            'reviewer_notes'
+            "is_correct",
+            "score",
+            "reviewer_notes"
         ]
     )
+
+    request.session[f"verdict_{case_id}"] = {
+        "done": True,
+        "correct": submission.is_correct,
+        "score": submission.score,
+        "notes": submission.reviewer_notes,
+    }
+
     return redirect(
-        'casehistory'
+        f"{reverse('analysis', kwargs={'case_id': case_id})}"
+        f"?submission_id={submission.submission_id}"
     )
+
 def casehistory(request):
     submissions = (
         CaseSubmission.objects
@@ -549,17 +664,16 @@ def casehistory(request):
         default=0
     )
     return render(
-        request,
-        "casehistory.html",
-        {
-            "cases_json": mark_safe(
-                json.dumps(cases_json)
-            ),
-            "conviction_rate": conviction_rate,
-            "avg_score": avg_score,
-            "best_score": best_score,
-        }
-    )
+    request,
+    "casehistory.html",
+    {
+        "cases_json": cases_json,
+        "conviction_rate": conviction_rate,
+        "avg_score": avg_score,
+        "best_score": best_score,
+    }
+)
+
 def review_submission(request, submission_id):
     submission = get_object_or_404(
         CaseSubmission,
@@ -641,5 +755,107 @@ def review_submission(request, submission_id):
             'evidence_compare': evidence_compare,
         }
     )
+
 def leaderboard(request):
-    return render(request, "leaderboard.html")
+    submissions = (
+        CaseSubmission.objects
+        .select_related("case")
+        .order_by("-score", "-submitted_at")
+    )
+
+    leaderboard_data = []
+
+    for sub in submissions:
+        selected_evidence = set(
+            SubmissionEvidence.objects.filter(
+                submission=sub,
+                is_selected=True
+            ).values_list(
+                "evidence_id",
+                flat=True
+            )
+        )
+
+        correct_evidence = set(
+            SolutionEvidence.objects.filter(
+                case_id=sub.case_id,
+                is_key_evidence=True
+            ).values_list(
+                "evidence_id",
+                flat=True
+            )
+        )
+
+        accused = (
+            SubmissionSuspect.objects
+            .filter(
+                submission=sub,
+                is_accused=True
+            )
+            .first()
+        )
+
+        guilty = (
+            SolutionSuspect.objects
+            .filter(
+                case_id=sub.case_id,
+                is_guilty=True
+            )
+            .first()
+        )
+
+        suspect_correct = (
+            accused is not None
+            and guilty is not None
+            and accused.suspect_id == guilty.suspect_id
+        )
+
+        evidence_accuracy = (
+            round(
+                len(selected_evidence & correct_evidence)
+                / len(correct_evidence)
+                * 100
+            )
+            if correct_evidence
+            else 0
+        )
+
+        suspect_accuracy = 100 if suspect_correct else 0
+
+        accuracy = round(
+            (evidence_accuracy + suspect_accuracy) / 2
+        )
+
+        if sub.is_correct is True:
+            outcome = "correct"
+        elif sub.is_correct is False:
+            outcome = "incorrect"
+        else:
+            outcome = "pending"
+
+        leaderboard_data.append({
+            "title": sub.case.title,
+            "case_id": sub.case.case_number,
+            "investigator": (
+                str(sub.user_id)
+                if sub.user_id
+                else "Unknown Investigator"
+            ),
+            "outcome": outcome,
+            "accuracy": accuracy,
+            "score": sub.score or 0,
+            "date_solved": sub.submitted_at.strftime("%Y-%m-%d"),
+        })
+
+    leaderboard_data.sort(
+        key=lambda x: x["score"],
+        reverse=True
+    )
+
+    return render(
+        request,
+        "leaderboard.html",
+        {
+            "leaderboard": leaderboard_data,
+        }
+    )

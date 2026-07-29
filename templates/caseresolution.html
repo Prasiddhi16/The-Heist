@@ -139,7 +139,7 @@ textarea#narrative {
   <a href="{% url 'suspects' case.case_id %}" class="btn btn-secondary">Back to Suspects</a>
   <a href="{% url 'evidence' case.case_id %}" class="btn btn-secondary">Back to Evidence</a>
   <button class="btn btn-primary" onclick="generateReport()">Generate Case Report</button>
-  <button class="btn btn-secondary" onclick="goToAnalysis()">Investigate</button>
+ <button class="btn btn-secondary" onclick="alert('NEW VERSION LOADED'); goToAnalysis()">Investigate</button>
 </div>
 </div>
 
@@ -162,6 +162,7 @@ const CASE_LOCATION = "{{ case.location|default:""|escapejs }}";
 const SUBMISSION_KEY = 'submission_id_' + CASE_ID;
 
 const SUSPECTS_BY_ID = {};
+
 {% for s in suspects %}
 SUSPECTS_BY_ID[{{ s.suspect_id }}] = {
   name: "{{ s.name|escapejs }}",
@@ -270,7 +271,7 @@ function renderEvidence() {
   }).join('');
 }
 
-async function goToAnalysis() {
+function goToAnalysis() {
   const submissionId = sessionStorage.getItem(SUBMISSION_KEY);
 
   if (!submissionId) {
@@ -278,37 +279,10 @@ async function goToAnalysis() {
     return;
   }
 
-  const narrative = document.getElementById('narrative').value.trim();
-
-  try {
-    
-    const response = await fetch(
-      '/case/' + CASE_ID + '/save-narrative/',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCsrfToken()
-        },
-        body: JSON.stringify({
-          submission_id: submissionId,
-          narrative: narrative
-        })
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error('Failed to save narrative');
-    }
-    window.location.href =
-      "{% url 'analysis' case.case_id %}" +
-      "?submission_id=" +
-      encodeURIComponent(submissionId);
-
-  } catch (error) {
-    console.error('Failed to save narrative:', error);
-    alert('Could not save your investigation narrative. Please try again.');
-  }
+  window.location.href =
+    "{% url 'analysis' case.case_id %}" +
+    "?submission_id=" +
+    encodeURIComponent(submissionId);
 }
 function generateReport() {
   const suspect = currentState.accused_suspect_id != null ? SUSPECTS_BY_ID[currentState.accused_suspect_id] : null;

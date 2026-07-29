@@ -1,13 +1,24 @@
-
 if (window.supabase) {
     const { createClient } = window.supabase;
-    
-    // Initialize the client
+
     window.supabaseClient = createClient(
-        window.SUPABASE_URL, 
+        window.SUPABASE_URL,
         window.SUPABASE_ANON_KEY
     );
+
     console.log("Supabase client initialized successfully.");
+
+    window.getSupabaseUserId = async function () {
+        const { data, error } = await window.supabaseClient.auth.getUser();
+
+        if (error) {
+            console.error("Supabase user error:", error);
+            return null;
+        }
+
+        return data?.user?.id || null;
+    };
+
 } else {
     console.error("Supabase library failed to load.");
 }

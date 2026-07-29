@@ -3,343 +3,555 @@
 {% block content %}
 
 <style>
-.page-hdr { border-left: 3px solid #b3221c; padding-left: 14px; margin-bottom: 18px; }
-.page-title { font-family: 'Courier New', monospace; letter-spacing: 1px; text-transform: uppercase; color: #221c0f; }
-.page-sub { color: #9a8f7c; font-style: italic; }
-
-.card {
-  background: #14120f;
-  background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
-  background-size: 4px 4px;
-  border: 1px solid #2c2620;
-  box-shadow: 0 0 0 1px #000 inset, 0 8px 24px rgba(0,0,0,0.5);
-  padding: 18px;
-  margin-bottom: 20px;
-}
-.card h3 {
-  font-family: 'Courier New', monospace;
-  color: #c9c1b0;
-  letter-spacing: 1px;
-  margin-bottom: 14px;
-}
-
-.btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 16px; border-radius: 3px; border: 1px solid #3a332a;
-  font-family: 'Courier New', monospace; font-size: 0.8rem; letter-spacing: 0.5px;
-  text-transform: uppercase; cursor: pointer; text-decoration: none;
-}
-.btn-primary { background: #b3221c; color: #fff; border-color: #7a1e19; }
-.btn-primary:hover { background: #931c17; }
-.btn-secondary { background: #2c2620; color: #d8d0c0; }
-.btn-remove { background: transparent; color: #ff5c52; border-color: #7a1e19; padding: 6px 12px; font-size: 0.72rem; }
-.btn-remove:hover { background: rgba(179,34,28,0.12); }
-
-.empty-slot {
-  text-align: center; padding: 24px; color: #5c5346;
-  font-family: 'Courier New', monospace; letter-spacing: 1px;
-  border: 1px dashed #3a332a; border-radius: 4px;
-}
-
-.accused-row, .evidence-row {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 12px; border-bottom: 1px solid #221e19; color: #d8d0c0; font-family: 'Georgia', serif;
-}
-.accused-row:last-child, .evidence-row:last-child { border-bottom: none; }
-
-textarea#narrative {
-  width: 100%; min-height: 140px; background: #0e0c0a; color: #d8d0c0;
-  border: 1px solid #3a332a; border-radius: 4px; padding: 12px; font-family: 'Georgia', serif;
-  font-size: 0.95rem; resize: vertical; box-sizing: border-box;
-}
-
-/* Printable report */
-#reportOutput { display: none; }
-#reportOutput.show { display: block; }
-.report-paper {
-  background: #f5f1e8; color: #1a1610; padding: 40px; border-radius: 2px;
-  font-family: 'Georgia', serif; line-height: 1.6;
-}
-.report-paper h2 {
-  font-family: 'Courier New', monospace; letter-spacing: 1px; text-transform: uppercase;
-  border-bottom: 2px solid #1a1610; padding-bottom: 10px; margin-bottom: 20px;
-}
-.report-meta { font-size: 0.85rem; color: #4a4436; margin-bottom: 20px; }
-.report-section { margin-bottom: 22px; }
-.report-section h4 {
-  font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.5px;
-  font-size: 0.85rem; color: #6b1712; margin-bottom: 8px; border-bottom: 1px solid #ccc3ad; padding-bottom: 4px;
-}
-.report-evidence-item { padding: 6px 0; border-bottom: 1px dotted #ccc3ad; }
-.report-sign { margin-top: 40px; display: flex; justify-content: space-between; font-size: 0.85rem; }
-
-@media print {
-  body * { visibility: hidden; }
-  #reportOutput, #reportOutput * { visibility: visible; }
-  #reportOutput { position: absolute; left: 0; top: 0; width: 100%; }
-  .no-print { display: none !important; }
+.page-hdr{border-left:3px solid #b3221c;padding-left:14px;margin-bottom:18px}
+.page-title{font-family:'Courier New',monospace;letter-spacing:1px;text-transform:uppercase;color:#221c0f}
+.page-sub{color:#9a8f7c}
+.card{background:#14120f;background-image:radial-gradient(rgba(255,255,255,.02) 1px,transparent 1px);background-size:4px 4px;border:1px solid #2c2620;box-shadow:0 0 0 1px #000 inset,0 8px 24px rgba(0,0,0,.5);padding:18px;margin-bottom:20px}
+.card h3{font-family:'Courier New',monospace;color:#c9c1b0;letter-spacing:1px;margin-bottom:14px}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:3px;border:1px solid #3a332a;font-family:'Courier New',monospace;font-size:.8rem;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;text-decoration:none}
+.btn-primary{background:#b3221c;color:#fff;border-color:#7a1e19}
+.btn-primary:hover{background:#931c17}
+.btn-secondary{background:#2c2620;color:#d8d0c0}
+.btn-remove{background:transparent;color:#ff5c52;border-color:#7a1e19;padding:6px 12px;font-size:.72rem}
+.btn-remove:hover{background:rgba(179,34,28,.12)}
+.empty-slot{text-align:center;padding:24px;color:#5c5346;font-family:'Courier New',monospace;letter-spacing:1px;border:1px dashed #3a332a;border-radius:4px}
+.accused-row,.evidence-row{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #221e19;color:#d8d0c0;font-family:'Georgia',serif}
+.accused-row:last-child,.evidence-row:last-child{border-bottom:none}
+textarea#narrative{width:100%;min-height:140px;background:#0e0c0a;color:#d8d0c0;border:1px solid #3a332a;border-radius:4px;padding:12px;font-family:'Georgia',serif;font-size:.95rem;resize:vertical;box-sizing:border-box}
+#reportOutput{display:none}
+#reportOutput.show{display:block}
+.report-paper{background:#f5f1e8;color:#1a1610;padding:40px;border-radius:2px;font-family:'Georgia',serif;line-height:1.6}
+.report-paper h2{font-family:'Courier New',monospace;letter-spacing:1px;text-transform:uppercase;border-bottom:2px solid #1a1610;padding-bottom:10px;margin-bottom:20px}
+.report-meta{font-size:.85rem;color:#4a4436;margin-bottom:20px}
+.report-section{margin-bottom:22px}
+.report-section h4{font-family:'Courier New',monospace;text-transform:uppercase;letter-spacing:.5px;font-size:.85rem;color:#6b1712;margin-bottom:8px;border-bottom:1px solid #ccc3ad;padding-bottom:4px}
+.report-evidence-item{padding:6px 0;border-bottom:1px dotted #ccc3ad}
+.report-sign{margin-top:40px;display:flex;justify-content:space-between;font-size:.85rem}
+.user-info{font-family:'Courier New',monospace;font-size:.75rem;color:#8f8575;margin-top:5px}
+.status-message{display:none;padding:10px 12px;margin-bottom:15px;border:1px solid #3a332a;background:#0e0c0a;color:#c9c1b0;font-family:'Courier New',monospace;font-size:.8rem}
+.status-message.show{display:block}
+@media print{
+body *{visibility:hidden}
+#reportOutput,#reportOutput *{visibility:visible}
+#reportOutput{position:absolute;left:0;top:0;width:100%}
+.no-print{display:none!important}
 }
 </style>
 
 {% if not case %}
 
 <div class="page-hdr no-print">
-  <div>
-    <div class="page-title">Case Resolution</div>
-    <div class="page-sub">Select a case to review or close.</div>
-  </div>
+<div>
+<div class="page-title">Case Resolution</div>
+<div class="page-sub">Select a case to review or close.</div>
+</div>
 </div>
 
 <div class="card">
-  {% if cases %}
-    {% for c in cases %}
-      <div class="accused-row">
-        <div>
-          <strong>{{ c.case_number }}</strong> — {{ c.title }}<br>
-          <small style="color:#9a8f7c;">{{ c.status }} &middot; {{ c.location }}</small>
-        </div>
-        <a href="{% url 'caseresolution' c.case_id %}" class="btn btn-primary">Open</a>
-      </div>
-    {% endfor %}
-  {% else %}
-    <div class="empty-slot">No cases found.</div>
-  {% endif %}
+{% if cases %}
+{% for c in cases %}
+<div class="accused-row">
+<div>
+<strong>{{ c.case_number }}</strong> — {{ c.title }}<br>
+<small style="color:#9a8f7c;">{{ c.status }} &middot; {{ c.location }}</small>
+</div>
+<a href="{% url 'caseresolution' c.case_id %}" class="btn btn-primary">Open</a>
+</div>
+{% endfor %}
+{% else %}
+<div class="empty-slot">No cases found.</div>
+{% endif %}
 </div>
 
 {% else %}
 
 <div class="page-hdr no-print">
-  <div>
-    <div class="page-title">Case Resolution — {{ case.title }}</div>
-    <div class="page-sub">Accuse a suspect, attach evidence, and finalize the case report.</div>
-  </div>
+<div>
+<div class="page-title">Case Resolution — {{ case.title }}</div>
+<div class="page-sub">Accuse a suspect, attach evidence, and finalize the case report.</div>
+<div id="userInfo" class="user-info"></div>
 </div>
+</div>
+
+<div id="statusMessage" class="status-message"></div>
 
 <div class="no-print">
-  <div class="card">
-    <h3>ACCUSED SUSPECT</h3>
-    <div id="accusedContainer">
-      <div class="empty-slot">No suspect accused yet — go to the Suspects page and click "Accuse".</div>
-    </div>
-  </div>
 
-  <div class="card">
-    <h3>SUPPORTING EVIDENCE</h3>
-    <div id="evidenceContainer">
-      <div class="empty-slot">No evidence attached yet — go to the Evidence page and click "Add to Case".</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>INVESTIGATOR'S NARRATIVE</h3>
-    <textarea id="narrative" placeholder="Summarize how the evidence ties the accused to the crime..."></textarea>
-  </div>
-
-  <div class="card" style="display:flex; gap:12px; flex-wrap:wrap;">
-  <a href="{% url 'suspects' case.case_id %}" class="btn btn-secondary">Back to Suspects</a>
-  <a href="{% url 'evidence' case.case_id %}" class="btn btn-secondary">Back to Evidence</a>
-  <button class="btn btn-primary" onclick="generateReport()">Generate Case Report</button>
- <button class="btn btn-secondary" onclick="alert('NEW VERSION LOADED'); goToAnalysis()">Investigate</button>
+<div class="card">
+<h3>ACCUSED SUSPECT</h3>
+<div id="accusedContainer">
+<div class="empty-slot">Loading case submission...</div>
 </div>
+</div>
+
+<div class="card">
+<h3>SUPPORTING EVIDENCE</h3>
+<div id="evidenceContainer">
+<div class="empty-slot">Loading case submission...</div>
+</div>
+</div>
+
+<div class="card">
+<h3>INVESTIGATOR'S NARRATIVE</h3>
+<textarea id="narrative" placeholder="Summarize how the evidence ties the accused to the crime..."></textarea>
+</div>
+
+<div class="card" style="display:flex;gap:12px;flex-wrap:wrap;">
+<a href="{% url 'suspects' case.case_id %}" class="btn btn-secondary">Back to Suspects</a>
+<a href="{% url 'evidence' case.case_id %}" class="btn btn-secondary">Back to Evidence</a>
+<button class="btn btn-primary" onclick="generateReport()">Generate Case Report</button>
+<button class="btn btn-secondary" onclick="goToAnalysis()">Investigate</button>
+</div>
+
 </div>
 
 <div id="reportOutput">
-  <div class="report-paper" id="reportPaper"></div>
-  <div class="no-print" style="margin-top:16px; display:flex; gap:12px;">
-    <button class="btn btn-primary" onclick="window.print()">Print / Save as PDF</button>
-
-  </div>
-  
-
+<div class="report-paper" id="reportPaper"></div>
+<div class="no-print" style="margin-top:16px;display:flex;gap:12px;">
+<button class="btn btn-primary" onclick="window.print()">Print / Save as PDF</button>
+</div>
 </div>
 
 <script>
-const CASE_ID = {{ case.case_id }};
-const CASE_TITLE = "{{ case.title|escapejs }}";
-const CASE_NUMBER = "{{ case.case_number|escapejs }}";
-const CASE_LOCATION = "{{ case.location|default:""|escapejs }}";
+const CASE_ID={{ case.case_id }};
+const CASE_TITLE="{{ case.title|escapejs }}";
+const CASE_NUMBER="{{ case.case_number|escapejs }}";
+const CASE_LOCATION="{{ case.location|default:""|escapejs }}";
 
-const SUBMISSION_KEY = 'submission_id_' + CASE_ID;
+const SUBMISSION_KEY='submission_id_'+CASE_ID;
+let CURRENT_USER_ID=null;
+let CURRENT_USER_EMAIL=null;
 
-const SUSPECTS_BY_ID = {};
+const SUSPECTS_BY_ID={};
 
 {% for s in suspects %}
-SUSPECTS_BY_ID[{{ s.suspect_id }}] = {
-  name: "{{ s.name|escapejs }}",
-  occupation: "{{ s.occupation|default:""|escapejs }}",
-  motive: "{{ s.motive|default:""|escapejs }}",
-  suspect_status: "{{ s.suspect_status|default:""|escapejs }}"
+SUSPECTS_BY_ID[{{ s.suspect_id }}]={
+name:"{{ s.name|escapejs }}",
+occupation:"{{ s.occupation|default:""|escapejs }}",
+motive:"{{ s.motive|default:""|escapejs }}",
+suspect_status:"{{ s.suspect_status|default:""|escapejs }}"
 };
 {% endfor %}
 
-const EVIDENCE_BY_ID = {};
+const EVIDENCE_BY_ID={};
+
 {% for e in evidence_items %}
-EVIDENCE_BY_ID[{{ e.evidence_id }}] = {
-  evidence_id: {{ e.evidence_id }},
-  item_name: "{{ e.item_name|escapejs }}",
-  evidence_type: "{{ e.evidence_type|escapejs }}",
-  found_at: "{{ e.found_at|escapejs }}",
-  details: "{{ e.details|default:""|escapejs }}"
+EVIDENCE_BY_ID[{{ e.evidence_id }}]={
+evidence_id:{{ e.evidence_id }},
+item_name:"{{ e.item_name|escapejs }}",
+evidence_type:"{{ e.evidence_type|escapejs }}",
+found_at:"{{ e.found_at|escapejs }}",
+details:"{{ e.details|default:""|escapejs }}"
 };
 {% endfor %}
 
-let currentState = { accused_suspect_id: null, selected_evidence_ids: [], narrative: '' };
+let currentState={
+accused_suspect_id:null,
+selected_evidence_ids:[],
+narrative:''
+};
 
-function getCsrfToken() {
-  const match = document.cookie.match(/csrftoken=([^;]+)/);
-  return match ? match[1] : '';
+function getCsrfToken(){
+const match=document.cookie.match(/csrftoken=([^;]+)/);
+return match?match[1]:'';
 }
 
-async function loadState() {
-  const submissionId = sessionStorage.getItem(SUBMISSION_KEY);
-  if (!submissionId) {
-    currentState = { accused_suspect_id: null, selected_evidence_ids: [], narrative: '' };
-    renderAll();
-    return;
-  }
-  try {
-    const res = await fetch('/case/' + CASE_ID + '/submission-state/?submission_id=' + submissionId);
-    currentState = await res.json();
-  } catch (err) {
-    console.error('Failed to load submission state', err);
-    currentState = { accused_suspect_id: null, selected_evidence_ids: [], narrative: '' };
-  }
-  renderAll();
+function showStatus(message){
+const el=document.getElementById('statusMessage');
+el.textContent=message;
+el.classList.add('show');
 }
 
-function renderAll() {
-  renderAccused();
-  renderEvidence();
-  document.getElementById('narrative').value = currentState.narrative || '';
+function hideStatus(){
+document.getElementById('statusMessage').classList.remove('show');
 }
 
-async function removeAccused() {
-  const submissionId = sessionStorage.getItem(SUBMISSION_KEY);
-  if (!submissionId || currentState.accused_suspect_id == null) return;
-  await fetch('/case/' + CASE_ID + '/suspects/' + currentState.accused_suspect_id + '/accuse/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
-    body: JSON.stringify({ submission_id: submissionId, unset: true })
-  });
-  await loadState();
+async function loadCurrentUser(){
+
+if(!window.supabaseClient){
+console.warn('Supabase client not available.');
+return null;
 }
 
-async function removeEvidence(evidenceId) {
-  const submissionId = sessionStorage.getItem(SUBMISSION_KEY);
-  if (!submissionId) return;
-  await fetch('/case/' + CASE_ID + '/evidence/' + evidenceId + '/toggle/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
-    body: JSON.stringify({ submission_id: submissionId })
-  });
-  await loadState();
+try{
+
+const {data,error}=await window.supabaseClient.auth.getUser();
+
+if(error){
+console.error('Unable to get current user:',error);
+return null;
 }
 
-function renderAccused() {
-  const container = document.getElementById('accusedContainer');
-  const suspect = currentState.accused_suspect_id != null ? SUSPECTS_BY_ID[currentState.accused_suspect_id] : null;
-  if (!suspect) {
-    container.innerHTML = '<div class="empty-slot">No suspect accused yet — go to the Suspects page and click "Accuse".</div>';
-    return;
-  }
-  container.innerHTML =
-    '<div class="accused-row">' +
-      '<div>' +
-        '<strong>' + suspect.name + '</strong><br>' +
-        '<small style="color:#9a8f7c;">' + (suspect.occupation || 'Unknown') + ' &middot; ' + (suspect.suspect_status || '') + '</small><br>' +
-        '<small style="color:#bfae93;">Motive: ' + (suspect.motive || 'None logged') + '</small>' +
-      '</div>' +
-      '<button class="btn-remove" onclick="removeAccused()">Remove</button>' +
-    '</div>';
+if(!data||!data.user){
+console.warn('No authenticated Supabase user found.');
+return null;
 }
 
-function renderEvidence() {
-  const container = document.getElementById('evidenceContainer');
-  const list = (currentState.selected_evidence_ids || []).map(id => EVIDENCE_BY_ID[id]).filter(Boolean);
-  if (!list.length) {
-    container.innerHTML = '<div class="empty-slot">No evidence attached yet — go to the Evidence page and click "Add to Case".</div>';
-    return;
-  }
-  container.innerHTML = list.map(function (e) {
-    return '<div class="evidence-row">' +
-      '<div>' +
-        '<strong>EV-' + e.evidence_id + ': ' + e.item_name + '</strong><br>' +
-        '<small style="color:#9a8f7c;">' + e.evidence_type + ' &middot; found at ' + e.found_at + '</small>' +
-      '</div>' +
-      '<button class="btn-remove" onclick="removeEvidence(' + e.evidence_id + ')">Remove</button>' +
-    '</div>';
-  }).join('');
+CURRENT_USER_ID=data.user.id;
+CURRENT_USER_EMAIL=data.user.email||'';
+
+const userInfo=document.getElementById('userInfo');
+
+if(userInfo){
+userInfo.textContent='Investigator: '+(CURRENT_USER_EMAIL||CURRENT_USER_ID);
 }
 
-function goToAnalysis() {
-  const submissionId = sessionStorage.getItem(SUBMISSION_KEY);
+return data.user;
 
-  if (!submissionId) {
-    alert('No active case submission found.');
-    return;
-  }
-
-  window.location.href =
-    "{% url 'analysis' case.case_id %}" +
-    "?submission_id=" +
-    encodeURIComponent(submissionId);
+}catch(error){
+console.error('User loading failed:',error);
+return null;
 }
-function generateReport() {
-  const suspect = currentState.accused_suspect_id != null ? SUSPECTS_BY_ID[currentState.accused_suspect_id] : null;
-  const evidenceList = (currentState.selected_evidence_ids || []).map(id => EVIDENCE_BY_ID[id]).filter(Boolean);
-  const narrative = document.getElementById('narrative').value.trim();
-
-  if (!suspect) {
-    alert('You must accuse a suspect before generating the report.');
-    return;
-  }
-  if (!evidenceList.length) {
-    alert('Attach at least one piece of evidence before generating the report.');
-    return;
-  }
-
-  const today = new Date().toLocaleDateString();
-
-  const evidenceHtml = evidenceList.map(function (e) {
-    return '<div class="report-evidence-item"><strong>EV-' + e.evidence_id + '</strong> — ' +
-      e.item_name + ' (' + e.evidence_type + ', found at ' + e.found_at + ')' +
-      (e.details ? ': ' + e.details : '') + '</div>';
-  }).join('');
-
-  document.getElementById('reportPaper').innerHTML =
-    '<h2>Case Resolution Report</h2>' +
-    '<div class="report-meta">' +
-      'Case: <strong>' + CASE_NUMBER + '</strong> — ' + CASE_TITLE + '<br>' +
-      'Location: ' + CASE_LOCATION + '<br>' +
-      'Date Closed: ' + today +
-    '</div>' +
-    '<div class="report-section">' +
-      '<h4>Accused</h4>' +
-      '<p><strong>' + suspect.name + '</strong> (' + (suspect.occupation || 'Unknown') + ')<br>' +
-      'Motive: ' + (suspect.motive || 'None logged') + '<br>' +
-      'Prior Status: ' + (suspect.suspect_status || 'N/A') + '</p>' +
-    '</div>' +
-    '<div class="report-section">' +
-      '<h4>Supporting Evidence (' + evidenceList.length + ')</h4>' +
-      evidenceHtml +
-    '</div>' +
-    '<div class="report-section">' +
-      '<h4>Investigator\'s Findings</h4>' +
-      '<p>' + (narrative ? narrative.replace(/\n/g, '<br>') : 'No additional narrative provided.') + '</p>' +
-    '</div>' +
-    '<div class="report-sign">' +
-      '<div>Investigator\'s Signature: ______________________</div>' +
-      '<div>Date: ' + today + '</div>' +
-    '</div>';
-
-  document.getElementById('reportOutput').classList.add('show');
-  document.getElementById('reportOutput').scrollIntoView({ behavior: 'smooth' });
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  loadState();
+function getSubmissionId(){
+return sessionStorage.getItem(SUBMISSION_KEY);
+}
+
+function setSubmissionId(id){
+if(id){
+sessionStorage.setItem(SUBMISSION_KEY,String(id));
+}
+}
+
+async function loadState(){
+
+const submissionId=getSubmissionId();
+
+if(!submissionId){
+currentState={
+accused_suspect_id:null,
+selected_evidence_ids:[],
+narrative:''
+};
+renderAll();
+return;
+}
+
+try{
+
+const params=new URLSearchParams({
+submission_id:submissionId
 });
+
+if(CURRENT_USER_ID){
+params.append('user_id',CURRENT_USER_ID);
+}
+
+const res=await fetch(
+'/case/'+CASE_ID+'/submission-state/?'+params.toString(),
+{
+method:'GET',
+headers:{
+'X-User-ID':CURRENT_USER_ID||''
+}
+}
+);
+
+if(!res.ok){
+throw new Error('Unable to load submission state');
+}
+
+currentState=await res.json();
+
+renderAll();
+
+}catch(err){
+
+console.error('Failed to load submission state',err);
+
+currentState={
+accused_suspect_id:null,
+selected_evidence_ids:[],
+narrative:''
+};
+
+renderAll();
+
+}
+}
+
+function renderAll(){
+renderAccused();
+renderEvidence();
+
+const narrative=document.getElementById('narrative');
+
+if(narrative){
+narrative.value=currentState.narrative||'';
+}
+}
+
+async function removeAccused(){
+
+const submissionId=getSubmissionId();
+
+if(!submissionId||currentState.accused_suspect_id==null){
+return;
+}
+
+try{
+
+const response=await fetch(
+'/case/'+CASE_ID+'/suspects/'+currentState.accused_suspect_id+'/accuse/',
+{
+method:'POST',
+headers:{
+'Content-Type':'application/json',
+'X-CSRFToken':getCsrfToken(),
+'X-User-ID':CURRENT_USER_ID||''
+},
+body:JSON.stringify({
+submission_id:submissionId,
+unset:true,
+user_id:CURRENT_USER_ID
+})
+}
+);
+
+if(!response.ok){
+throw new Error('Failed to remove accused suspect');
+}
+
+await loadState();
+
+}catch(error){
+
+console.error(error);
+alert('Unable to remove the accused suspect.');
+
+}
+}
+
+async function removeEvidence(evidenceId){
+
+const submissionId=getSubmissionId();
+
+if(!submissionId){
+return;
+}
+
+try{
+
+const response=await fetch(
+'/case/'+CASE_ID+'/evidence/'+evidenceId+'/toggle/',
+{
+method:'POST',
+headers:{
+'Content-Type':'application/json',
+'X-CSRFToken':getCsrfToken(),
+'X-User-ID':CURRENT_USER_ID||''
+},
+body:JSON.stringify({
+submission_id:submissionId,
+user_id:CURRENT_USER_ID
+})
+}
+);
+
+if(!response.ok){
+throw new Error('Failed to remove evidence');
+}
+
+await loadState();
+
+}catch(error){
+
+console.error(error);
+alert('Unable to remove evidence.');
+
+}
+}
+
+function renderAccused(){
+
+const container=document.getElementById('accusedContainer');
+
+const suspect=
+currentState.accused_suspect_id!=null
+?SUSPECTS_BY_ID[currentState.accused_suspect_id]
+:null;
+
+if(!suspect){
+
+container.innerHTML=
+'<div class="empty-slot">No suspect accused yet — go to the Suspects page and click "Accuse".</div>';
+
+return;
+}
+
+container.innerHTML=
+'<div class="accused-row">'+
+'<div>'+
+'<strong>'+suspect.name+'</strong><br>'+
+'<small style="color:#9a8f7c;">'+
+(suspect.occupation||'Unknown')+
+' &middot; '+
+(suspect.suspect_status||'')+
+'</small><br>'+
+'<small style="color:#bfae93;">Motive: '+
+(suspect.motive||'None logged')+
+'</small>'+
+'</div>'+
+'<button class="btn-remove" onclick="removeAccused()">Remove</button>'+
+'</div>';
+
+}
+
+function renderEvidence(){
+
+const container=document.getElementById('evidenceContainer');
+
+const list=
+(currentState.selected_evidence_ids||[])
+.map(id=>EVIDENCE_BY_ID[id])
+.filter(Boolean);
+
+if(!list.length){
+
+container.innerHTML=
+'<div class="empty-slot">No evidence attached yet — go to the Evidence page and click "Add to Case".</div>';
+
+return;
+}
+
+container.innerHTML=list.map(function(e){
+
+return '<div class="evidence-row">'+
+'<div>'+
+'<strong>EV-'+e.evidence_id+': '+e.item_name+'</strong><br>'+
+'<small style="color:#9a8f7c;">'+
+e.evidence_type+
+' &middot; found at '+
+e.found_at+
+'</small>'+
+'</div>'+
+'<button class="btn-remove" onclick="removeEvidence('+e.evidence_id+')">Remove</button>'+
+'</div>';
+
+}).join('');
+
+}
+
+function goToAnalysis(){
+
+const submissionId=getSubmissionId();
+
+if(!submissionId){
+alert('No active case submission found.');
+return;
+}
+
+window.location.href=
+"{% url 'analysis' case.case_id %}"+
+"?submission_id="+
+encodeURIComponent(submissionId);
+
+}
+
+function generateReport(){
+
+const suspect=
+currentState.accused_suspect_id!=null
+?SUSPECTS_BY_ID[currentState.accused_suspect_id]
+:null;
+
+const evidenceList=
+(currentState.selected_evidence_ids||[])
+.map(id=>EVIDENCE_BY_ID[id])
+.filter(Boolean);
+
+const narrative=
+document.getElementById('narrative').value.trim();
+
+if(!suspect){
+alert('You must accuse a suspect before generating the report.');
+return;
+}
+
+if(!evidenceList.length){
+alert('Attach at least one piece of evidence before generating the report.');
+return;
+}
+
+const today=new Date().toLocaleDateString();
+
+const evidenceHtml=evidenceList.map(function(e){
+
+return '<div class="report-evidence-item">'+
+'<strong>EV-'+e.evidence_id+'</strong> — '+
+e.item_name+
+' ('+
+e.evidence_type+
+', found at '+
+e.found_at+
+')'+
+(e.details?': '+e.details:'')+
+'</div>';
+
+}).join('');
+
+document.getElementById('reportPaper').innerHTML=
+'<h2>Case Resolution Report</h2>'+
+'<div class="report-meta">'+
+'Case: <strong>'+CASE_NUMBER+'</strong> — '+CASE_TITLE+'<br>'+
+'Location: '+CASE_LOCATION+'<br>'+
+'Investigator: '+(CURRENT_USER_EMAIL||CURRENT_USER_ID||'Unknown')+'<br>'+
+'Date Closed: '+today+
+'</div>'+
+'<div class="report-section">'+
+'<h4>Accused</h4>'+
+'<p><strong>'+suspect.name+'</strong> ('+
+(suspect.occupation||'Unknown')+
+')<br>'+
+'Motive: '+(suspect.motive||'None logged')+
+'<br>'+
+'Prior Status: '+(suspect.suspect_status||'N/A')+
+'</p>'+
+'</div>'+
+'<div class="report-section">'+
+'<h4>Supporting Evidence ('+evidenceList.length+')</h4>'+
+evidenceHtml+
+'</div>'+
+'<div class="report-section">'+
+'<h4>Investigator\'s Findings</h4>'+
+'<p>'+
+(narrative?narrative.replace(/\n/g,'<br>'):'No additional narrative provided.')+
+'</p>'+
+'</div>'+
+'<div class="report-sign">'+
+'<div>Investigator\'s Signature: ______________________</div>'+
+'<div>Date: '+today+'</div>'+
+'</div>';
+
+document.getElementById('reportOutput').classList.add('show');
+
+document.getElementById('reportOutput').scrollIntoView({
+behavior:'smooth'
+});
+
+}
+
+document.addEventListener('DOMContentLoaded',async function(){
+
+hideStatus();
+
+const user=await loadCurrentUser();
+
+if(!user){
+
+showStatus(
+'Unable to identify the current investigator. Please refresh the page and try again.'
+);
+
+}
+
+await loadState();
+
+});
+
 </script>
 
 {% endif %}
+
 {% endblock %}

@@ -904,31 +904,31 @@
     </div>
 
     <form
-        method="post"
-        action="{% url 'solve_case' case.case_id %}"
+    method="post"
+    action="{% url 'solve_case' case.case_id %}"
+>
+    {% csrf_token %}
+
+    <input
+        type="hidden"
+        name="submission_id"
+        value="{{ submission.submission_id }}"
     >
 
-        {% csrf_token %}
+    <input
+        type="hidden"
+        name="user_id"
+        value="{{ submission.user_id }}"
+    >
 
-        {% if submission %}
-
-            <input
-                type="hidden"
-                name="submission_id"
-                value="{{ submission.submission_id }}"
-            >
-
-        {% endif %}
-
-        <button
-            type="submit"
-            class="btn-solve"
-            {% if not can_file_verdict %}disabled{% endif %}
-        >
-            🔒 File Verdict
-        </button>
-
-    </form>
+    <button
+        type="submit"
+        class="btn-solve"
+        {% if not can_file_verdict %}disabled{% endif %}
+    >
+        🔒 File Verdict
+    </button>
+</form>
 
     {% if not selected_suspect %}
 

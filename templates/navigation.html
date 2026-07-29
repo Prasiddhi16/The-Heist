@@ -58,9 +58,11 @@
 
   <div class="sidebar-section-label">Records</div>
 
-  <a href="{% url 'casehistory' %}" class="nav-item {% if request.resolver_match.url_name == 'casehistory' %}active{% endif %}">
-    <span class="nav-icon"><i class="fa-solid fa-box-archive"></i></span> Case History
-  </a>
+<a href="{% url 'casehistory' %}" id="case-history-link" class="nav-item {% if request.resolver_match.url_name == 'casehistory' %}active{% endif %}">
+  <span class="nav-icon"><i class="fa-solid fa-box-archive"></i></span>
+  Case History
+</a>
+
 
   <a href="{% url 'leaderboard' %}" class="nav-item {% if request.resolver_match.url_name == 'leaderboard' %}active{% endif %}">
     <span class="nav-icon"><i class="fa-solid fa-trophy"></i></span> Leaderboard

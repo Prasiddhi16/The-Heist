@@ -251,7 +251,7 @@
           <td>
             <button class="btn-add" id="add-ev-{{ e.evidence_id }}"
               style="padding:8px 14px; border-radius:2px; border:1px solid #ff0000; background:rgba(40,0,0,0.9); color:#ff6b6b; font-family:'Special Elite',monospace; font-size:0.8rem; text-transform:uppercase; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 8px rgba(255,0,0,0.4);"
-              onclick="addEvidence({{ e.evidence_id }}, this)">
+              onclick="addEvidence({{e.evidence_id }}, this)">
               + Add to Case
             </button>
           </td>
@@ -268,41 +268,110 @@
 const CASE_ID = {{ case.case_id }};
 const SUB_KEY = 'submission_id_' + CASE_ID;
 
-function getSubmissionId() { return sessionStorage.getItem(SUB_KEY); }
-function setSubmissionId(id) { sessionStorage.setItem(SUB_KEY, id); }
+function getSubmissionId() {
+  return sessionStorage.getItem(SUB_KEY);
+}
+
+function setSubmissionId(id) {
+  sessionStorage.setItem(SUB_KEY, id);
+}
+
+async function getUserId() {
+  if (!window.supabaseClient) {
+    console.error('Supabase client is not initialized');
+    return null;
+  }
+
+  const { data, error } = await window.supabaseClient.auth.getUser();
+
+  if (error) {
+    console.error('Failed to get user:', error);
+    return null;
+  }
+
+  return data?.user?.id || null;
+}
 
 async function addEvidence(evidenceId, btn) {
-  const resp = await fetch(`/case/${CASE_ID}/evidence/${evidenceId}/toggle/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ submission_id: getSubmissionId() })
-  });
-  const data = await resp.json();
-  setSubmissionId(data.submission_id);
+  try {
+    const userId = await getUserId();
 
-  if (data.is_selected) {
-    btn.textContent = '✓ Linked';
-    btn.style.color = '#777';
-    btn.style.borderColor = '#444';
-    btn.style.boxShadow = 'none';
-  } else {
-    btn.textContent = '+ Add to Case';
-    btn.style.color = '#ff6b6b';
-    btn.style.borderColor = '#ff0000';
-    btn.style.boxShadow = '0 0 8px rgba(255,0,0,0.4)';
+    if (!userId) {
+      alert('Please log in first.');
+      return;
+    }
+
+    const resp = await fetch(
+      `/case/${CASE_ID}/evidence/${evidenceId}/toggle/`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          submission_id: getSubmissionId(),
+          user_id: userId
+        })
+      }
+    );
+
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      console.error(data);
+      alert(data.error || 'Failed to update evidence.');
+      return;
+    }
+
+    setSubmissionId(data.submission_id);
+
+    if (data.is_selected) {
+      btn.textContent = '✓ Linked';
+      btn.style.color = '#777';
+      btn.style.borderColor = '#444';
+      btn.style.boxShadow = 'none';
+    } else {
+      btn.textContent = '+ Add to Case';
+      btn.style.color = '#ff6b6b';
+      btn.style.borderColor = '#ff0000';
+      btn.style.boxShadow = '0 0 8px rgba(255,0,0,0.4)';
+    }
+
+  } catch (error) {
+    console.error('Evidence error:', error);
   }
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
   const subId = getSubmissionId();
-  if (!subId) return;
-  const resp = await fetch(`/case/${CASE_ID}/submission-state/?submission_id=${subId}`);
+
+  if (!subId) {
+    return;
+  }
+
+  const userId = await getUserId();
+
+  if (!userId) {
+    return;
+  }
+
+  const resp = await fetch(
+    `/case/${CASE_ID}/submission-state/?submission_id=${encodeURIComponent(subId)}&user_id=${encodeURIComponent(userId)}`
+  );
+
   const data = await resp.json();
+
+  if (!resp.ok) {
+    console.error(data);
+    return;
+  }
+
   data.selected_evidence_ids.forEach(function (id) {
     const btn = document.getElementById('add-ev-' + id);
-    if (btn) { 
-      btn.textContent = '✓ Linked'; 
-      btn.style.color = '#777'; 
+
+    if (btn) {
+      btn.textContent = '✓ Linked';
+      btn.style.color = '#777';
       btn.style.borderColor = '#444';
       btn.style.boxShadow = 'none';
     }

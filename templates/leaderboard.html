@@ -4,9 +4,12 @@
 
 <style>
 .page-hdr{border-left:3px solid #b3221c;padding-left:14px;margin-bottom:24px}
-.page-title{font-family:'Courier New',monospace;letter-spacing:1px;text-transform:uppercase;color:#221c0f;font-size:1.3rem;margin-bottom:4px}
+.page-title{font-family:'Courier New',monospace;letter-spacing:1px;text-transform:uppercase;color:#f6f4f0;font-size:1.3rem;margin-bottom:4px}
 .page-sub{color:#9a8f7c;font-style:italic}
-.leaderboard-card{background:#14120f;background-image:radial-gradient(rgba(255,255,255,0.02) 1px,transparent 1px);background-size:4px 4px;border:1px solid #2c2620;box-shadow:0 0 0 1px #000 inset,0 10px 30px rgba(0,0,0,0.5);padding:20px;margin-bottom:24px;overflow-x:auto}
+.leaderboard-card{background:#14120f;background-image:radial-gradient(rgba(255,255,255,.02) 1px,transparent 1px);background-size:4px 4px;border:1px solid #2c2620;box-shadow:0 0 0 1px #000 inset,0 10px 30px rgba(0,0,0,.5);padding:20px;margin-bottom:24px;overflow-x:auto}
+.card-hdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.card-title{font-family:'Courier New',monospace;letter-spacing:1.5px;text-transform:uppercase;color:#bfae93;font-size:.85rem}
+.card-note{color:#5c5346;font-family:'Courier New',monospace;font-size:.65rem;letter-spacing:1px}
 .podium{display:flex;justify-content:center;align-items:flex-end;gap:18px;margin-bottom:35px;padding:20px 0}
 .podium-item{text-align:center;width:180px}
 .podium-rank{font-family:'Courier New',monospace;font-size:.75rem;letter-spacing:2px;color:#8a7f6e;text-transform:uppercase;margin-bottom:8px}
@@ -17,100 +20,373 @@
 .podium-name{color:#d8d0c0;font-family:'Courier New',monospace;font-size:.85rem;margin-bottom:5px;word-break:break-word}
 .podium-score{color:#6fbf8d;font-family:'Courier New',monospace;font-size:1.1rem;font-weight:bold}
 .podium-cases{color:#8a7f6e;font-family:'Courier New',monospace;font-size:.65rem;margin-top:4px}
+.podium-badge-wrap{margin-top:8px;display:flex;justify-content:center}
 .leaderboard-table{width:100%;border-collapse:collapse;min-width:650px}
 .leaderboard-table thead{border-bottom:1px solid #3a332a}
 .leaderboard-table th{text-align:left;padding:13px 12px;color:#8a7f6e;font-family:'Courier New',monospace;font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase}
 .leaderboard-table td{padding:15px 12px;border-bottom:1px solid #221e19;color:#d8d0c0;font-family:'Georgia',serif;font-size:.9rem}
-.leaderboard-table tbody tr{transition:background .15s ease,transform .15s ease}
+.leaderboard-table tbody tr{transition:background .15s ease}
 .leaderboard-table tbody tr:hover{background:rgba(255,255,255,.025)}
 .rank{width:60px;font-family:'Courier New',monospace;color:#8a7f6e;font-weight:bold}
 .rank.top{color:#e0a940}
-.case-number{color:#9a8f7c;font-family:'Courier New',monospace;font-size:.75rem}
-.case-title{color:#d8d0c0;font-weight:bold}
+.investigator-cell{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.investigator-name{color:#d8d0c0;font-weight:bold}
+.username{color:#9a8f7c;font-family:'Courier New',monospace;font-size:.75rem}
+.rank-name{color:#bfae93;font-family:'Courier New',monospace;font-size:.8rem}
+.cases-solved{color:#7d8fd6;font-family:'Courier New',monospace;font-weight:bold}
 .score-positive{color:#6fbf8d;font-family:'Courier New',monospace;font-weight:bold}
-.score-negative{color:#ff5c52;font-family:'Courier New',monospace;font-weight:bold}
-.accuracy{font-family:'Courier New',monospace;color:#7d8fd6}
-.status{display:inline-block;padding:4px 9px;border-radius:3px;font-family:'Courier New',monospace;font-size:.65rem;text-transform:uppercase;letter-spacing:1px}
-.status-correct{color:#6fbf8d;background:rgba(70,140,100,.12);border:1px solid #2e5c40}
-.status-incorrect{color:#ff5c52;background:rgba(179,34,28,.12);border:1px solid #7a1e19}
-.status-pending{color:#e0a940;background:rgba(224,169,64,.1);border:1px solid #705523}
 .empty-state{text-align:center;padding:60px 20px;color:#5c5346;font-family:'Courier New',monospace;letter-spacing:1px;font-style:italic}
-@media(max-width:700px){.podium{gap:8px}.podium-item{width:30%}.podium-icon{width:55px;height:55px;font-size:1rem}.podium-item.first .podium-icon{width:65px;height:65px;font-size:1.2rem}.podium-name{font-size:.7rem}}
+
+/* --- Rank-tier stamp badges --- */
+.rank-badge{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:22px;padding:0 6px;border-radius:3px;border:1.5px dashed;font-family:'Courier New',monospace;font-size:.62rem;font-weight:bold;letter-spacing:.5px;transform:rotate(-4deg);background:rgba(0,0,0,.25);white-space:nowrap;cursor:default}
+.tier-rookie{border-color:#8a7f6e;color:#a89c86}
+.tier-agent{border-color:#7d8fd6;color:#9ba9e8}
+.tier-detective{border-color:#6fbf8d;color:#84d69f}
+.tier-senior{border-color:#c7c7c7;color:#dedede}
+.tier-master{border-color:#e0a940;color:#f0be5f;transform:rotate(-4deg) scale(1.05)}
+
+.badge-legend{display:flex;flex-wrap:wrap;gap:10px 18px;margin-bottom:18px;padding-bottom:16px;border-bottom:1px dashed #2c2620}
+.badge-legend-item{display:flex;align-items:center;gap:7px;color:#8a7f6e;font-family:'Courier New',monospace;font-size:.68rem;letter-spacing:.5px}
+
+/* --- Chart cards --- */
+.charts-row{display:grid;grid-template-columns:1.4fr 1fr;gap:24px}
+.chart-wrap{position:relative;height:280px}
+@media(max-width:800px){
+.charts-row{grid-template-columns:1fr}
+}
+
+@media(max-width:700px){
+.podium{gap:8px}
+.podium-item{width:30%}
+.podium-icon{width:55px;height:55px;font-size:1rem}
+.podium-item.first .podium-icon{width:65px;height:65px;font-size:1.2rem}
+.podium-name{font-size:.7rem}
+}
 </style>
 
 <div class="page-hdr">
 <div class="page-title">Investigator Leaderboard</div>
 <div class="page-sub">Ranked record of case-solving performance.</div>
 </div>
+
 <div class="leaderboard-card">
+
 {% if leaderboard %}
+
 {% if leaderboard|length >= 3 %}
+
 <div class="podium">
+
 <div class="podium-item second">
 <div class="podium-rank">2nd Place</div>
 <div class="podium-icon">2</div>
-<div class="podium-name">Case #{{ leaderboard.1.case_id }}</div>
-<div class="podium-score">{% if leaderboard.1.score >= 0 %}+{{ leaderboard.1.score }}{% else %}{{ leaderboard.1.score }}{% endif %}</div>
-<div class="podium-cases">{{ leaderboard.1.title }}</div>
+<div class="podium-name">
+{{ leaderboard.1.investigator }}
 </div>
+<div class="podium-score">
++{{ leaderboard.1.total_score }}
+</div>
+<div class="podium-cases">
+{{ leaderboard.1.cases_solved }} Cases Solved
+</div>
+<div class="podium-badge-wrap">
+{% if leaderboard.1.cases_solved >= 50 %}<span class="rank-badge tier-master" title="Master Sleuth — 50+ cases solved">MASTER SLEUTH</span>
+{% elif leaderboard.1.cases_solved >= 30 %}<span class="rank-badge tier-senior" title="Senior Detective — 30+ cases solved">SENIOR DET.</span>
+{% elif leaderboard.1.cases_solved >= 15 %}<span class="rank-badge tier-detective" title="Detective — 15+ cases solved">DETECTIVE</span>
+{% elif leaderboard.1.cases_solved >= 5 %}<span class="rank-badge tier-agent" title="Field Agent — 5+ cases solved">FIELD AGENT</span>
+{% else %}<span class="rank-badge tier-rookie" title="Rookie — building their case file">ROOKIE</span>
+{% endif %}
+</div>
+</div>
+
 <div class="podium-item first">
 <div class="podium-rank">1st Place</div>
 <div class="podium-icon">1</div>
-<div class="podium-name">Case #{{ leaderboard.0.case_id }}</div>
-<div class="podium-score">{% if leaderboard.0.score >= 0 %}+{{ leaderboard.0.score }}{% else %}{{ leaderboard.0.score }}{% endif %}</div>
-<div class="podium-cases">{{ leaderboard.0.title }}</div>
+<div class="podium-name">
+{{ leaderboard.0.investigator }}
 </div>
+<div class="podium-score">
++{{ leaderboard.0.total_score }}
+</div>
+<div class="podium-cases">
+{{ leaderboard.0.cases_solved }} Cases Solved
+</div>
+<div class="podium-badge-wrap">
+{% if leaderboard.0.cases_solved >= 50 %}<span class="rank-badge tier-master" title="Master Sleuth — 50+ cases solved">MASTER SLEUTH</span>
+{% elif leaderboard.0.cases_solved >= 30 %}<span class="rank-badge tier-senior" title="Senior Detective — 30+ cases solved">SENIOR DET.</span>
+{% elif leaderboard.0.cases_solved >= 15 %}<span class="rank-badge tier-detective" title="Detective — 15+ cases solved">DETECTIVE</span>
+{% elif leaderboard.0.cases_solved >= 5 %}<span class="rank-badge tier-agent" title="Field Agent — 5+ cases solved">FIELD AGENT</span>
+{% else %}<span class="rank-badge tier-rookie" title="Rookie — building their case file">ROOKIE</span>
+{% endif %}
+</div>
+</div>
+
 <div class="podium-item third">
 <div class="podium-rank">3rd Place</div>
 <div class="podium-icon">3</div>
-<div class="podium-name">Case #{{ leaderboard.2.case_id }}</div>
-<div class="podium-score">{% if leaderboard.2.score >= 0 %}+{{ leaderboard.2.score }}{% else %}{{ leaderboard.2.score }}{% endif %}</div>
-<div class="podium-cases">{{ leaderboard.2.title }}</div>
+<div class="podium-name">
+{{ leaderboard.2.investigator }}
 </div>
+<div class="podium-score">
++{{ leaderboard.2.total_score }}
+</div>
+<div class="podium-cases">
+{{ leaderboard.2.cases_solved }} Cases Solved
+</div>
+<div class="podium-badge-wrap">
+{% if leaderboard.2.cases_solved >= 50 %}<span class="rank-badge tier-master" title="Master Sleuth — 50+ cases solved">MASTER SLEUTH</span>
+{% elif leaderboard.2.cases_solved >= 30 %}<span class="rank-badge tier-senior" title="Senior Detective — 30+ cases solved">SENIOR DET.</span>
+{% elif leaderboard.2.cases_solved >= 15 %}<span class="rank-badge tier-detective" title="Detective — 15+ cases solved">DETECTIVE</span>
+{% elif leaderboard.2.cases_solved >= 5 %}<span class="rank-badge tier-agent" title="Field Agent — 5+ cases solved">FIELD AGENT</span>
+{% else %}<span class="rank-badge tier-rookie" title="Rookie — building their case file">ROOKIE</span>
+{% endif %}
+</div>
+</div>
+
 </div>
 {% endif %}
+
+<div class="badge-legend">
+<div class="badge-legend-item"><span class="rank-badge tier-rookie">R</span> Rookie (0–4 cases)</div>
+<div class="badge-legend-item"><span class="rank-badge tier-agent">FA</span> Field Agent (5–14)</div>
+<div class="badge-legend-item"><span class="rank-badge tier-detective">DET</span> Detective (15–29)</div>
+<div class="badge-legend-item"><span class="rank-badge tier-senior">SD</span> Senior Detective (30–49)</div>
+<div class="badge-legend-item"><span class="rank-badge tier-master">MS</span> Master Sleuth (50+)</div>
+</div>
+
 <table class="leaderboard-table">
 <thead>
 <tr>
 <th>Rank</th>
-<th>Case</th>
 <th>Investigator</th>
-<th>Outcome</th>
-<th>Accuracy</th>
-<th>Score</th>
-<th>Date</th>
+<th>Username</th>
+<th>Rank Level</th>
+<th>Cases Solved</th>
+<th>Total Score</th>
 </tr>
 </thead>
+
 <tbody>
+
 {% for entry in leaderboard %}
+
 <tr>
-<td class="rank {% if forloop.counter <= 3 %}top{% endif %}">#{{ forloop.counter }}</td>
-<td><div class="case-title">{{ entry.title }}</div><div class="case-number">{{ entry.case_id }}</div></td>
-<td>{{ entry.investigator }}</td>
-<td>
-{% if entry.outcome == "correct" %}
-<span class="status status-correct">Correct</span>
-{% elif entry.outcome == "incorrect" %}
-<span class="status status-incorrect">Incorrect</span>
-{% else %}
-<span class="status status-pending">Pending</span>
-{% endif %}
+
+<td class="rank {% if forloop.counter <= 3 %}top{% endif %}">
+#{{ forloop.counter }}
 </td>
-<td class="accuracy">{{ entry.accuracy }}%</td>
+
 <td>
-{% if entry.score >= 0 %}
-<span class="score-positive">+{{ entry.score }}</span>
-{% else %}
-<span class="score-negative">{{ entry.score }}</span>
-{% endif %}
-</td>
-<td>{{ entry.date_solved }}</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
-{% else %}
-<div class="empty-state">— NO INVESTIGATION RECORDS YET —<br><br>Solve a case to appear on the leaderboard.</div>
+<div class="investigator-cell">
+<span class="investigator-name">{{ entry.investigator }}</span>
+{% if entry.cases_solved >= 50 %}<span class="rank-badge tier-master" title="Master Sleuth — 50+ cases solved">MS</span>
+{% elif entry.cases_solved >= 30 %}<span class="rank-badge tier-senior" title="Senior Detective — 30+ cases solved">SD</span>
+{% elif entry.cases_solved >= 15 %}<span class="rank-badge tier-detective" title="Detective — 15+ cases solved">DET</span>
+{% elif entry.cases_solved >= 5 %}<span class="rank-badge tier-agent" title="Field Agent — 5+ cases solved">FA</span>
+{% else %}<span class="rank-badge tier-rookie" title="Rookie — building their case file">R</span>
 {% endif %}
 </div>
+</td>
+
+<td>
+<div class="username">
+@{{ entry.username }}
+</div>
+</td>
+
+<td>
+<div class="rank-name">
+{{ entry.rank }}
+</div>
+</td>
+
+<td class="cases-solved">
+{{ entry.cases_solved }}
+</td>
+
+<td>
+<span class="score-positive">
++{{ entry.total_score }}
+</span>
+</td>
+
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
+
+{% else %}
+
+<div class="empty-state">
+— NO INVESTIGATORS ON THE LEADERBOARD YET —
+<br><br>
+Solve a case correctly to appear on the leaderboard.
+</div>
+
+{% endif %}
+
+</div>
+
+{% if leaderboard %}
+<div class="charts-row">
+
+<div class="leaderboard-card">
+<div class="card-hdr">
+<span class="card-title">Score Board — Top 10</span>
+<span class="card-note">By total score</span>
+</div>
+<div class="chart-wrap">
+<canvas id="scoreChart"></canvas>
+</div>
+</div>
+
+<div class="leaderboard-card">
+<div class="card-hdr">
+<span class="card-title">Tier Distribution</span>
+<span class="card-note">All investigators</span>
+</div>
+<div class="chart-wrap">
+<canvas id="tierChart"></canvas>
+</div>
+</div>
+
+</div>
+
+<script id="leaderboard-chart-data" type="application/json">
+[
+{% for entry in leaderboard %}
+{"investigator": "{{ entry.investigator|escapejs }}", "cases_solved": {{ entry.cases_solved }}, "total_score": {{ entry.total_score }}}{% if not forloop.last %},{% endif %}
+{% endfor %}
+]
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script>
+(function () {
+  function renderCharts() {
+    if (typeof Chart === 'undefined') { return; }
+
+    var raw = JSON.parse(document.getElementById('leaderboard-chart-data').textContent);
+
+    var TIER_COLORS = {
+      rookie:   '#8a7f6e',
+      agent:    '#7d8fd6',
+      detective:'#6fbf8d',
+      senior:   '#c7c7c7',
+      master:   '#e0a940'
+    };
+
+    function tierOf(cases) {
+      if (cases >= 50) return 'master';
+      if (cases >= 30) return 'senior';
+      if (cases >= 15) return 'detective';
+      if (cases >= 5)  return 'agent';
+      return 'rookie';
+    }
+
+    Chart.defaults.font.family = "'Courier New', monospace";
+    Chart.defaults.color = '#8a7f6e';
+
+    // --- Score Board (top 10, horizontal bars) ---
+    var top10 = raw.slice(0, 10);
+    var scoreCtx = document.getElementById('scoreChart');
+    if (scoreCtx) {
+      new Chart(scoreCtx, {
+        type: 'bar',
+        data: {
+          labels: top10.map(function (e) { return e.investigator; }),
+          datasets: [{
+            data: top10.map(function (e) { return e.total_score; }),
+            backgroundColor: top10.map(function (e) { return TIER_COLORS[tierOf(e.cases_solved)]; }),
+            borderRadius: 2,
+            barThickness: 14
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#211d18',
+              borderColor: '#3a332a',
+              borderWidth: 1,
+              titleFont: { family: "'Courier New', monospace" },
+              bodyFont: { family: "'Courier New', monospace" },
+              callbacks: {
+                label: function (ctx) { return '+' + ctx.parsed.x + ' pts'; }
+              }
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(255,255,255,.05)' },
+              ticks: { color: '#8a7f6e' }
+            },
+            y: {
+              grid: { display: false },
+              ticks: { color: '#d8d0c0' }
+            }
+          }
+        }
+      });
+    }
+
+    // --- Tier Distribution (donut) ---
+    var counts = { rookie: 0, agent: 0, detective: 0, senior: 0, master: 0 };
+    raw.forEach(function (e) { counts[tierOf(e.cases_solved)]++; });
+
+    var labelMap = {
+      rookie: 'Rookie',
+      agent: 'Field Agent',
+      detective: 'Detective',
+      senior: 'Senior Detective',
+      master: 'Master Sleuth'
+    };
+    var order = ['rookie', 'agent', 'detective', 'senior', 'master'];
+
+    var tierCtx = document.getElementById('tierChart');
+    if (tierCtx) {
+      new Chart(tierCtx, {
+        type: 'doughnut',
+        data: {
+          labels: order.map(function (k) { return labelMap[k]; }),
+          datasets: [{
+            data: order.map(function (k) { return counts[k]; }),
+            backgroundColor: order.map(function (k) { return TIER_COLORS[k]; }),
+            borderColor: '#14120f',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '62%',
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: { color: '#bfae93', boxWidth: 12, padding: 12 }
+            },
+            tooltip: {
+              backgroundColor: '#211d18',
+              borderColor: '#3a332a',
+              borderWidth: 1
+            }
+          }
+        }
+      });
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderCharts);
+  } else {
+    renderCharts();
+  }
+})();
+</script>
+{% endif %}
+
 {% endblock %}

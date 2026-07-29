@@ -269,44 +269,126 @@
 const CASE_ID = {{ case.case_id }};
 const SUB_KEY = 'submission_id_' + CASE_ID;
 
-function getSubmissionId() { return sessionStorage.getItem(SUB_KEY); }
-function setSubmissionId(id) { sessionStorage.setItem(SUB_KEY, id); }
+function getSubmissionId() {
+  return sessionStorage.getItem(SUB_KEY);
+}
+
+function setSubmissionId(id) {
+  if (id) {
+    sessionStorage.setItem(SUB_KEY, id);
+  }
+}
+
+async function getUserId() {
+  if (!window.supabaseClient) {
+    console.error('Supabase client not initialized');
+    return null;
+  }
+
+  const { data, error } = await window.supabaseClient.auth.getUser();
+
+  if (error || !data.user) {
+    console.error('No authenticated user found', error);
+    return null;
+  }
+
+  return data.user.id;
+}
 
 async function accuseSuspect(suspectId, btn) {
-  const resp = await fetch(`/case/${CASE_ID}/suspects/${suspectId}/accuse/`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ submission_id: getSubmissionId() })
-  });
-  const data = await resp.json();
-  setSubmissionId(data.submission_id);
+  try {
+    const userId = await getUserId();
 
-  document.querySelectorAll('.btn-add').forEach(function (b) {
-    b.textContent = '+ Accuse';
-    b.style.color = '#ff4d4d';
-    b.style.borderColor = '#ff0000';
-    b.style.boxShadow = '0 0 8px rgba(255,0,0,0.4)';
-  });
-  btn.textContent = '✓ Accused';
-  btn.style.color = '#777';
-  btn.style.borderColor = '#444';
-  btn.style.boxShadow = 'none';
+    if (!userId) {
+      alert('Please log in before accusing a suspect.');
+      return;
+    }
+
+    const resp = await fetch(
+      `/case/${CASE_ID}/suspects/${suspectId}/accuse/`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-ID': userId
+        },
+        body: JSON.stringify({
+          submission_id: getSubmissionId(),
+          user_id: userId
+        })
+      }
+    );
+
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      console.error(data);
+      alert(data.error || 'Unable to accuse suspect.');
+      return;
+    }
+
+    setSubmissionId(data.submission_id);
+
+    document.querySelectorAll('.btn-add').forEach(function (b) {
+      b.textContent = '+ Accuse';
+      b.style.color = '#ff4d4d';
+      b.style.borderColor = '#ff0000';
+      b.style.boxShadow = '0 0 8px rgba(255,0,0,0.4)';
+    });
+
+    btn.textContent = '✓ Accused';
+    btn.style.color = '#777';
+    btn.style.borderColor = '#444';
+    btn.style.boxShadow = 'none';
+
+  } catch (error) {
+    console.error('Accuse error:', error);
+    alert('Something went wrong while accusing the suspect.');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', async function () {
   const subId = getSubmissionId();
-  if (!subId) return;
-  const resp = await fetch(`/case/${CASE_ID}/submission-state/?submission_id=${subId}`);
+
+  if (!subId) {
+    return;
+  }
+
+  const userId = await getUserId();
+
+  if (!userId) {
+    return;
+  }
+
+  const resp = await fetch(
+    `/case/${CASE_ID}/submission-state/?submission_id=${encodeURIComponent(subId)}`,
+    {
+      headers: {
+        'X-User-ID': userId
+      }
+    }
+  );
+
   const data = await resp.json();
+
+  if (!resp.ok) {
+    console.error(data);
+    return;
+  }
+
   if (data.accused_suspect_id) {
-    const btn = document.getElementById('accuse-' + data.accused_suspect_id);
-    if (btn) { 
-      btn.textContent = '✓ Accused'; 
-      btn.style.color = '#777'; 
+    const btn = document.getElementById(
+      'accuse-' + data.accused_suspect_id
+    );
+
+    if (btn) {
+      btn.textContent = '✓ Accused';
+      btn.style.color = '#777';
       btn.style.borderColor = '#444';
       btn.style.boxShadow = 'none';
     }
   }
 });
 </script>
+
 {% endblock %}

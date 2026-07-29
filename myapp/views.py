@@ -145,18 +145,39 @@ def submission_state(request, case_id):
 @csrf_exempt
 def save_narrative(request, case_id):
     if request.method != 'POST':
-        return JsonResponse({'error': 'POST required'}, status=405)
+        return JsonResponse({
+            'error': 'POST required'
+        }, status=405)
+
     try:
         body = json.loads(request.body or '{}')
     except json.JSONDecodeError:
-        return JsonResponse({'error': 'Invalid JSON'}, status=400)
-    submission = _get_or_create_submission(
-        case_id,
-        body.get('submission_id')
-    )
+        return JsonResponse({
+            'error': 'Invalid JSON'
+        }, status=400)
+
+    submission_id = body.get('submission_id')
+
+    if not submission_id:
+        return JsonResponse({
+            'error': 'submission_id is required'
+        }, status=400)
+
+    submission = CaseSubmission.objects.filter(
+        submission_id=submission_id,
+        case_id=case_id
+    ).first()
+
+    if not submission:
+        return JsonResponse({
+            'error': 'Submission not found'
+        }, status=404)
+
     submission.narrative = body.get('narrative', '')
     submission.save(update_fields=['narrative'])
+
     return JsonResponse({
+        'success': True,
         'submission_id': submission.submission_id
     })
 def login(request):

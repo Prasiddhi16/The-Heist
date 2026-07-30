@@ -1,4 +1,4 @@
-```html
+
 {% extends 'index.html' %}
 {% load static %}
 
@@ -437,14 +437,17 @@
     line-height:1.5;
 }
 
+/* ================================= */
+/* VERDICT RESULT BASE STYLING */
+/* ================================= */
+
 .verdict-result{
-    margin-top:24px;
     padding:30px;
     border-radius:14px;
 }
 
 .correct-result{
-    border-color:#15803d;
+    border:1px solid #15803d;
     background:linear-gradient(
         135deg,
         rgba(21,128,61,.15),
@@ -453,7 +456,7 @@
 }
 
 .incorrect-result{
-    border-color:#b8860b;
+    border:1px solid #b8860b;
     background:linear-gradient(
         135deg,
         rgba(184,134,11,.12),
@@ -564,7 +567,174 @@
     border:1px solid #6b5313;
 }
 
+/* ================================= */
+/* VERDICT POPUP OVERLAY */
+/* ================================= */
+
+.verdict-overlay{
+    position:fixed;
+    inset:0;
+    z-index:99999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:25px;
+    background:rgba(0,0,0,.68);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    animation:overlayFadeIn .25s ease forwards;
+}
+
+.verdict-modal{
+    position:relative;
+    width:100%;
+    max-width:650px;
+    max-height:90vh;
+    overflow-y:auto;
+    border-radius:16px;
+    background:#1f2937;
+    animation:modalPopIn .3s ease forwards;
+}
+
+.verdict-modal::-webkit-scrollbar{
+    width:6px;
+}
+
+.verdict-modal::-webkit-scrollbar-track{
+    background:#111827;
+    border-radius:10px;
+}
+
+.verdict-modal::-webkit-scrollbar-thumb{
+    background:#4b5563;
+    border-radius:10px;
+}
+
+.correct-modal{
+    border:1px solid #15803d;
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.75),
+        0 0 40px rgba(21,128,61,.18);
+}
+
+.incorrect-modal{
+    border:1px solid #b8860b;
+    box-shadow:
+        0 25px 80px rgba(0,0,0,.75),
+        0 0 40px rgba(184,134,11,.18);
+}
+
+.verdict-close{
+    position:absolute;
+    top:14px;
+    right:14px;
+    z-index:5;
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border:1px solid #4b5563;
+    border-radius:50%;
+    background:rgba(17,24,39,.9);
+    color:#9ca3af;
+    font-size:24px;
+    line-height:1;
+    cursor:pointer;
+    transition:
+        background .2s ease,
+        color .2s ease,
+        border-color .2s ease,
+        transform .2s ease;
+}
+
+.verdict-close:hover{
+    background:#374151;
+    color:#f9fafb;
+    border-color:#6b7280;
+    transform:rotate(90deg);
+}
+
+.verdict-modal .verdict-result{
+    margin:0;
+    padding:30px;
+    border:none;
+    border-radius:16px;
+    background:transparent;
+}
+
+.verdict-modal .result-header{
+    padding-right:45px;
+}
+
+.verdict-modal .result-icon{
+    animation:resultIconPop .5s ease .15s both;
+}
+
+.verdict-modal .score-box{
+    animation:resultContentFade .4s ease .2s both;
+}
+
+.verdict-modal .review-note{
+    animation:resultContentFade .4s ease .3s both;
+}
+
+.verdict-modal .result-message{
+    animation:resultContentFade .4s ease .4s both;
+}
+
+@keyframes overlayFadeIn{
+    from{
+        opacity:0;
+    }
+
+    to{
+        opacity:1;
+    }
+}
+
+@keyframes modalPopIn{
+    from{
+        opacity:0;
+        transform:scale(.90) translateY(20px);
+    }
+
+    to{
+        opacity:1;
+        transform:scale(1) translateY(0);
+    }
+}
+
+@keyframes resultIconPop{
+    from{
+        opacity:0;
+        transform:scale(.5);
+    }
+
+    to{
+        opacity:1;
+        transform:scale(1);
+    }
+}
+
+@keyframes resultContentFade{
+    from{
+        opacity:0;
+        transform:translateY(8px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* ================================= */
+/* RESPONSIVE */
+/* ================================= */
+
 @media(max-width:850px){
+
     .analysis-grid{
         grid-template-columns:1fr;
     }
@@ -575,6 +745,7 @@
 }
 
 @media(max-width:550px){
+
     .case-summary-header{
         flex-direction:column;
     }
@@ -594,13 +765,69 @@
 
     .result-header{
         align-items:flex-start;
+        gap:14px;
+    }
+
+    .result-icon{
+        width:52px;
+        height:52px;
+        font-size:25px;
+    }
+
+    .result-header h2{
+        font-size:21px;
     }
 
     .score-box{
         gap:15px;
     }
+
+    .score-box strong{
+        font-size:22px;
+    }
+
+    .verdict-overlay{
+        padding:15px;
+    }
+
+    .verdict-modal{
+        max-height:92vh;
+    }
+
+    .verdict-modal .verdict-result{
+        padding:24px 20px;
+    }
+
+    .verdict-modal .result-header{
+        padding-right:35px;
+    }
+
+    .verdict-close{
+        top:10px;
+        right:10px;
+        width:34px;
+        height:34px;
+        font-size:21px;
+    }
 }
+
+
+@keyframes modalPopOut{
+from{
+opacity:1;
+transform:scale(1) translateY(0);
+}
+
+
+to{
+    opacity:0;
+    transform:scale(.92) translateY(15px);
+}
+
+}
+
 </style>
+
 
 <div class="analysis-page">
 <div class="analysis-container">
@@ -926,7 +1153,7 @@
         class="btn-solve"
         {% if not can_file_verdict %}disabled{% endif %}
     >
-        🔒 File Verdict
+         File Verdict
     </button>
 </form>
 
@@ -953,116 +1180,98 @@
 
 {% if verdict_done %}
 
-<section class="card verdict-result {% if verdict_correct %}correct-result{% else %}incorrect-result{% endif %}">
+<div class="verdict-overlay" id="verdictOverlay">
 
-    <div class="result-header">
+<div class="verdict-modal {% if verdict_correct %}correct-modal{% else %}incorrect-modal{% endif %}">
 
-        <div class="result-icon">
+    <button
+        type="button"
+        class="verdict-close"
+        id="closeVerdict"
+        aria-label="Close result"
+    >
+        ×
+    </button>
 
-            {% if verdict_correct %}
-                ✓
-            {% else %}
-                ✕
-            {% endif %}
+    <section class="verdict-result {% if verdict_correct %}correct-result{% else %}incorrect-result{% endif %}">
+
+        <div class="result-header">
+
+            <div class="result-icon">
+                {% if verdict_correct %}
+                    ✓
+                {% else %}
+                    ✕
+                {% endif %}
+            </div>
+
+            <div>
+                {% if verdict_correct %}
+
+                    <h2>Case Solved</h2>
+
+                    <p>
+                        Excellent investigation. You identified
+                        the correct solution.
+                    </p>
+
+                {% else %}
+
+                    <h2>Incorrect Deduction</h2>
+
+                    <p>
+                        Your investigation was partially correct,
+                        but the final deduction did not match
+                        the case solution.
+                    </p>
+
+                {% endif %}
+            </div>
 
         </div>
 
-        <div>
+        <div class="score-box">
+            <span>Final Score</span>
 
-            {% if verdict_correct %}
+            <strong>
+                {{ verdict_score }}/100
+            </strong>
+        </div>
 
-                <h2>Case Solved</h2>
+        <div class="review-note">
 
-                <p>
-                    Excellent investigation. You identified
-                    the correct solution.
-                </p>
+            <strong>
+                Investigation Feedback
+            </strong>
 
-            {% else %}
-
-                <h2>Incorrect Deduction</h2>
-
-                <p>
-                    Your investigation was partially correct,
-                    but the final deduction did not match
-                    the case solution.
-                </p>
-
-            {% endif %}
+            <p>
+                {{ verdict_notes }}
+            </p>
 
         </div>
 
-    </div>
+        {% if verdict_correct %}
 
-    <div class="score-box">
+            <div class="result-message success-message">
+                 You successfully solved this case.
+            </div>
 
-        <span>
-            Final Score
-        </span>
+        {% else %}
 
-        <strong>
-            {{ verdict_score }}/100
-        </strong>
+            <div class="result-message retry-message">
+                 Review the evidence and suspect information
+                to improve your deduction.
+            </div>
 
-    </div>
+        {% endif %}
 
-    <div class="review-note">
+    </section>
 
-        <strong>
-            Investigation Feedback
-        </strong>
+</div>
 
-        <p>
-            {{ verdict_notes }}
-        </p>
-
-    </div>
-
-    {% if verdict_correct %}
-
-        <div class="result-message success-message">
-            🏆 You successfully solved this case.
-        </div>
-
-    {% else %}
-
-        <div class="result-message retry-message">
-            🔍 Review the evidence and suspect information
-            to improve your deduction.
-        </div>
-
-    {% endif %}
-
-</section>
+</div>
 
 {% endif %}
-
-</div>
-</div>
-
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-    const ring = document.getElementById("readinessRing");
-
-    if(!ring){
-        return;
-    }
-
-    const percent = parseFloat(
-        ring.dataset.percent || 0
-    );
-
-    const radius = 72;
-    const circumference = 2 * Math.PI * radius;
-
-    ring.style.strokeDasharray = circumference;
-    ring.style.strokeDashoffset =
-        circumference -
-        (percent / 100) * circumference;
-});
-</script>
+<script> document.addEventListener("DOMContentLoaded", function(){ const ring = document.getElementById("readinessRing"); if(ring){ const percent = parseFloat( ring.dataset.percent || 0 ); const radius = 72; const circumference = 2 * Math.PI * radius; ring.style.strokeDasharray = circumference; ring.style.strokeDashoffset = circumference - (percent / 100) * circumference; } const overlay = document.getElementById("verdictOverlay"); const closeButton = document.getElementById("closeVerdict"); if(overlay && closeButton){ closeButton.addEventListener("click", function(){ overlay.style.animation = "overlayFadeOut .2s ease forwards"; const modal = overlay.querySelector(".verdict-modal"); if(modal){ modal.style.animation = "modalPopOut .2s ease forwards"; } setTimeout(function(){ overlay.remove(); document.body.style.overflow = ""; }, 200); }); overlay.addEventListener("click", function(event){ if(event.target === overlay){ closeButton.click(); } }); document.addEventListener("keydown", function(event){ if(event.key === "Escape"){ closeButton.click(); } }); document.body.style.overflow = "hidden"; } }); </script>
 
 {% endblock %}
-```
-
-

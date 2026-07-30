@@ -136,22 +136,26 @@
 
   .data-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .data-table th {
-    font-family: 'Creepster', cursive;
-    font-size: 1.1rem;
-    letter-spacing: 3px;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
-    color: #ff3333;
+    color: #ff5c5c;
     border-bottom: 2px solid #800000;
     padding: 14px;
     text-align: left;
     background: rgba(30, 0, 0, 0.9);
-    text-shadow: 0 0 5px rgba(255,0,0,0.5);
+    text-shadow: none;
   }
   .data-table td {
     padding: 16px 14px;
     border-bottom: 1px solid #3d0c0c;
-    color: #e6d3be;
-    font-family: 'Special Elite', serif;
+    color: #f5e9d8;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    letter-spacing: 0.2px;
+    text-shadow: none;
     vertical-align: top;
   }
   .data-table tr:hover td { 
@@ -159,41 +163,34 @@
     box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.3);
   }
 
-  /* Details column gets extra room and a cleaner, more legible treatment
-     since it tends to hold the longest text in the table */
+  /* Details column gets extra room since it tends to hold the longest text */
   .data-table th.col-details,
   .data-table td.col-details {
     width: 30%;
     min-width: 260px;
   }
   .data-table td.col-details {
-    font-family: 'Georgia', 'Times New Roman', serif;
-    font-size: 0.95rem;
-    line-height: 1.55;
-    color: #f5e9d8;
-    letter-spacing: 0.2px;
-    text-shadow: none;
     white-space: normal;
     word-break: break-word;
   }
 
   .evidence-id { 
-    font-family: 'Courier New', monospace; 
-    color: #ff3333; 
+    font-family: 'Georgia', 'Times New Roman', serif;
+    color: #ff5c5c; 
     font-weight: bold;
-    font-size: 0.9rem; 
-    text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+    font-size: 0.95rem; 
+    text-shadow: none;
   }
 
   .tag {
     display: inline-block;
     padding: 4px 10px;
     border-radius: 2px;
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     font-weight: bold;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
-    font-family: 'Courier New', monospace;
+    font-family: 'Georgia', 'Times New Roman', serif;
   }
   .tag-physical    { background: rgba(180, 0, 0, 0.4); color: #ff8080; border: 1px solid #cc0000; }
   .tag-digital     { background: rgba(0, 150, 180, 0.3); color: #80f0ff; border: 1px solid #0088a3; }
@@ -278,7 +275,7 @@
           </td>
           <td>
             <button class="btn-add" id="add-ev-{{ e.evidence_id }}"
-              style="padding:8px 14px; border-radius:2px; border:1px solid #ff0000; background:rgba(40,0,0,0.9); color:#ff6b6b; font-family:'Special Elite',monospace; font-size:0.8rem; text-transform:uppercase; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 8px rgba(255,0,0,0.4);"
+              style="padding:8px 14px; border-radius:2px; border:1px solid #ff0000; background:rgba(40,0,0,0.9); color:#ff6b6b; font-family:'Georgia','Times New Roman',serif; font-size:0.85rem; text-transform:uppercase; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 8px rgba(255,0,0,0.4);"
               onclick="addEvidence({{e.evidence_id }}, this)">
               + Add to Case
             </button>

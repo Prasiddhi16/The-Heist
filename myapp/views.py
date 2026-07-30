@@ -1399,6 +1399,8 @@ def leaderboard(request):
             .count()
         )
 
+        incorrect_cases = cases_solved - correct_cases
+
         accuracy = round(
             correct_cases
             / cases_solved
@@ -1414,6 +1416,8 @@ def leaderboard(request):
             "username": user.username,
             "rank": user.rank or "Rookie",
             "cases_solved": cases_solved,
+            "correct_cases": correct_cases,
+            "incorrect_cases": incorrect_cases,
             "total_score": total_score,
             "average_score": average_score,
             "accuracy": accuracy

@@ -255,34 +255,22 @@
 
   .btn-dash-action {
     display: inline-block;
-    padding: 6px 10px;
+    padding: 6px 12px;
     border-radius: 3px;
-    border: 1px solid var(--accent-red);
-    background: rgba(40,0,0,0.8);
-    color: #ff6b6b;
+    border: 1px solid var(--gold-accent);
+    background: rgba(196, 154, 69, 0.15);
+    color: var(--gold-accent);
     font-family: monospace;
     font-size: 0.75rem;
     text-transform: uppercase;
     text-decoration: none;
     transition: all 0.2s ease;
-    margin-right: 4px;
   }
 
   .btn-dash-action:hover {
-    background: var(--accent-red);
-    color: #fff;
-    box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
-  }
-
-  .btn-suspects-highlight {
-    border-color: var(--gold-accent);
-    background: rgba(196, 154, 69, 0.15);
-    color: var(--gold-accent);
-  }
-
-  .btn-suspects-highlight:hover {
     background: var(--gold-accent);
     color: #000;
+    box-shadow: 0 0 10px rgba(196, 154, 69, 0.5);
   }
 
   .btn-sm {
@@ -348,13 +336,13 @@
 
     <div class="stat-card">
       <div class="stat-top">
-        <div class="stat-label">Cases Solved</div>
-        <div class="stat-icon-wrap" style="background:rgba(76,175,80,0.15)">
-          <i class="fa-solid fa-check-double" style="color:#4caf50"></i>
+        <div class="stat-label">Case Attempts</div>
+        <div class="stat-icon-wrap" style="background:rgba(234,179,8,0.15)">
+          <i class="fa-solid fa-list-check" style="color:#eab308"></i>
         </div>
       </div>
-      <div class="stat-value" id="dash-solved" style="color:#4caf50">0</div>
-      <div class="stat-trend"><span class="trend-up">▲ Verified</span> Dossier Sync</div>
+      <div class="stat-value" id="dash-attempts" style="color:#eab308">0</div>
+      <div class="stat-trend">Submissions Made</div>
     </div>
 
     <div class="stat-card">
@@ -371,7 +359,7 @@
 
   <!-- Dashboard Split View -->
   <div class="dash-grid">
-    <!-- Active Cases & Timeline -->
+    <!-- Left Column: Active Cases & Timeline -->
     <div>
       <!-- Recent Cases Table -->
       <div class="card" style="margin-bottom: 20px;">
@@ -388,7 +376,7 @@
                 <th>Title</th>
                 <th>Location</th>
                 <th>Status</th>
-                <th>Actions</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody id="dash-cases-body">
@@ -438,7 +426,15 @@ document.addEventListener('DOMContentLoaded', async function () {
     return;
   }
 
-  //Retrieve Current Auth User & Profile Details
+  // Dynamic Rank Tier Calculation Logic (3 cases structure)
+  function calculateRank(score) {
+    if (score >= 600) return 'Master Mind';
+    if (score >= 300) return 'Senior Detective';
+    if (score >= 100) return 'Investigator';
+    return 'Rookie';
+  }
+
+  // Retrieve Current Auth User & Profile Details
   try {
     const { data: authData, error: authError } = await supabase.auth.getUser();
 
@@ -461,17 +457,24 @@ document.addEventListener('DOMContentLoaded', async function () {
       console.error('Profile fetch error:', profileError);
     } else if (profile) {
       const username = profile.username || 'Agent';
+      const userScore = profile.score || 0;
+      
+      // Calculate dynamic rank based on score or fall back to column
+      const calculatedRank = calculateRank(userScore);
+
       document.getElementById('dash-username').textContent = username;
       document.getElementById('stat-operative').textContent = username;
-      document.getElementById('dash-rank').textContent = profile.rank || 'Rookie';
-      document.getElementById('dash-solved').textContent = profile.cases_solved || 0;
-      document.getElementById('dash-score').textContent = profile.score || 0;
+      document.getElementById('dash-rank').textContent = profile.rank && profile.rank !== 'Rookie' ? profile.rank : calculatedRank;
+      
+      // Display attempts count using existing cases_solved tracking field
+      document.getElementById('dash-attempts').textContent = profile.cases_solved || 0;
+      document.getElementById('dash-score').textContent = userScore;
     }
   } catch (err) {
     console.error('Auth or Profile block failed:', err);
   }
 
-  // Populate Cases Table with Live Links to Evidence & Suspects
+  //Populate Cases Table with View Case Action
   try {
     const { data: cases, error: casesError } = await supabase
       .from('cases')
@@ -495,8 +498,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             <td>${c.location || 'Unknown'}</td>
             <td><span class="badge">${c.status || 'Active'}</span></td>
             <td>
-              <a href="/case/${c.case_id}/evidence/" class="btn-dash-action">Evidence</a>
-              <a href="/case/${c.case_id}/suspects/" class="btn-dash-action btn-suspects-highlight">Suspects</a>
+              <a href="/cases/${c.case_id}/" class="btn-dash-action">View Case</a>
             </td>
           </tr>
         `;
@@ -534,7 +536,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.error('Timeline block failed:', err);
   }
 
-  // Populate Most Wanted Suspects Card
+  //Populate Most Wanted Suspects Card
   try {
     const { data: suspectList, error: suspError } = await supabase
       .from('suspects')

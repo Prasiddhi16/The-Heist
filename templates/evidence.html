@@ -332,6 +332,7 @@ async function addEvidence(evidenceId, btn) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
+          'X-User-ID': userId
         },
         body: JSON.stringify({
           submission_id: getSubmissionId(),
@@ -381,7 +382,12 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 
   const resp = await fetch(
-    `/case/${CASE_ID}/submission-state/?submission_id=${encodeURIComponent(subId)}&user_id=${encodeURIComponent(userId)}`
+    `/case/${CASE_ID}/submission-state/?submission_id=${encodeURIComponent(subId)}`,
+    {
+      headers: {
+        'X-User-ID': userId
+      }
+    }
   );
 
   const data = await resp.json();

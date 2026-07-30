@@ -1,8 +1,20 @@
 {% extends 'index.html' %}
+{% load static %}
 {% block title %}Dashboard{% endblock %}
+
 {% block content %}
 
 <style>
+  :root {
+    --bg-dark: #121110;
+    --card-bg: #1c1a18;
+    --card-border: #2e2a25;
+    --accent-red: #b92b27;
+    --accent-red-hover: #d32f2f;
+    --text-primary: #f0ece1;
+    --text-muted: #8c857b;
+    --gold-accent: #c49a45;
+  }
   @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&family=Nosifer&display=swap');
 
   @keyframes pulseGlow {
@@ -10,347 +22,544 @@
     50% { box-shadow: inset 0 0 70px #300, 0 0 45px rgba(255, 0, 0, 0.8); }
   }
 
-  .murder-wrapper {
-    position: relative;
-    padding: 60px 65px;
-    background: #040202;
-    background-image: 
-      radial-gradient(ellipse 35px 50px at 85% 22%, transparent 0%, rgba(180,0,0,0.5) 5%, transparent 10%, rgba(180,0,0,0.6) 15%, transparent 20%),
-      radial-gradient(ellipse 30px 45px at 15% 78%, transparent 0%, rgba(160,0,0,0.5) 4%, transparent 8%, rgba(160,0,0,0.6) 12%, transparent 16%),
-      radial-gradient(circle at 50% 50%, rgba(120, 0, 0, 0.3) 0%, transparent 50%),
-      repeating-linear-gradient(0deg, rgba(0,0,0,0.4) 0px, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px);
-    border-radius: 4px;
-    animation: flickering 6.5s infinite, pulseGlow 3s infinite alternate;
-    overflow: hidden;
-  }
-
-  .murder-wrapper::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 40px;
-    background-color: #0b0706;
-    background-image: radial-gradient(#261715 35%, #000 45%, transparent 46%);
-    background-size: 28px 20px;
-    background-position: 8px center;
-    border-bottom: 3px solid #800000;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.9);
-    z-index: 10;
-  }
-
-  .murder-wrapper::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 40px;
-    background-color: #0b0706;
-    background-image: radial-gradient(#261715 35%, #000 45%, transparent 46%);
-    background-size: 28px 20px;
-    background-position: 8px center;
-    border-top: 3px solid #800000;
-    box-shadow: 0 -5px 15px rgba(0,0,0,0.9);
-    z-index: 10;
-  }
-
-  .reel-side-left,
-  .reel-side-right {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 40px;
-    background-color: #0b0706;
-    background-image: radial-gradient(#261715 35%, #000 45%, transparent 46%);
-    background-size: 20px 28px;
-    background-position: center 8px;
-    z-index: 11;
-  }
-  .reel-side-left {
-    left: 0;
-    border-right: 3px solid #800000;
-    box-shadow: 5px 0 15px rgba(0,0,0,0.9);
-  }
-  .reel-side-right {
-    right: 0;
-    border-left: 3px solid #800000;
-    box-shadow: -5px 0 15px rgba(0,0,0,0.9);
-  }
-
-  .blood-drips {
-    position: absolute;
-    top: 40px;
-    left: 40px;
-    right: 40px;
-    height: 12px;
-    background: linear-gradient(180deg, #800000 0%, transparent 100%);
-    opacity: 0.7;
-    z-index: 9;
-  }
-
-  .page-hdr { 
-    position: relative;
-    border-left: 5px solid #ff0000; 
-    padding: 15px 0 15px 20px; 
-    margin-bottom: 30px; 
-    background: linear-gradient(90deg, rgba(180,0,0,0.35) 0%, transparent 100%);
-    box-shadow: inset 10px 0 20px rgba(255, 0, 0, 0.2);
+  /* Page Header Styles */
+  .page-hdr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-left: 12px;
+    border-left: 4px solid var(--accent-red);
+    background: linear-gradient(90deg, rgba(185,43,39,0.15) 0%, transparent 100%);
+    padding: 12px 15px;
   }
 
   .page-title {
-    font-family: 'Nosifer', cursive;
-    font-size: 2.2rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.8rem;
+    font-weight: 700;
     letter-spacing: 2px;
-    color: black;
-    text-shadow: 0 0 12px rgba(255, 0, 0, 0.9), 3px 3px 6px #000;
+    text-transform: uppercase;
+    color: var(--text-primary);
     margin: 0;
-    line-height: 1.2;
   }
 
-  .page-sub { 
-    color: #cca485; 
-    font-family: 'Special Elite', cursive; 
-    font-style: italic; 
-    font-size: 1rem;
-    margin-top: 8px;
-    text-shadow: 0 0 4px #000;
+  .page-sub {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-style: italic;
   }
 
-  .stats-grid {
+  /* Main Wrapper Decorative FX */
+  .murder-wrapper {
+    position: relative;
+    padding: 30px;
+    background: #040202;
+    background-image: 
+      radial-gradient(ellipse 35px 50px at 85% 22%, transparent 0%, rgba(180,0,0,0.3) 5%, transparent 10%, rgba(180,0,0,0.4) 15%, transparent 20%),
+      radial-gradient(ellipse 30px 45px at 15% 78%, transparent 0%, rgba(160,0,0,0.3) 4%, transparent 8%, rgba(160,0,0,0.4) 12%, transparent 16%),
+      radial-gradient(circle at 50% 50%, rgba(120, 0, 0, 0.2) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.4) 0px, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px);
+    border-radius: 4px;
+    animation: pulseGlow 4s infinite alternate;
+    margin-bottom: 20px;
+  }
+
+  /* Stats Grid & Cards */
+  .stat-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
-    margin-bottom: 35px;
-    z-index: 8;
-    position: relative;
+    gap: 16px;
+    margin-bottom: 24px;
   }
 
   .stat-card {
-    background: #080404;
-    border: 2px solid #660000;
-    padding: 20px;
-    border-radius: 4px;
-    box-shadow: 0 0 20px rgba(139, 0, 0, 0.4), inset 0 0 20px #000;
-    text-align: center;
+    background: radial-gradient(circle at top left, #24201c, var(--card-bg));
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    padding: 18px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--gold-accent);
+  }
+
+  .stat-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
   }
 
   .stat-label {
-    font-family: 'Georgia', 'Times New Roman', serif;
-    font-size: 0.85rem;
-    color: #cca485;
-    letter-spacing: 2px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
     text-transform: uppercase;
+    letter-spacing: 1px;
   }
 
-  .stat-val {
-    font-family: 'Nosifer', cursive;
-    font-size: 1.6rem;
-    color: #ff3333;
-    margin-top: 10px;
-    text-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+  .stat-icon-wrap {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
+  .stat-value {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: var(--text-primary);
+  }
+
+  .stat-trend {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .trend-up {
+    color: #4caf50;
+    font-weight: bold;
+  }
+
+  /* Main Dashboard Grid */
+  .dash-grid {
+    display: grid;
+    grid-template-columns: 2.2fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 992px) {
+    .dash-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Cards & Tables */
   .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     position: relative;
-    background: #080404;
-    background-image: 
-      radial-gradient(ellipse 38px 55px at 10% 88%, transparent 0%, rgba(200,0,0,0.25) 5%, transparent 10%, rgba(200,0,0,0.3) 15%, transparent 20%),
-      radial-gradient(ellipse at bottom left, rgba(180,0,0,0.25) 0%, transparent 70%),
-      radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 100% 100%, 100% 100%, 3px 3px;
-    border: 2px solid #660000;
-    box-shadow: 0 0 30px rgba(139, 0, 0, 0.5), inset 0 0 30px #000;
-    z-index: 8;
     overflow-x: auto;
   }
 
-  .data-table { width: 100%; border-collapse: collapse; }
-  .data-table th {
-    font-family: 'Georgia', 'Times New Roman', serif;
-    font-size: 0.95rem;
-    letter-spacing: 3px;
+  .section-hdr {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--card-border);
+  }
+
+  .section-title {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
     text-transform: uppercase;
-    color: #ff3333;
-    border-bottom: 2px solid #800000;
-    padding: 14px;
+    letter-spacing: 1px;
+  }
+
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+  }
+
+  .data-table th {
+    font-family: monospace;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gold-accent);
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--card-border);
     text-align: left;
-    background: rgba(30, 0, 0, 0.9);
-    text-shadow: 0 0 5px rgba(255,0,0,0.5);
+    background: rgba(0, 0, 0, 0.2);
   }
+
   .data-table td {
-    padding: 16px 14px;
-    border-bottom: 1px solid #3d0c0c;
-    color: #e6d3be;
-    font-family: 'Georgia', 'Times New Roman', serif;
-    font-size: 0.95rem;
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    vertical-align: middle;
   }
-  .data-table tr:hover td { 
-    background: rgba(220, 0, 0, 0.25); 
-    box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.3);
+
+  .data-table tr:hover td {
+    background: rgba(185, 43, 39, 0.1);
+  }
+
+  /* Badges & Action Buttons */
+  .badge {
+    background: rgba(196, 154, 69, 0.1);
+    color: var(--gold-accent);
+    border: 1px solid var(--gold-accent);
+    font-family: monospace;
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-primary {
+    background-color: var(--accent-red);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover {
+    background-color: var(--accent-red-hover);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--card-border);
+  }
+
+  .btn-ghost:hover {
+    color: var(--text-primary);
+    border-color: var(--gold-accent);
   }
 
   .btn-dash-action {
     display: inline-block;
-    padding: 8px 12px;
-    border-radius: 2px;
-    border: 1px solid #ff0000;
-    background: rgba(40,0,0,0.9);
+    padding: 6px 10px;
+    border-radius: 3px;
+    border: 1px solid var(--accent-red);
+    background: rgba(40,0,0,0.8);
     color: #ff6b6b;
-    font-family: 'Georgia', 'Times New Roman', serif;
-    font-size: 0.85rem;
+    font-family: monospace;
+    font-size: 0.75rem;
     text-transform: uppercase;
     text-decoration: none;
     transition: all 0.2s ease;
-    box-shadow: 0 0 8px rgba(255,0,0,0.4);
-    margin-right: 6px;
+    margin-right: 4px;
   }
+
   .btn-dash-action:hover {
-    background: #e60000;
+    background: var(--accent-red);
     color: #fff;
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.9);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.6);
   }
 
   .btn-suspects-highlight {
-    border-color: #ff3333;
-    background: linear-gradient(180deg, #800000 0%, #300000 100%);
-    color: #ffffff;
-  }
-  .btn-suspects-highlight:hover {
-    background: #b30000;
+    border-color: var(--gold-accent);
+    background: rgba(196, 154, 69, 0.15);
+    color: var(--gold-accent);
   }
 
-  .stamp-empty {
-    text-align: center;
-    padding: 40px;
-    color: #ff0000;
-    font-family: 'Nosifer', cursive;
-    font-size: 1.1rem;
-    letter-spacing: 2px;
-    text-shadow: 0 0 10px rgba(255,0,0,0.8);
+  .btn-suspects-highlight:hover {
+    background: var(--gold-accent);
+    color: #000;
+  }
+
+  .btn-sm {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+  }
+
+  /* Activity Feed & Wanted Section */
+  .timeline-item {
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--card-border);
+  }
+
+  .timeline-item:last-child {
+    border-bottom: none;
+  }
+
+  .wanted-card {
+    background: radial-gradient(circle at top left, #24201c, var(--card-bg));
+    border-left: 3px solid var(--accent-red);
+    border-top: 1px solid var(--card-border);
+    border-right: 1px solid var(--card-border);
+    border-bottom: 1px solid var(--card-border);
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 4px;
   }
 </style>
 
+<!-- Header Console -->
+<div class="page-hdr">
+  <div>
+    <h1 class="page-title">Welcome, <span id="dash-username">Detective</span></h1>
+    <div class="page-sub">Active Case Console & Intelligence Dossier</div>
+  </div>
+  <a href="{% url 'cases' %}" class="btn btn-primary">Browse All Cases</a>
+</div>
+
 <div class="murder-wrapper">
-  <div class="reel-side-left"></div>
-  <div class="reel-side-right"></div>
-  <div class="blood-drips"></div>
+  <!-- Stats Grid -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Operative</div>
+        <div class="stat-icon-wrap" style="background:rgba(255,255,255,0.05)">
+          <i class="fa-solid fa-user-ninja" style="color:var(--text-muted)"></i>
+        </div>
+      </div>
+      <div class="stat-value" id="stat-operative" style="font-size: 1.3rem;">...</div>
+      <div class="stat-trend"><span class="trend-up">● Online</span> Active Session</div>
+    </div>
 
-  <div class="page-hdr">
-    <h1 class="page-title">INVESTIGATOR DOSSIER</h1>
-    <div class="page-sub">Active Case Console & Performance Tracker</div>
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Assigned Rank</div>
+        <div class="stat-icon-wrap" style="background:rgba(139,92,246,.15)">
+          <i class="fa-solid fa-shield-halved" style="color:#8B5CF6"></i>
+        </div>
+      </div>
+      <div class="stat-value" id="dash-rank" style="color:#8B5CF6; font-size: 1.4rem;">Rookie</div>
+      <div class="stat-trend">Security Clearance Level</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Cases Solved</div>
+        <div class="stat-icon-wrap" style="background:rgba(76,175,80,0.15)">
+          <i class="fa-solid fa-check-double" style="color:#4caf50"></i>
+        </div>
+      </div>
+      <div class="stat-value" id="dash-solved" style="color:#4caf50">0</div>
+      <div class="stat-trend"><span class="trend-up">▲ Verified</span> Dossier Sync</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Detective Score</div>
+        <div class="stat-icon-wrap" style="background:rgba(196,154,69,0.15)">
+          <i class="fa-solid fa-star" style="color:var(--gold-accent)"></i>
+        </div>
+      </div>
+      <div class="stat-value" id="dash-score" style="color:var(--gold-accent)">0</div>
+      <div class="stat-trend">Points Accumulated</div>
+    </div>
   </div>
 
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-label">OPERATIVE</div>
-      <div class="stat-val" id="dash-username">...</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">RANK</div>
-      <div class="stat-val" id="dash-rank">...</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">CASES SOLVED</div>
-      <div class="stat-val" id="dash-solved">0</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">SCORE</div>
-      <div class="stat-val" id="dash-score">0</div>
-    </div>
-  </div>
+  <!-- Dashboard Split View -->
+  <div class="dash-grid">
+    <!-- Active Cases & Timeline -->
+    <div>
+      <!-- Recent Cases Table -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="section-hdr">
+          <div class="section-title">Active Case Database</div>
+          <a href="{% url 'cases' %}" class="btn btn-ghost btn-sm">View All →</a>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Case ID</th>
+                <th>Case #</th>
+                <th>Title</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="dash-cases-body">
+              <tr>
+                <td colspan="6" style="text-align:center; color:var(--text-muted); padding:30px;">
+                  Scanning central database files...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-  <div class="card">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>Case ID</th>
-          <th>Case Number</th>
-          <th>Title</th>
-          <th>Location</th>
-          <th>Status</th>
-          <th>Case Actions</th>
-        </tr>
-      </thead>
-      <tbody id="dash-cases-body">
-        <tr>
-          <td colspan="6" class="stamp-empty">SCANNING CASE FILES...</td>
-        </tr>
-      </tbody>
-    </table>
+      <!-- Evidence Activity Timeline -->
+      <div class="card">
+        <div class="section-hdr">
+          <div class="section-title">Investigation Timeline</div>
+        </div>
+        <div class="timeline" id="dash-timeline">
+          <div style="padding:1rem; color:var(--text-muted);">Parsing recent tactical event records...</div>
+        </div>
+      </div>
+    </div>
+
+    <!--Most Wanted Targets -->
+    <div>
+      <div class="card">
+        <div class="section-hdr">
+          <div class="section-title">Most Wanted Suspects</div>
+        </div>
+        <div class="wanted-list" id="wanted-list">
+          <div style="padding:1rem; color:var(--text-muted);">Scanning local grids for target profiles...</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', async function () {
-  if (!window.supabaseClient) {
-    console.error('Supabase client is missing.');
+  const supabase = window.supabaseClient;
+  if (!supabase) {
+    console.error('Supabase client missing.');
     return;
   }
 
-  //Fetching current logged-in Supabase user
-  const { data: authData, error: authError } = await window.supabaseClient.auth.getUser();
+  //Retrieve Current Auth User & Profile Details
+  try {
+    const { data: authData, error: authError } = await supabase.auth.getUser();
 
-  if (authError || !authData?.user) {
-    console.warn('User is unauthenticated.');
-    document.getElementById('dash-username').textContent = 'UNAUTHORIZED';
-    return;
+    if (authError || !authData?.user) {
+      console.warn('User is unauthenticated.');
+      document.getElementById('dash-username').textContent = 'UNAUTHORIZED';
+      document.getElementById('stat-operative').textContent = 'UNAUTHORIZED';
+      return;
+    }
+
+    const userId = authData.user.id;
+
+    const { data: profile, error: profileError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (profileError) {
+      console.error('Profile fetch error:', profileError);
+    } else if (profile) {
+      const username = profile.username || 'Agent';
+      document.getElementById('dash-username').textContent = username;
+      document.getElementById('stat-operative').textContent = username;
+      document.getElementById('dash-rank').textContent = profile.rank || 'Rookie';
+      document.getElementById('dash-solved').textContent = profile.cases_solved || 0;
+      document.getElementById('dash-score').textContent = profile.score || 0;
+    }
+  } catch (err) {
+    console.error('Auth or Profile block failed:', err);
   }
 
-  const userId = authData.user.id;
+  // Populate Cases Table with Live Links to Evidence & Suspects
+  try {
+    const { data: cases, error: casesError } = await supabase
+      .from('cases')
+      .select('*')
+      .order('case_id', { ascending: true });
 
-  // Querying user data from users table
-  const { data: profile, error: profileError } = await window.supabaseClient
-    .from('users')
-    .select('*')
-    .eq('user_id', userId)
-    .single();
+    const tbody = document.getElementById('dash-cases-body');
 
-  if (profileError) {
-    console.error('Profile fetch error:', profileError);
-  } else if (profile) {
-    document.getElementById('dash-username').textContent = profile.username || 'Agent';
-    document.getElementById('dash-rank').textContent = profile.rank || 'Rookie';
-    document.getElementById('dash-solved').textContent = profile.cases_solved || 0;
-    document.getElementById('dash-score').textContent = profile.score || 0;
+    if (casesError) {
+      console.error('Cases fetch error:', casesError);
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">ERROR LOADING FILES</td></tr>';
+    } else if (!cases || cases.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">NO ACTIVE CASES ASSIGNED</td></tr>';
+    } else {
+      tbody.innerHTML = cases.map(function (c) {
+        return `
+          <tr>
+            <td>#${c.case_id}</td>
+            <td><strong>${c.case_number || 'N/A'}</strong></td>
+            <td>${c.title || 'Untitled Case'}</td>
+            <td>${c.location || 'Unknown'}</td>
+            <td><span class="badge">${c.status || 'Active'}</span></td>
+            <td>
+              <a href="/case/${c.case_id}/evidence/" class="btn-dash-action">Evidence</a>
+              <a href="/case/${c.case_id}/suspects/" class="btn-dash-action btn-suspects-highlight">Suspects</a>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+  } catch (err) {
+    console.error('Cases table query failed:', err);
   }
 
-  //Retrieving all active cases from cases table
-  const { data: cases, error: casesError } = await window.supabaseClient
-    .from('cases')
-    .select('*')
-    .order('case_id', { ascending: true });
+  // Populate Recent Clues Timeline
+  try {
+    const { data: evidenceTimeline, error: evError } = await supabase
+      .from('evidence')
+      .select('item_name, found_at, cases(case_number)')
+      .limit(3);
 
-  const tbody = document.getElementById('dash-cases-body');
+    const timelineContainer = document.getElementById('dash-timeline');
 
-  if (casesError) {
-    console.error('Cases fetch error:', casesError);
-    tbody.innerHTML = '<tr><td colspan="6" class="stamp-empty">ERROR LOADING FILES</td></tr>';
-    return;
+    if (evError) console.error('Evidence query error:', evError);
+
+    if (evidenceTimeline && evidenceTimeline.length > 0) {
+      timelineContainer.innerHTML = evidenceTimeline.map(e => `
+        <div class="timeline-item" style="display:flex; gap:1rem; font-size:0.82rem;">
+          <div style="color:var(--gold-accent); font-weight:bold;">[CLUE SECURED]</div>
+          <div>
+            <strong style="color:var(--text-primary);">${e.item_name || 'Evidence Item'}</strong> found at location "${e.found_at || 'Crime Scene'}".
+            <br><small style="color:var(--text-muted)">Assigned File: ${e.cases?.case_number || 'Unlinked'}</small>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      timelineContainer.innerHTML = '<div style="padding:0.5rem 0; color:var(--text-muted); font-size:0.85rem;">No recent physical analysis records found.</div>';
+    }
+  } catch (err) {
+    console.error('Timeline block failed:', err);
   }
 
-  if (!cases || cases.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="stamp-empty">NO ACTIVE CASES ASSIGNED</td></tr>';
-    return;
-  }
+  // Populate Most Wanted Suspects Card
+  try {
+    const { data: suspectList, error: suspError } = await supabase
+      .from('suspects')
+      .select('name, occupation, suspect_status, cases(title)')
+      .eq('suspect_status', 'Wanted')
+      .limit(3);
 
-  tbody.innerHTML = cases.map(function (c) {
-    return `
-      <tr>
-        <td>#${c.case_id}</td>
-        <td><strong>${c.case_number}</strong></td>
-        <td>${c.title}</td>
-        <td>${c.location || 'Unknown'}</td>
-        <td><span style="color:#ff4d4d;">${c.status || 'Active'}</span></td>
-        <td>
-          <a href="/case/${c.case_id}/evidence/" class="btn-dash-action">View Evidence</a>
-          <a href="/case/${c.case_id}/suspects/" class="btn-dash-action btn-suspects-highlight">Inspect Suspects</a>
-        </td>
-      </tr>
-    `;
-  }).join('');
+    const wantedContainer = document.getElementById('wanted-list');
+
+    if (suspError) console.error('Suspects query error:', suspError);
+
+    if (suspectList && suspectList.length > 0) {
+      wantedContainer.innerHTML = suspectList.map(s => `
+        <div class="wanted-card">
+          <div style="font-weight:600; font-size:0.9rem; color:var(--text-primary);">${s.name}</div>
+          <div style="font-size:0.75rem; color:var(--text-muted);">${s.occupation || 'No Listed Occupation'}</div>
+          <div style="font-size:0.72rem; margin-top:0.25rem; color:var(--gold-accent);">Linked Matrix: ${s.cases?.title || 'Unknown Case'}</div>
+        </div>
+      `).join('');
+    } else {
+      wantedContainer.innerHTML = '<div style="padding:0.5rem 0; color:var(--text-muted); font-size:0.85rem;">All target suspects accounted for or contained.</div>';
+    }
+  } catch (err) {
+    console.error('Suspects block failed:', err);
+  }
 });
 </script>
-
 {% endblock %}

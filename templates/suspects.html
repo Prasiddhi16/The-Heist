@@ -3,103 +3,145 @@
 {% block content %}
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&family=Nosifer&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&family=Nosifer&family=Share+Tech+Mono&display=swap');
 
   @keyframes pulseGlow {
-    0%, 100% { box-shadow: inset 0 0 50px #000, 0 0 25px rgba(255, 0, 0, 0.4); }
-    50% { box-shadow: inset 0 0 70px #300, 0 0 45px rgba(255, 0, 0, 0.8); }
+    0%, 100% { box-shadow: inset 0 0 60px #000, 0 0 25px rgba(232, 185, 35, 0.25); }
+    50% { box-shadow: inset 0 0 80px #120f00, 0 0 45px rgba(232, 185, 35, 0.5); }
+  }
+
+  @keyframes tapeSettle {
+    0% { opacity: 0; transform: rotate(var(--rot,0)) scale(0.85); }
+    100% { opacity: 1; transform: rotate(var(--rot,0)) scale(1); }
   }
 
   .murder-wrapper {
     position: relative;
-    padding: 60px 65px;
-    background: #040202;
-    background-image: 
-      radial-gradient(ellipse 35px 50px at 85% 22%, transparent 0%, rgba(180,0,0,0.5) 5%, transparent 10%, rgba(180,0,0,0.6) 15%, transparent 20%),
-      radial-gradient(ellipse 30px 45px at 15% 78%, transparent 0%, rgba(160,0,0,0.5) 4%, transparent 8%, rgba(160,0,0,0.6) 12%, transparent 16%),
-      radial-gradient(ellipse 28px 42px at 22% 42%, transparent 0%, rgba(200,0,0,0.4) 6%, transparent 12%, rgba(200,0,0,0.3) 18%),
-      radial-gradient(circle at 88% 18%, rgba(180, 0, 0, 0.5) 0%, transparent 22%),
-      radial-gradient(circle at 12% 82%, rgba(150, 0, 0, 0.45) 0%, transparent 25%),
-      radial-gradient(circle at 50% 50%, rgba(120, 0, 0, 0.3) 0%, transparent 50%),
-      repeating-linear-gradient(0deg, rgba(0,0,0,0.4) 0px, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px);
-    border-radius: 4px;
-    animation: flickering 6.5s infinite, pulseGlow 3s infinite alternate;
+    padding: 70px 60px;
+    background: radial-gradient(ellipse at 20% 10%, #14141c 0%, #08080b 45%, #050506 100%);
+    background-image:
+      radial-gradient(circle at 15% 15%, rgba(60, 90, 140, 0.10) 0%, transparent 30%),
+      radial-gradient(circle at 85% 85%, rgba(232, 185, 35, 0.07) 0%, transparent 35%),
+      radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.5) 0%, transparent 55%),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.35) 0px, rgba(0,0,0,0.35) 2px, transparent 2px, transparent 4px);
+    border-radius: 6px;
+    animation: pulseGlow 3.5s infinite alternate;
     overflow: hidden;
   }
 
-  .murder-wrapper::before {
-    content: '';
+  .tape-corner {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 40px;
-    background-color: #0b0706;
-    background-image: radial-gradient(#261715 35%, #000 45%, transparent 46%);
-    background-size: 28px 20px;
-    background-position: 8px center;
-    border-bottom: 3px solid #800000;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.9);
-    z-index: 10;
-  }
-
-  .murder-wrapper::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 40px;
-    background-color: #0b0706;
-    background-image: radial-gradient(#261715 35%, #000 45%, transparent 46%);
-    background-size: 28px 20px;
-    background-position: 8px center;
-    border-top: 3px solid #800000;
-    box-shadow: 0 -5px 15px rgba(0,0,0,0.9);
-    z-index: 10;
-  }
-
-  .reel-side-left,
-  .reel-side-right {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 40px;
-    background-color: #0b0706;
-    background-image: radial-gradient(#261715 35%, #000 45%, transparent 46%);
-    background-size: 20px 28px;
-    background-position: center 8px;
+    width: 190px;
+    height: 240px;
+    overflow: hidden;
     z-index: 11;
+    pointer-events: none;
   }
-  .reel-side-left {
-    left: 0;
-    border-right: 3px solid #800000;
-    box-shadow: 5px 0 15px rgba(0,0,0,0.9);
-  }
-  .reel-side-right {
-    right: 0;
-    border-left: 3px solid #800000;
-    box-shadow: -5px 0 15px rgba(0,0,0,0.9);
+  .tape-corner-tl { top: 20px; left: 0; }
+  .tape-corner-tr { top: 20px; right: 0; }
+  .tape-corner-bl { bottom: 0; left: 0; }
+  .tape-corner-br { bottom: 0; right: 0; }
+
+  .tape-strip {
+    position: absolute;
+    height: 40px;
+    width: 280px;
+    background: repeating-linear-gradient(
+      45deg,
+      #e8b923 0px, #e8b923 26px,
+      #111 26px, #111 32px
+    );
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    white-space: nowrap;
+    border-top: 2px solid #000;
+    border-bottom: 2px solid #000;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.85);
+    transition: transform 0.35s ease;
+    animation: tapeSettle 0.5s ease-out backwards;
+    pointer-events: auto;
   }
 
-  .blood-drips {
+  .tape-text {
+    display: inline-block;
+    font-family: 'Special Elite', cursive;
+    font-weight: bold;
+    font-size: 0.8rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #111;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.12);
+    padding-left: 12px;
+  }
+
+  .tc-tl-1 { top: 6px; left: -40px; --rot: -18deg; transform: rotate(-18deg); animation-delay: 0.02s; }
+  .tc-tr-1 { top: 6px; left: -10px; --rot: 16deg;  transform: rotate(16deg);  animation-delay: 0.16s; }
+  .tc-bl-1 { bottom: -5px; left: -20px; --rot: 12deg;  transform: rotate(12deg);  animation-delay: 0.32s; }
+  .tc-br-1 { bottom: -18px; right: -20px; --rot: -20deg; transform: rotate(-20deg); animation-delay: 0.48s; }
+
+  .tape-corner:hover .tape-strip {
+    transform: rotate(calc(var(--rot,0deg) + 2deg)) scale(1.03);
+  }
+
+  .evidence-seal {
     position: absolute;
-    top: 40px;
-    left: 40px;
-    right: 40px;
-    height: 12px;
-    background: linear-gradient(180deg, #800000 0%, transparent 100%);
-    opacity: 0.7;
-    z-index: 9;
+    top: 25px;
+    right: -40px;
+    width: 260px;
+    height: 38px;
+    background: repeating-linear-gradient(
+      -45deg,
+      #e8b923 0px, #e8b923 20px,
+      #111 20px, #111 32px
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(22deg);
+    border-top: 2px dashed #000;
+    border-bottom: 2px dashed #000;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.8);
+    z-index: 15;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .evidence-seal:hover {
+    transform: rotate(20deg) scale(1.05);
+  }
+
+  .evidence-seal.torn {
+    animation: tearTape 0.4s forwards ease-in;
+    pointer-events: none;
+  }
+
+  @keyframes tearTape {
+    0% { transform: rotate(22deg) scale(1); opacity: 1; }
+    50% { transform: rotate(35deg) translateY(-20px) scale(1.1); opacity: 0.8; }
+    100% { transform: rotate(60deg) translateY(120px) scale(0.5); opacity: 0; }
+  }
+
+  .seal-text {
+    font-family: 'Times Roman', monospace;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: #000;
+    letter-spacing: 2px;
+    background: #e8b923;
+    padding: 2px 6px;
+    border: 1px solid #000;
   }
 
   .page-hdr { 
     position: relative;
-    border-left: 5px solid #ff0000; 
+    border-left: 5px solid #e8b923; 
     padding: 15px 0 15px 20px; 
     margin-bottom: 30px; 
-    background: linear-gradient(90deg, rgba(180,0,0,0.35) 0%, transparent 100%);
-    box-shadow: inset 10px 0 20px rgba(255, 0, 0, 0.2);
+    background: linear-gradient(90deg, rgba(232,185,35,0.14) 0%, transparent 100%);
+    box-shadow: inset 10px 0 20px rgba(232, 185, 35, 0.1);
+    z-index: 5;
   }
 
   .page-title {
@@ -107,12 +149,12 @@
     font-size: 2rem;
     letter-spacing: 2px;
     color: black;
-    text-shadow: 0 0 12px rgba(255, 0, 0, 0.9), 3px 3px 6px #000;
+    text-shadow: 0 0 12px rgba(255, 208, 0, 0.9), 3px 3px 6px #000;
     margin: 0;
     line-height: 1.2;
   }
   .page-sub { 
-    color: #cca485; 
+    color: #c9b98a; 
     font-family: 'Special Elite', cursive; 
     font-style: italic; 
     font-size: 1rem;
@@ -122,99 +164,143 @@
 
   .card {
     position: relative;
-    background: #080404;
+    background: #0b0b10;
     background-image: 
-      radial-gradient(ellipse 38px 55px at 10% 88%, transparent 0%, rgba(200,0,0,0.25) 5%, transparent 10%, rgba(200,0,0,0.3) 15%, transparent 20%),
-      radial-gradient(ellipse at bottom left, rgba(180,0,0,0.25) 0%, transparent 70%),
+      radial-gradient(ellipse at top right, rgba(232,185,35,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse at bottom left, rgba(60,90,140,0.06) 0%, transparent 70%),
       radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
     background-size: 100% 100%, 100% 100%, 3px 3px;
-    border: 2px solid #660000;
-    box-shadow: 0 0 30px rgba(113, 36, 36, 0.5), inset 0 0 30px #000;
+    border: 2px solid #2c2408;
+    box-shadow: 0 0 30px rgba(232, 185, 35, 0.18), inset 0 0 30px #000;
+    border-radius: 3px;
     z-index: 8;
     overflow-x: auto;
+    transition: box-shadow 0.3s ease;
+  }
+  .card:hover {
+    box-shadow: 0 0 40px rgba(232, 185, 35, 0.3), inset 0 0 30px #000;
   }
 
-  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
   .data-table th {
-    font-family: 'Georgia', 'Times New Roman', serif;
-    font-size: 0.95rem;
-    letter-spacing: 3px;
+    font-family:'Times New Roman';
+    font-size: 1.50rem;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
-    color: #ff3333;
-    border-bottom: 2px solid #800000;
+    color: #e8b923;
+    border-bottom: 2px solid #6b5600;
     padding: 14px;
     text-align: left;
-    background: rgba(30, 0, 0, 0.9);
-    text-shadow: 0 0 5px rgba(255,0,0,0.5);
+    background: rgba(18, 15, 0, 0.9);
+    text-shadow: none;
   }
   .data-table td {
     padding: 16px 14px;
-    border-bottom: 1px solid #3d0c0c;
-    color: #e6d3be;
-    font-family: 'Georgia', 'Times New Roman', serif;
-    font-size: 0.95rem;
+    border-bottom: 1px solid #221d06;
+    color: #ece0c4;
+    font-family: 'Times New Roman';
+    font-size: 1.55rem;
+    line-height: 1.55;
+    letter-spacing: 0.2px;
+    text-shadow: none;
+    vertical-align: top;
+    transition: background 0.2s ease;
   }
   .data-table tr:hover td { 
-    background: rgba(220, 0, 0, 0.25); 
-    box-shadow: inset 0 0 15px rgba(255, 0, 0, 0.3);
+    background: rgba(232, 185, 35, 0.09); 
+    box-shadow: inset 0 0 15px rgba(232, 185, 35, 0.15);
   }
 
-  .risk-badge {
+  .data-table th.col-details,
+  .data-table td.col-details {
+    width: 30%;
+    min-width: 260px;
+  }
+  .data-table td.col-details {
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .evidence-id { 
+    font-family: 'Georgia', 'Times New Roman', serif;
+    color: #e8b923; 
+    font-weight: bold;
+    font-size: 0.95rem; 
+    text-shadow: none;
+  }
+
+  .tag {
     display: inline-block;
     padding: 4px 10px;
     border-radius: 2px;
-    font-size: 0.95rem;
+    font-size: 0.78rem;
     font-weight: bold;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
     font-family: 'Georgia', 'Times New Roman', serif;
   }
-  .risk-prime { background: rgba(220, 0, 0, 0.45); color: #ff3333; border: 1px solid #ff0000; box-shadow: 0 0 12px rgba(255, 0, 0, 0.7); }
-  .risk-poi   { background: rgba(214, 158, 46, 0.3); color: #ffca58; border: 1px solid #b38000; }
-  .risk-clear { background: rgba(50, 150, 80, 0.25); color: #80ffaa; border: 1px solid #008033; }
+  .risk-prime { background: rgba(180, 40, 40, 0.3);  color: #ff8f8f; border: 1px solid #a83232; }
+  .risk-poi   { background: rgba(232, 185, 35, 0.22); color: #e8b923; border: 1px solid #a88300; }
+  .risk-clear { background: rgba(60, 150, 100, 0.22); color: #7fe0a8; border: 1px solid #2f8a5a; }
 
   .stamp-empty {
     text-align: center;
     padding: 40px;
-    color: #ff0000;
+    color: #e8b923;
     font-family: 'Nosifer', cursive;
     font-size: 1.1rem;
     letter-spacing: 2px;
-    text-shadow: 0 0 10px rgba(255,0,0,0.8);
+    text-shadow: 0 0 10px rgba(232,185,35,0.7);
   }
 
-  .btn-resolve-nav {
+  .btn-evidence-nav {
     text-decoration: none;
     padding: 12px 22px;
-    background: linear-gradient(180deg, #b30000 0%, #4a0000 100%);
-    color: #fff;
+    background: linear-gradient(180deg, #e8b923 0%, #6b5600 100%);
+    color: #0a0a0a;
     border-radius: 2px;
     font-family: 'Creepster', cursive;
     font-size: 1.1rem;
     letter-spacing: 2px;
     text-transform: uppercase;
-    border: 1px solid #ff3333;
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+    border: 1px solid #e8b923;
+    box-shadow: 0 0 15px rgba(232, 185, 35, 0.5);
     transition: all 0.2s ease;
+    display: inline-block;
   }
-  .btn-resolve-nav:hover {
-    background: #e60000;
-    box-shadow: 0 0 25px rgba(255, 0, 0, 1);
-    transform: scale(1.03);
+  .btn-evidence-nav:hover {
+    background: #ffd457;
+    box-shadow: 0 0 25px rgba(232, 185, 35, 0.9);
+    transform: scale(1.03) translateY(-1px);
+  }
+
+  .btn-add { transition: all 0.2s ease !important; }
+  .btn-add:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 4px 14px rgba(232, 185, 35, 0.5) !important;
   }
 </style>
 
 <div class="murder-wrapper">
-  <div class="reel-side-left"></div>
-  <div class="reel-side-right"></div>
-  <div class="blood-drips"></div>
+  <div class="tape-corner tape-corner-tl">
+    <div class="tape-strip tc-tl-1"><span class="tape-text">CRIME SCENE — DO NOT ENTER — CRIME SCENE — DO NOT ENTER</span></div>
+  </div>
+  <div class="tape-corner tape-corner-tr">
+    <div class="tape-strip tc-tr-1"><span class="tape-text">CRIME SCENE — DO NOT ENTER — CRIME SCENE — DO NOT ENTER</span></div>
+  </div>
+  <div class="tape-corner tape-corner-bl">
+    <div class="tape-strip tc-bl-1"><span class="tape-text">CRIME SCENE — DO NOT ENTER — CRIME SCENE — DO NOT ENTER</span></div>
+  </div>
+  <div class="tape-corner tape-corner-br">
+    <div class="tape-strip tc-br-1"><span class="tape-text">CRIME SCENE — DO NOT ENTER — CRIME SCENE — DO NOT ENTER</span></div>
+  </div>
 
   <div class="page-hdr" style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:10px;">
     <div>
       <h1 class="page-title">SUSPECTS — {{ case.title }}</h1>
       <div class="page-sub">Who left their mark?</div>
     </div>
-    <a href="{% url 'caseresolution' case.case_id %}" class="btn-resolve-nav">
+    <a href="{% url 'caseresolution' case.case_id %}" class="btn-evidence-nav">
       Go to Case Resolution 
     </a>
   </div>
@@ -226,7 +312,7 @@
           <th>Name</th>
           <th>Occupation</th>
           <th>Motive</th>
-          <th>Alibi & Status</th>
+          <th class="col-details">Alibi & Status</th>
           <th>Status</th>
           <th>Action</th>
         </tr>
@@ -236,23 +322,23 @@
         <tr>
           <td><strong>{{ s.name }}</strong></td>
           <td>{{ s.occupation|default:"Unknown" }}</td>
-          <td><small style="color: #cca485;">{{ s.motive|default:"None logged" }}</small></td>
-          <td>
+          <td>{{ s.motive|default:"None logged" }}</td>
+          <td class="col-details">
             <div>{{ s.alibi|default:"No alibi provided" }}</div>
-            {% if s.alibi_status %}<small style="font-style: italic; color: #a38c75;">({{ s.alibi_status }})</small>{% endif %}
+            {% if s.alibi_status %}<small style="font-style: italic; color: #a89570;">({{ s.alibi_status }})</small>{% endif %}
           </td>
           <td>
             {% if s.suspect_status == "Prime Suspect" %}
-              <span class="risk-badge risk-prime">Prime Suspect</span>
+              <span class="tag risk-prime">Prime Suspect</span>
             {% elif s.suspect_status == "Person of Interest" %}
-              <span class="risk-badge risk-poi">Person of Interest</span>
+              <span class="tag risk-poi">Person of Interest</span>
             {% else %}
-              <span class="risk-badge risk-clear">{{ s.suspect_status|default:"Cleared" }}</span>
+              <span class="tag risk-clear">{{ s.suspect_status|default:"Cleared" }}</span>
             {% endif %}
           </td>
           <td>
             <button class="btn-add" id="accuse-{{ s.suspect_id }}"
-              style="padding:8px 14px; border-radius:2px; border:1px solid #ff0000; background:rgba(40,0,0,0.9); color:#ff4d4d; font-family:'Georgia','Times New Roman',serif; font-size:0.95rem; text-transform:uppercase; cursor:pointer; transition: all 0.2s; box-shadow: 0 0 8px rgba(255,0,0,0.4);"
+              style="padding:8px 14px; border-radius:2px; border:1px solid #e8b923; background:rgba(18,15,0,0.9); color:#e8b923; font-family:'Georgia','Times New Roman',serif; font-size:0.85rem; text-transform:uppercase; cursor:pointer; box-shadow: 0 0 8px rgba(232,185,35,0.35);"
               onclick="accuseSuspect({{ s.suspect_id }}, this)">
               + Accuse
             </button>
@@ -332,9 +418,9 @@ async function accuseSuspect(suspectId, btn) {
 
     document.querySelectorAll('.btn-add').forEach(function (b) {
       b.textContent = '+ Accuse';
-      b.style.color = '#ff4d4d';
-      b.style.borderColor = '#ff0000';
-      b.style.boxShadow = '0 0 8px rgba(255,0,0,0.4)';
+      b.style.color = '#e8b923';
+      b.style.borderColor = '#e8b923';
+      b.style.boxShadow = '0 0 8px rgba(232,185,35,0.35)';
     });
 
     btn.textContent = '✓ Accused';

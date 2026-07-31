@@ -401,29 +401,34 @@
   }
 
   function showCaseDetailsModal(caseId) {
-    const selected = loadedCasesData.find(c => c.case_id == caseId);
-    if (!selected) return;
+  const selected = loadedCasesData.find(c => c.case_id == caseId);
+  if (!selected) return;
 
-    document.getElementById('modalCaseNum').textContent = selected.case_number || 'N/A';
-    document.getElementById('modalCaseTitle').textContent = selected.title || 'Untitled Case';
-    document.getElementById('modalCaseStatus').textContent = (selected.status || 'ACTIVE').toUpperCase();
-    document.getElementById('modalCaseRisk').textContent = selected.risk_level ? `Level ${selected.risk_level}` : 'Level 1';
-    document.getElementById('modalCaseLoss').textContent = selected.loss_value || 'N/A';
-    document.getElementById('modalCaseLoc').textContent = selected.location || 'Unknown';
-    document.getElementById('modalCaseDate').textContent = formatDate(selected.created_at) || 'N/A';
-    document.getElementById('modalCaseDesc').textContent = selected.description || 'No detailed description provided.';
+  Update the URL hash so it reflects the open case
+  window.location.hash = `case-${caseId}`;
 
-    const invBtn = document.getElementById('modalInvestigateBtn');
-    invBtn.onclick = function () {
-      openCase(selected.case_id);
-    };
+  document.getElementById('modalCaseNum').textContent = selected.case_number || 'N/A';
+  document.getElementById('modalCaseTitle').textContent = selected.title || 'Untitled Case';
+  document.getElementById('modalCaseStatus').textContent = (selected.status || 'ACTIVE').toUpperCase();
+  document.getElementById('modalCaseRisk').textContent = selected.risk_level ? `Level ${selected.risk_level}` : 'Level 1';
+  document.getElementById('modalCaseLoss').textContent = selected.loss_value || 'N/A';
+  document.getElementById('modalCaseLoc').textContent = selected.location || 'Unknown';
+  document.getElementById('modalCaseDate').textContent = formatDate(selected.created_at) || 'N/A';
+  document.getElementById('modalCaseDesc').textContent = selected.description || 'No detailed description provided.';
 
-    document.getElementById('caseDetailModal').classList.add('active');
-  }
+  const invBtn = document.getElementById('modalInvestigateBtn');
+  invBtn.onclick = function () {
+    openCase(selected.case_id);
+  };
 
-  function closeCaseModal() {
-    document.getElementById('caseDetailModal').classList.remove('active');
-  }
+  document.getElementById('caseDetailModal').classList.add('active');
+}
+
+function closeCaseModal() {
+  document.getElementById('caseDetailModal').classList.remove('active');
+  // Clear the hash from the URL clean when closing
+  history.pushState("", document.title, window.location.pathname + window.location.search);
+}
 
   function renderCases(cases) {
     const grid = document.getElementById('caseGrid');

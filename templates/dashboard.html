@@ -498,7 +498,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             <td>${c.location || 'Unknown'}</td>
             <td><span class="badge">${c.status || 'Active'}</span></td>
             <td>
-              <a href="/cases/${c.case_id}/" class="btn-dash-action">View Case</a>
+              <a href="/cases/#case-${c.case_id}" class="btn-dash-action">View Case</a>
             </td>
           </tr>
         `;

@@ -1,24 +1,104 @@
 <style>
-.sidebar{
-  background:#1b1b3d !important;
-  border-right:1px solid rgba(255,255,255,.06) !important;
-}
-.sidebar .sidebar-section-label{color:rgba(255,255,255,.35) !important}
-.sidebar .nav-item{color:rgba(255,255,255,.6) !important}
-.sidebar .nav-item:hover{background:rgba(255,255,255,.06) !important;color:#ffffff !important}
-.sidebar .nav-item.active{
-  background:rgba(255,255,255,.12) !important;
-  color:#ffffff !important;
-  border-color:transparent !important;
-  font-weight:600;
-}
-.sidebar .nav-count{background:#F59E0B !important;color:#1b1b3d !important;border:none !important;font-weight:800}
-.sidebar .sidebar-footer{border-top:1px solid rgba(255,255,255,.06) !important}
-.sidebar .detective-chip{background:rgba(255,255,255,.05) !important}
-.sidebar .detective-name{color:#ffffff !important}
-.sidebar .detective-rank{color:#F59E0B !important}
-.sidebar .logout-btn{color:rgba(255,255,255,.5) !important}
-.sidebar .logout-btn:hover{color:#EF4444 !important}
+  @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&family=Nosifer&display=swap');
+
+  .sidebar{
+    width:300px !important;
+    min-width:300 !important;
+    max-width:300 !important;
+    box-sizing:border-box !important;
+    height:100vh !important;
+    display:flex !important;
+    flex-direction:column !important;
+    padding:22px 16px !important;
+    gap:4px !important;
+    overflow-y:auto !important;
+    background:#0b0b10 !important;
+    background-image:
+      radial-gradient(circle at 30% 0%, rgba(232,185,35,0.06) 0%, transparent 45%),
+      radial-gradient(circle at 100% 100%, rgba(232,185,35,0.04) 0%, transparent 50%) !important;
+    border-right:1px solid #2c2408 !important;
+    box-shadow: inset -10px 0 25px rgba(0,0,0,0.6) !important;
+  }
+ 
+  .sidebar .sidebar-section-label{
+    color:#6b5600 !important;
+    font-family:'Special Elite', cursive !important;
+    letter-spacing:2px !important;
+    text-transform:uppercase !important;
+    font-size:0.75rem !important;
+    margin:14px 4px 6px !important;
+  }
+
+  .sidebar .nav-item{
+    color:#c9b98a !important;
+    font-family:'Georgia','Times New Roman',serif !important;
+    border:1px solid transparent !important;
+    border-radius:2px !important;
+    transition: all 0.2s ease !important;
+  }
+
+  .sidebar .nav-item .nav-icon{
+    color:#a88300 !important;
+  }
+
+  .sidebar .nav-item:hover{
+    background:rgba(232,185,35,0.08) !important;
+    color:#ffd457 !important;
+    border-color:#6b5600 !important;
+    box-shadow: 0 0 12px rgba(232,185,35,0.15) !important;
+  }
+
+  .sidebar .nav-item.active{
+    background:linear-gradient(90deg, rgba(232,185,35,0.18) 0%, rgba(232,185,35,0.04) 100%) !important;
+    color:#ffd457 !important;
+    border-color:#e8b923 !important;
+    font-weight:600;
+    box-shadow: inset 3px 0 0 #e8b923, 0 0 14px rgba(232,185,35,0.25) !important;
+  }
+
+  .sidebar .nav-item.active .nav-icon{
+    color:#e8b923 !important;
+  }
+
+  .sidebar .nav-count{
+    background:#e8b923 !important;
+    color:#0a0a0a !important;
+    border:none !important;
+    font-weight:800;
+    box-shadow: 0 0 8px rgba(232,185,35,0.5);
+  }
+
+  .sidebar .sidebar-footer{
+    border-top:1px solid #2c2408 !important;
+  }
+
+  .sidebar .detective-chip{
+    background:rgba(232,185,35,0.05) !important;
+    border:1px solid #2c2408 !important;
+  }
+
+  .sidebar .detective-avatar{
+    background:#1a1608 !important;
+    color:#e8b923 !important;
+    border:1px solid #6b5600 !important;
+  }
+
+  .sidebar .detective-name{
+    color:#ece0c4 !important;
+    font-family:'Georgia','Times New Roman',serif !important;
+  }
+
+  .sidebar .detective-rank{
+    color:#e8b923 !important;
+  }
+
+  .sidebar .logout-btn{
+    color:#8a7a55 !important;
+  }
+  .sidebar .logout-btn:hover{
+    color:#ff6b6b !important;
+    text-shadow: 0 0 8px rgba(255,107,107,0.6);
+  }
 </style>
 
 <aside class="sidebar">
@@ -36,33 +116,32 @@
 
   <div class="sidebar-section-label">Investigation</div>
 
-  <a href="{% url 'cases' %}" class="nav-item {% if request.resolver_match.url_name == 'evidence' %}active{% endif %}">
+  <a href="{% if case %}{% url 'evidence' case.case_id %}{% else %}{% url 'cases' %}{% endif %}"
+     class="nav-item {% if request.resolver_match.url_name == 'evidence' %}active{% endif %}">
     <span class="nav-icon"><i class="fa-solid fa-fingerprint"></i></span> Evidence
   </a>
 
-  <a href="{% url 'cases' %}" class="nav-item {% if request.resolver_match.url_name == 'suspects' %}active{% endif %}">
+  <a href="{% if case %}{% url 'suspects' case.case_id %}{% else %}{% url 'cases' %}{% endif %}"
+     class="nav-item {% if request.resolver_match.url_name == 'suspects' %}active{% endif %}">
     <span class="nav-icon"><i class="fa-solid fa-user-secret"></i></span> Suspects
   </a>
 
-  <a href="{% url 'cases' %}" class="nav-item {% if request.resolver_match.url_name == 'heist' %}active{% endif %}">
-    <span class="nav-icon"><i class="fa-solid fa-thumbtack"></i></span> Inv. Board
-  </a>
-
-  <a href="{% url 'cases' %}" class="nav-item {% if request.resolver_match.url_name == 'analysis' %}active{% endif %}">
+  <a href="{% if case %}{% url 'analysis' case.case_id %}{% else %}{% url 'cases' %}{% endif %}"
+     class="nav-item {% if request.resolver_match.url_name == 'analysis' %}active{% endif %}">
     <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span> Case Analysis
   </a>
 
-  <a href="{% url 'cases' %}" class="nav-item {% if request.resolver_match.url_name == 'caseresolution' %}active{% endif %}">
+  <a href="{% if case %}{% url 'caseresolution' case.case_id %}{% else %}{% url 'caseresolution' %}{% endif %}"
+     class="nav-item {% if request.resolver_match.url_name == 'caseresolution' %}active{% endif %}">
     <span class="nav-icon"><i class="fa-solid fa-scale-balanced"></i></span> Case Resolution
   </a>
 
   <div class="sidebar-section-label">Records</div>
 
-<a href="{% url 'casehistory' %}" id="case-history-link" class="nav-item {% if request.resolver_match.url_name == 'casehistory' %}active{% endif %}">
-  <span class="nav-icon"><i class="fa-solid fa-box-archive"></i></span>
-  Case History
-</a>
-
+  <a href="{% url 'casehistory' %}" id="case-history-link" class="nav-item {% if request.resolver_match.url_name == 'casehistory' %}active{% endif %}">
+    <span class="nav-icon"><i class="fa-solid fa-box-archive"></i></span>
+    Case History
+  </a>
 
   <a href="{% url 'leaderboard' %}" class="nav-item {% if request.resolver_match.url_name == 'leaderboard' %}active{% endif %}">
     <span class="nav-icon"><i class="fa-solid fa-trophy"></i></span> Leaderboard

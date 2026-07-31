@@ -29,7 +29,7 @@
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: #000000;
+    color: var(--text-primary);
   }
 
   .page-sub {
@@ -325,7 +325,6 @@
 <div class="case-grid" id="caseGrid">
   <p>Loading cases...</p>
 </div>
-<!-- /case-grid -->
 
 <!-- Structured Case Detail Modal -->
 <div class="modal-overlay" id="caseDetailModal">
@@ -394,47 +393,44 @@
   }
 
   function formatDate(isoString) {
-    if (!isoString) return '';
-    // created_at comes back as an ISO timestamp, e.g. "2026-07-16T13:25:07.30744+00:00"
-    // we only want the date portion to match the design.
+    if (!isoString) return 'N/A';
     return isoString.split('T')[0];
   }
 
   function showCaseDetailsModal(caseId) {
-  const selected = loadedCasesData.find(c => c.case_id == caseId);
-  if (!selected) return;
+    const selected = loadedCasesData.find(c => c.case_id == caseId);
+    if (!selected) return;
 
-  Update the URL hash so it reflects the open case
-  window.location.hash = `case-${caseId}`;
+    // Update the URL hash so it reflects the open case
+    window.location.hash = `case-${caseId}`;
 
-  document.getElementById('modalCaseNum').textContent = selected.case_number || 'N/A';
-  document.getElementById('modalCaseTitle').textContent = selected.title || 'Untitled Case';
-  document.getElementById('modalCaseStatus').textContent = (selected.status || 'ACTIVE').toUpperCase();
-  document.getElementById('modalCaseRisk').textContent = selected.risk_level ? `Level ${selected.risk_level}` : 'Level 1';
-  document.getElementById('modalCaseLoss').textContent = selected.loss_value || 'N/A';
-  document.getElementById('modalCaseLoc').textContent = selected.location || 'Unknown';
-  document.getElementById('modalCaseDate').textContent = formatDate(selected.created_at) || 'N/A';
-  document.getElementById('modalCaseDesc').textContent = selected.description || 'No detailed description provided.';
+    document.getElementById('modalCaseNum').textContent = selected.case_number || 'N/A';
+    document.getElementById('modalCaseTitle').textContent = selected.title || 'Untitled Case';
+    document.getElementById('modalCaseStatus').textContent = (selected.status || 'ACTIVE').toUpperCase();
+    document.getElementById('modalCaseRisk').textContent = selected.risk_level ? `Level ${selected.risk_level}` : 'Level 1';
+    document.getElementById('modalCaseLoss').textContent = selected.loss_value || 'N/A';
+    document.getElementById('modalCaseLoc').textContent = selected.location || 'Unknown';
+    document.getElementById('modalCaseDate').textContent = formatDate(selected.created_at);
+    document.getElementById('modalCaseDesc').textContent = selected.description || 'No detailed description provided.';
 
-  const invBtn = document.getElementById('modalInvestigateBtn');
-  invBtn.onclick = function () {
-    openCase(selected.case_id);
-  };
+    const invBtn = document.getElementById('modalInvestigateBtn');
+    invBtn.onclick = function () {
+      openCase(selected.case_id);
+    };
 
-  document.getElementById('caseDetailModal').classList.add('active');
-}
+    document.getElementById('caseDetailModal').classList.add('active');
+  }
 
-function closeCaseModal() {
-  document.getElementById('caseDetailModal').classList.remove('active');
-  // Clear the hash from the URL clean when closing
-  history.pushState("", document.title, window.location.pathname + window.location.search);
-}
+  function closeCaseModal() {
+    document.getElementById('caseDetailModal').classList.remove('active');
+    history.pushState("", document.title, window.location.pathname + window.location.search);
+  }
 
   function renderCases(cases) {
     const grid = document.getElementById('caseGrid');
 
     if (!cases || cases.length === 0) {
-      grid.innerHTML = '<p>No active cases found.</p>';
+      grid.innerHTML = '<p style="color: var(--text-muted);">No active cases found.</p>';
       return;
     }
 
@@ -449,7 +445,7 @@ function closeCaseModal() {
             </div>
             <span class="badge">${c.status || ''}</span>
           </div>
-          <div class="case-loc"><i class="fa-solid fa-location-dot"></i> ${c.location || ''}</div>
+          <div class="case-loc"><i class="fa-solid fa-location-dot"></i> ${c.location || 'Unknown'}</div>
           <div class="case-meta">
             <div class="case-loss">Loss: <strong>${c.loss_value || 'N/A'}</strong> · ${formatDate(c.created_at)}</div>
           </div>
@@ -465,24 +461,30 @@ function closeCaseModal() {
     const grid = document.getElementById('caseGrid');
 
     if (!window.supabaseClient) {
-      grid.innerHTML = '<p>Unable to connect to the database. Check your Supabase configuration.</p>';
-      console.error('window.supabaseClient is not defined — check supabase-client.js and that SUPABASE_URL/SUPABASE_ANON_KEY are populated.');
+      grid.innerHTML = '<p style="color: var(--accent-red);">Unable to connect to database. Supabase client is not defined.</p>';
+      console.error('window.supabaseClient is not defined — check supabase-client.js configuration.');
       return;
     }
 
-    const { data, error } = await window.supabaseClient
-      .from('cases')
-      .select('case_id, case_number, title, status, location, loss_value, risk_level, description, created_at')
-      .order('created_at', { ascending: false });
+    try {
+      const { data, error } = await window.supabaseClient
+        .from('cases')
+        .select('case_id, case_number, title, status, location, loss_value, risk_level, description, created_at')
+        .order('created_at', { ascending: false });
 
-    if (error) {
-      grid.innerHTML = '<p>Failed to load cases. Please try again later.</p>';
-      console.error('Supabase fetch error:', error);
-      return;
+      if (error) {
+        grid.innerHTML = '<p style="color: var(--accent-red);">Failed to load cases from the database.</p>';
+        console.error('Supabase fetch error:', error);
+        return;
+      }
+
+      loadedCasesData = data || [];
+      renderCases(loadedCasesData);
+
+    } catch (err) {
+      grid.innerHTML = '<p style="color: var(--accent-red);">An unexpected error occurred while fetching cases.</p>';
+      console.error('Unhandled Exception:', err);
     }
-
-    loadedCasesData = data || [];
-    renderCases(loadedCasesData);
   });
 </script>
 

@@ -1,6 +1,6 @@
 {% extends 'index.html' %}
 {% load static %}
-{% block title %} Dashboard page {% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block content %}
 
@@ -15,6 +15,12 @@
     --text-muted: #8c857b;
     --gold-accent: #c49a45;
   }
+  @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Special+Elite&family=Nosifer&display=swap');
+
+  @keyframes pulseGlow {
+    0%, 100% { box-shadow: inset 0 0 50px #000, 0 0 25px rgba(255, 0, 0, 0.4); }
+    50% { box-shadow: inset 0 0 70px #300, 0 0 45px rgba(255, 0, 0, 0.8); }
+  }
 
   /* Page Header Styles */
   .page-hdr {
@@ -23,7 +29,9 @@
     align-items: center;
     margin-bottom: 24px;
     padding-left: 12px;
-    border-left: 3px solid var(--accent-red);
+    border-left: 4px solid var(--accent-red);
+    background: linear-gradient(90deg, rgba(185,43,39,0.15) 0%, transparent 100%);
+    padding: 12px 15px;
   }
 
   .page-title {
@@ -32,7 +40,8 @@
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: #000000;
+    color: var(--text-primary);
+    margin: 0;
   }
 
   .page-sub {
@@ -42,10 +51,25 @@
     font-style: italic;
   }
 
+  /* Main Wrapper Decorative FX */
+  .murder-wrapper {
+    position: relative;
+    padding: 30px;
+    background: #040202;
+    background-image: 
+      radial-gradient(ellipse 35px 50px at 85% 22%, transparent 0%, rgba(180,0,0,0.3) 5%, transparent 10%, rgba(180,0,0,0.4) 15%, transparent 20%),
+      radial-gradient(ellipse 30px 45px at 15% 78%, transparent 0%, rgba(160,0,0,0.3) 4%, transparent 8%, rgba(160,0,0,0.4) 12%, transparent 16%),
+      radial-gradient(circle at 50% 50%, rgba(120, 0, 0, 0.2) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.4) 0px, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px);
+    border-radius: 4px;
+    animation: pulseGlow 4s infinite alternate;
+    margin-bottom: 20px;
+  }
+
   /* Stats Grid & Cards */
   .stat-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
     margin-bottom: 24px;
   }
@@ -93,6 +117,7 @@
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 4px;
+    color: var(--text-primary);
   }
 
   .stat-trend {
@@ -101,10 +126,11 @@
   }
 
   .trend-up {
+    color: #4caf50;
     font-weight: bold;
   }
 
-  /* Main Dashboard Layout */
+  /* Main Dashboard Grid */
   .dash-grid {
     display: grid;
     grid-template-columns: 2.2fr 1fr;
@@ -117,13 +143,15 @@
     }
   }
 
-  /* Generic Card Styles */
+  /* Cards & Tables */
   .card {
     background: var(--card-bg);
     border: 1px solid var(--card-border);
     border-radius: 6px;
     padding: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    position: relative;
+    overflow-x: auto;
   }
 
   .section-hdr {
@@ -144,7 +172,6 @@
     letter-spacing: 1px;
   }
 
-  /* Tables */
   .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -154,13 +181,14 @@
 
   .data-table th {
     font-family: monospace;
+    font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 1px;
     color: var(--gold-accent);
-    text-align: left;
     padding: 10px 12px;
     border-bottom: 1px solid var(--card-border);
-    font-size: 0.75rem;
+    text-align: left;
+    background: rgba(0, 0, 0, 0.2);
   }
 
   .data-table td {
@@ -169,7 +197,11 @@
     vertical-align: middle;
   }
 
-  /* Badges & Buttons */
+  .data-table tr:hover td {
+    background: rgba(185, 43, 39, 0.1);
+  }
+
+  /* Badges & Action Buttons */
   .badge {
     background: rgba(196, 154, 69, 0.1);
     color: var(--gold-accent);
@@ -198,7 +230,7 @@
     border: none;
     cursor: pointer;
     text-decoration: none;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
+    transition: all 0.2s ease;
   }
 
   .btn-primary {
@@ -221,15 +253,35 @@
     border-color: var(--gold-accent);
   }
 
+  .btn-dash-action {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 3px;
+    border: 1px solid var(--gold-accent);
+    background: rgba(196, 154, 69, 0.15);
+    color: var(--gold-accent);
+    font-family: monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .btn-dash-action:hover {
+    background: var(--gold-accent);
+    color: #000;
+    box-shadow: 0 0 10px rgba(196, 154, 69, 0.5);
+  }
+
   .btn-sm {
     padding: 4px 10px;
     font-size: 0.75rem;
   }
 
-  /* Timeline & Wanted Cards Overrides */
+  /* Activity Feed & Wanted Section */
   .timeline-item {
-    padding: 8px 0;
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+    padding: 10px 0;
+    border-bottom: 1px dashed var(--card-border);
   }
 
   .timeline-item:last-child {
@@ -237,97 +289,127 @@
   }
 
   .wanted-card {
-    background: radial-gradient(circle at top left, #24201c, var(--card-bg)) !important;
+    background: radial-gradient(circle at top left, #24201c, var(--card-bg));
+    border-left: 3px solid var(--accent-red);
     border-top: 1px solid var(--card-border);
     border-right: 1px solid var(--card-border);
     border-bottom: 1px solid var(--card-border);
+    padding: 12px;
+    margin-bottom: 12px;
+    border-radius: 4px;
   }
 </style>
 
+<!-- Header Console -->
 <div class="page-hdr">
   <div>
-    <div class="page-title">Welcome, <span id="dash-name">Detective</span> </div>
-    <div class="page-sub">Here's your intelligence overview for today.</div>
+    <h1 class="page-title">Welcome, <span id="dash-username">Detective</span></h1>
+    <div class="page-sub">Active Case Console & Intelligence Dossier</div>
   </div>
-  <a href="{% url 'cases' %}" class="btn btn-primary">Browse Cases</a>
+  <a href="{% url 'cases' %}" class="btn btn-primary">Browse All Cases</a>
 </div>
 
-<div class="stat-grid">
-  <div class="stat-card">
-    <div class="stat-top">
-      <div class="stat-label">Cases Solved</div>
-      <div class="stat-icon-wrap" style="background:var(--green-d)"><i class="fa-solid fa-check-double" style="color:var(--green)"></i></div>
+<div class="murder-wrapper">
+  <!-- Stats Grid -->
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Operative</div>
+        <div class="stat-icon-wrap" style="background:rgba(255,255,255,0.05)">
+          <i class="fa-solid fa-user-ninja" style="color:var(--text-muted)"></i>
+        </div>
+      </div>
+      <div class="stat-value" id="stat-operative" style="font-size: 1.3rem;">...</div>
+      <div class="stat-trend"><span class="trend-up">● Online</span> Active Session</div>
     </div>
-    <div class="stat-value" id="stat-solved" style="color:var(--green)">0</div>
-    <div class="stat-trend"><span class="trend-up">▲ Live</span> from dossier</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-top">
-      <div class="stat-label">Active Cases</div>
-      <div class="stat-icon-wrap" style="background:var(--blue-d)"><i class="fa-solid fa-folder-open" style="color:var(--blue)"></i></div>
-    </div>
-    <div class="stat-value" id="stat-active" style="color:var(--blue)">0</div>
-    <div class="stat-trend"><span class="trend-up">▲ System</span> monitored</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-top">
-      <div class="stat-label">Detective Score</div>
-      <div class="stat-icon-wrap" style="background:var(--orange-d)"><i class="fa-solid fa-star" style="color:var(--orange)"></i></div>
-    </div>
-    <div class="stat-value" id="stat-score" style="color:var(--orange)">0</div>
-    <div class="stat-trend">Points accumulated</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-top">
-      <div class="stat-label">Assigned Rank</div>
-      <div class="stat-icon-wrap" style="background:rgba(139,92,246,.15)"><i class="fa-solid fa-shield-halved" style="color:#8B5CF6"></i></div>
-    </div>
-    <div class="stat-value" id="stat-rank" style="color:#8B5CF6; font-size: 1.5rem; padding-top: 0.35rem;">Rookie</div>
-    <div class="stat-trend">Security clearance</div>
-  </div>
-</div>
 
-<div class="dash-grid">
-  <div>
-    <!-- Recent Cases -->
-    <div class="card" style="margin-bottom:1rem">
-      <div class="section-hdr">
-        <div class="section-title">Recent Cases</div>
-        <a href="{% url 'cases' %}" class="btn btn-ghost btn-sm">View All →</a>
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Assigned Rank</div>
+        <div class="stat-icon-wrap" style="background:rgba(139,92,246,.15)">
+          <i class="fa-solid fa-shield-halved" style="color:#8B5CF6"></i>
+        </div>
       </div>
-      <div style="overflow-x:auto">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Case</th>
-              <th>Location</th>
-              <th>Status</th>
-              <th>Risk Level</th>
-              <th>Loss</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="dash-case-table">
-            <tr><td colspan="6" style="text-align:center;color:var(--text-muted);">Loading central database files...</td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="stat-value" id="dash-rank" style="color:#8B5CF6; font-size: 1.4rem;">Rookie</div>
+      <div class="stat-trend">Security Clearance Level</div>
     </div>
-    <!-- Timeline -->
-    <div class="card">
-      <div class="section-hdr"><div class="section-title">Investigation Activity</div></div>
-      <div class="timeline" id="dash-timeline">
-        <div style="padding:1rem;color:var(--text-muted);">Parsing recent tactical event records...</div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Case Attempts</div>
+        <div class="stat-icon-wrap" style="background:rgba(234,179,8,0.15)">
+          <i class="fa-solid fa-list-check" style="color:#eab308"></i>
+        </div>
       </div>
+      <div class="stat-value" id="dash-attempts" style="color:#eab308">0</div>
+      <div class="stat-trend">Submissions Made</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <div class="stat-label">Detective Score</div>
+        <div class="stat-icon-wrap" style="background:rgba(196,154,69,0.15)">
+          <i class="fa-solid fa-star" style="color:var(--gold-accent)"></i>
+        </div>
+      </div>
+      <div class="stat-value" id="dash-score" style="color:var(--gold-accent)">0</div>
+      <div class="stat-trend">Points Accumulated</div>
     </div>
   </div>
 
-  <!-- Most Wanted -->
-  <div>
-    <div class="card">
-      <div class="section-hdr"><div class="section-title">Most Wanted Suspects</div></div>
-      <div class="wanted-list" id="wanted-list">
-        <div style="padding:1rem;color:var(--text-muted);">Scanning local grids for target profiles...</div>
+  <!-- Dashboard Split View -->
+  <div class="dash-grid">
+    <!-- Left Column: Active Cases & Timeline -->
+    <div>
+      <!-- Recent Cases Table -->
+      <div class="card" style="margin-bottom: 20px;">
+        <div class="section-hdr">
+          <div class="section-title">Active Case Database</div>
+          <a href="{% url 'cases' %}" class="btn btn-ghost btn-sm">View All →</a>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Case ID</th>
+                <th>Case #</th>
+                <th>Title</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="dash-cases-body">
+              <tr>
+                <td colspan="6" style="text-align:center; color:var(--text-muted); padding:30px;">
+                  Scanning central database files...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Evidence Activity Timeline -->
+      <div class="card">
+        <div class="section-hdr">
+          <div class="section-title">Investigation Timeline</div>
+        </div>
+        <div class="timeline" id="dash-timeline">
+          <div style="padding:1rem; color:var(--text-muted);">Parsing recent tactical event records...</div>
+        </div>
+      </div>
+    </div>
+
+    <!--Most Wanted Targets -->
+    <div>
+      <div class="card">
+        <div class="section-hdr">
+          <div class="section-title">Most Wanted Suspects</div>
+        </div>
+        <div class="wanted-list" id="wanted-list">
+          <div style="padding:1rem; color:var(--text-muted);">Scanning local grids for target profiles...</div>
+        </div>
       </div>
     </div>
   </div>
@@ -337,123 +419,149 @@
 
 {% block extra_js %}
 <script>
-/* Note: profile/rank/score/avatar/username are populated globally by app.js
-   (loadProfile) via the #dash-name, #stat-solved, #stat-score, #stat-rank ids.
-   This script only handles what's specific to the dashboard page:
-   recent cases table, evidence timeline, and the most-wanted list. */
-
 document.addEventListener('DOMContentLoaded', async function () {
-    const supabase = window.supabaseClient;
-    if (!supabase) {
-        console.error('Supabase client injection failed.');
-        return;
+  const supabase = window.supabaseClient;
+  if (!supabase) {
+    console.error('Supabase client missing.');
+    return;
+  }
+
+  // Dynamic Rank Tier Calculation Logic (3 cases structure)
+  function calculateRank(score) {
+    if (score >= 600) return 'Master Mind';
+    if (score >= 300) return 'Senior Detective';
+    if (score >= 100) return 'Investigator';
+    return 'Rookie';
+  }
+
+  // Retrieve Current Auth User & Profile Details
+  try {
+    const { data: authData, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !authData?.user) {
+      console.warn('User is unauthenticated.');
+      document.getElementById('dash-username').textContent = 'UNAUTHORIZED';
+      document.getElementById('stat-operative').textContent = 'UNAUTHORIZED';
+      return;
     }
 
-    // active cases count (dashboard's own stat card, separate from the sidebar badge)
-    try {
-        const { count: activeCount, error } = await supabase
-            .from('cases')
-            .select('*', { count: 'exact', head: true })
-            .eq('status', 'Active');
+    const userId = authData.user.id;
 
-        if (error) console.error('active count error:', error);
-        document.getElementById('stat-active').textContent = activeCount || 0;
-    } catch (err) {
-        console.error('Active count block failed:', err);
+    const { data: profile, error: profileError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (profileError) {
+      console.error('Profile fetch error:', profileError);
+    } else if (profile) {
+      const username = profile.username || 'Agent';
+      const userScore = profile.score || 0;
+      
+      // Calculate dynamic rank based on score or fall back to column
+      const calculatedRank = calculateRank(userScore);
+
+      document.getElementById('dash-username').textContent = username;
+      document.getElementById('stat-operative').textContent = username;
+      document.getElementById('dash-rank').textContent = profile.rank && profile.rank !== 'Rookie' ? profile.rank : calculatedRank;
+      
+      // Display attempts count using existing cases_solved tracking field
+      document.getElementById('dash-attempts').textContent = profile.cases_solved || 0;
+      document.getElementById('dash-score').textContent = userScore;
     }
+  } catch (err) {
+    console.error('Auth or Profile block failed:', err);
+  }
 
-    // recent cases log
-    try {
-        const { data: casesData, error } = await supabase
-            .from('cases')
-            .select('case_number, title, location, status, risk_level, loss_value')
-            .order('created_at', { ascending: false })
-            .limit(4);
+  //Populate Cases Table with View Case Action
+  try {
+    const { data: cases, error: casesError } = await supabase
+      .from('cases')
+      .select('*')
+      .order('case_id', { ascending: true });
 
-        if (error) console.error('cases query error:', error);
+    const tbody = document.getElementById('dash-cases-body');
 
-        const tableBody = document.getElementById('dash-case-table');
-        if (casesData && casesData.length > 0) {
-            tableBody.innerHTML = casesData.map(c => `
-                <tr>
-                    <td><strong>${c.case_number || ''}</strong><br><small style="color:var(--text-muted)">${c.title || ''}</small></td>
-                    <td>${c.location || 'Unknown'}</td>
-                    <td><span class="badge">${c.status || 'Active'}</span></td>
-                    <td>Level ${c.risk_level || 1}</td>
-                    <td><strong>${c.loss_value || 'N/A'}</strong></td>
-                    <td><button class="btn btn-ghost btn-sm" onclick="viewCaseDetails('${c.case_number}')">View</button></td>
-                </tr>
-            `).join('');
-        } else {
-            tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted)">No operational case files returned.</td></tr>';
-        }
-    } catch (err) {
-        console.error('Cases block failed:', err);
-        document.getElementById('dash-case-table').innerHTML =
-            '<tr><td colspan="6" style="text-align:center;color:var(--text-muted)">Error loading cases.</td></tr>';
+    if (casesError) {
+      console.error('Cases fetch error:', casesError);
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--accent-red);">ERROR LOADING FILES</td></tr>';
+    } else if (!cases || cases.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">NO ACTIVE CASES ASSIGNED</td></tr>';
+    } else {
+      tbody.innerHTML = cases.map(function (c) {
+        return `
+          <tr>
+            <td>#${c.case_id}</td>
+            <td><strong>${c.case_number || 'N/A'}</strong></td>
+            <td>${c.title || 'Untitled Case'}</td>
+            <td>${c.location || 'Unknown'}</td>
+            <td><span class="badge">${c.status || 'Active'}</span></td>
+            <td>
+              <a href="/cases/#case-${c.case_id}" class="btn-dash-action">View Case</a>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
+  } catch (err) {
+    console.error('Cases table query failed:', err);
+  }
 
-    // evidence timeline
-    try {
-        const { data: evidenceTimeline, error } = await supabase
-            .from('evidence')
-            .select('item_name, found_at, cases(case_number)')
-            .limit(3);
+  // Populate Recent Clues Timeline
+  try {
+    const { data: evidenceTimeline, error: evError } = await supabase
+      .from('evidence')
+      .select('item_name, found_at, cases(case_number)')
+      .limit(3);
 
-        if (error) console.error('evidence query error:', error);
+    const timelineContainer = document.getElementById('dash-timeline');
 
-        const timelineContainer = document.getElementById('dash-timeline');
-        if (evidenceTimeline && evidenceTimeline.length > 0) {
-            timelineContainer.innerHTML = evidenceTimeline.map(e => `
-                <div class="timeline-item" style="display:flex; gap:1rem; margin-bottom:1rem; font-size:0.82rem;">
-                    <div style="color:var(--gold-accent); font-weight:bold;">[CLUE Found]</div>
-                    <div>
-                        <strong>${e.item_name || 'Evidence Item'}</strong> secured at location "${e.found_at || 'Crime Scene'}".
-                        <br><small style="color:var(--text-muted)">Assigned Case File: ${e.cases?.case_number || 'Unlinked'}</small>
-                    </div>
-                </div>
-            `).join('');
-        } else {
-            timelineContainer.innerHTML = '<div style="padding:1rem;color:var(--text-muted);font-size:0.85rem;">No recent physical analysis records found.</div>';
-        }
-    } catch (err) {
-        console.error('Timeline block failed:', err);
-        document.getElementById('dash-timeline').innerHTML =
-            '<div style="padding:1rem;color:var(--text-muted);font-size:0.85rem;">Error loading activity.</div>';
+    if (evError) console.error('Evidence query error:', evError);
+
+    if (evidenceTimeline && evidenceTimeline.length > 0) {
+      timelineContainer.innerHTML = evidenceTimeline.map(e => `
+        <div class="timeline-item" style="display:flex; gap:1rem; font-size:0.82rem;">
+          <div style="color:var(--gold-accent); font-weight:bold;">[CLUE SECURED]</div>
+          <div>
+            <strong style="color:var(--text-primary);">${e.item_name || 'Evidence Item'}</strong> found at location "${e.found_at || 'Crime Scene'}".
+            <br><small style="color:var(--text-muted)">Assigned File: ${e.cases?.case_number || 'Unlinked'}</small>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      timelineContainer.innerHTML = '<div style="padding:0.5rem 0; color:var(--text-muted); font-size:0.85rem;">No recent physical analysis records found.</div>';
     }
+  } catch (err) {
+    console.error('Timeline block failed:', err);
+  }
 
-    // wanted suspects
-    try {
-        const { data: suspectList, error } = await supabase
-            .from('suspects')
-            .select('name, occupation, suspect_status, cases(title)')
-            .eq('suspect_status', 'Wanted')
-            .limit(3);
+  //Populate Most Wanted Suspects Card
+  try {
+    const { data: suspectList, error: suspError } = await supabase
+      .from('suspects')
+      .select('name, occupation, suspect_status, cases(title)')
+      .eq('suspect_status', 'Wanted')
+      .limit(3);
 
-        if (error) console.error('suspects query error:', error);
+    const wantedContainer = document.getElementById('wanted-list');
 
-        const wantedContainer = document.getElementById('wanted-list');
-        if (suspectList && suspectList.length > 0) {
-            wantedContainer.innerHTML = suspectList.map(s => `
-                <div class="wanted-card" style="padding:0.75rem; border-left:3px solid var(--accent-red); margin-bottom:0.75rem; border-radius:4px;">
-                    <div style="font-weight:600; font-size:0.9rem; color:var(--text-primary);">${s.name}</div>
-                    <div style="font-size:0.75rem; color:var(--text-muted);">${s.occupation || 'No Listed Occupation'}</div>
-                    <div style="font-size:0.72rem; margin-top:0.25rem; color:var(--gold-accent);">Linked Matrix: ${s.cases?.title || 'Unknown Case'}</div>
-                </div>
-            `).join('');
-        } else {
-            wantedContainer.innerHTML = '<div style="padding:1rem;color:var(--text-muted);font-size:0.85rem;">All target suspects accounted for or contained.</div>';
-        }
-    } catch (err) {
-        console.error('Suspects block failed:', err);
-        document.getElementById('wanted-list').innerHTML =
-            '<div style="padding:1rem;color:var(--text-muted);font-size:0.85rem;">Error loading suspects.</div>';
+    if (suspError) console.error('Suspects query error:', suspError);
+
+    if (suspectList && suspectList.length > 0) {
+      wantedContainer.innerHTML = suspectList.map(s => `
+        <div class="wanted-card">
+          <div style="font-weight:600; font-size:0.9rem; color:var(--text-primary);">${s.name}</div>
+          <div style="font-size:0.75rem; color:var(--text-muted);">${s.occupation || 'No Listed Occupation'}</div>
+          <div style="font-size:0.72rem; margin-top:0.25rem; color:var(--gold-accent);">Linked Matrix: ${s.cases?.title || 'Unknown Case'}</div>
+        </div>
+      `).join('');
+    } else {
+      wantedContainer.innerHTML = '<div style="padding:0.5rem 0; color:var(--text-muted); font-size:0.85rem;">All target suspects accounted for or contained.</div>';
     }
+  } catch (err) {
+    console.error('Suspects block failed:', err);
+  }
 });
-
-function viewCaseDetails(caseNumber) {
-    sessionStorage.setItem('selectedCase', caseNumber);
-    window.location.href = "/case/" + caseNumber + "/evidence/";
-}
 </script>
 {% endblock %}

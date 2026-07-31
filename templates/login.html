@@ -9,18 +9,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Utility fallback to make sure hidden states hide correctly */
+        /* Utility fallback styles */
         .hidden { display: none !important; }
-        .error-msg { color: #ff6b6b; font-size: 0.85rem; margin-bottom: 1rem; text-align: center; }
+        .error-msg { color: #ef4444; font-size: 0.85rem; margin-bottom: 1rem; text-align: center; }
     </style>
 </head>
 
 <body>
 
 <div id="screen-login">
+    <!-- Left art section -->
     <div class="login-art">
-        <div class="login-art-svg"></div>
+        <div class="login-art-svg">
+            <!-- Left badge logo -->
+            <div class="badge-logo-container">
+                <i class="fa-solid fa-shield-cat"></i>
+            </div>
+        </div>
 
         <div class="login-art-text">
             <h2>Heist Solver</h2>
@@ -28,10 +35,14 @@
         </div>
     </div>
 
+    <!-- Right form panel -->
     <div class="login-form-panel">
 
         <div class="lf-logo">
-            <div class="lf-logo-icon">H</div>
+            <!-- Right logo icon box updated -->
+            <div class="lf-logo-icon">
+                <i class="fa-solid fa-shield-cat"></i>
+            </div>
 
             <div>
                 <div class="lf-logo-text">Heist Solver</div>
@@ -39,6 +50,7 @@
             </div>
         </div>
 
+        <!-- Navigation tab switches -->
         <div class="tab-switch">
             <button class="tab-btn active" id="ltab-in" onclick="switchLoginTab('in')">
                 Sign In
@@ -52,32 +64,40 @@
         <!-- Error reporting zone -->
         <div id="auth-error" class="error-msg hidden"></div>
 
+        <!-- Registration extra fields -->
         <div id="reg-fields" class="hidden">
             <div class="rf">
                 <label class="flabel">Full Name</label>
                 <input class="finput"
-                       placeholder="e.g. Inspector Kane"
+                       placeholder="e.g. Write your name here"
                        id="reg-name">
             </div>
         </div>
 
+        <!-- Username field -->
         <div class="rf">
             <label class="flabel">Username</label>
             <input class="finput"
-                   placeholder="Enter your username"
+                   placeholder="Enter your detective handle"
                    id="inp-user"
-                   value="inspector_kane">
+                   value="">
         </div>
 
+        <!-- Password input container -->
         <div class="rf">
             <label class="flabel">Password</label>
-            <input class="finput"
-                   type="password"
-                   placeholder="Enter your password"
-                   id="inp-pass"
-                   value="password">
+            <div class="pass-wrapper">
+                <input class="finput"
+                       type="password"
+                       placeholder="Enter password (min 8 chars)"
+                       id="inp-pass"
+                       value="">
+                <!-- Persistent eye icon -->
+                <i class="fa-solid fa-eye pass-eye-btn" id="toggle-pass-btn" onclick="togglePasswordVisibility()"></i>
+            </div>
         </div>
 
+        <!-- Form submit button -->
         <button class="submit-btn"
                 id="login-btn"
                 onclick="handleSubmit(event)">
@@ -90,6 +110,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
+  // Supabase global configs
   window.SUPABASE_URL = "{{ supabase_url }}";
   window.SUPABASE_ANON_KEY = "{{ supabase_anon_key }}";
 </script>
@@ -97,7 +118,10 @@
 <script src="{% static 'js/supabase-client.js' %}"></script>
 <script>
 
+// Current auth mode
 let loginMode = "in";
+
+// Show error messages
 function showError(msg) {
     const errBox = document.getElementById("auth-error");
     if (msg) {
@@ -108,13 +132,37 @@ function showError(msg) {
     }
 }
 
+// Toggle password view
+function togglePasswordVisibility() {
+    const passInput = document.getElementById("inp-pass");
+    const toggleBtn = document.getElementById("toggle-pass-btn");
+    
+    if (passInput.type === "password") {
+        passInput.type = "text";
+        toggleBtn.classList.remove("fa-eye");
+        toggleBtn.classList.add("fa-eye-slash");
+    } else {
+        passInput.type = "password";
+        toggleBtn.classList.remove("fa-eye-slash");
+        toggleBtn.classList.add("fa-eye");
+    }
+}
+
+// Switch auth tabs
 function switchLoginTab(mode) {
     loginMode = mode;
-    showError(""); // Clear old status alerts
+    showError(""); // Clear status alerts
 
     document.getElementById("ltab-in").classList.toggle("active", mode === "in");
     document.getElementById("ltab-up").classList.toggle("active", mode === "up");
     document.getElementById("reg-fields").classList.toggle("hidden", mode === "in");
+
+    const passInput = document.getElementById("inp-pass");
+    if (mode === "up") {
+        passInput.placeholder = "Create password (min 8 chars)";
+    } else {
+        passInput.placeholder = "Enter your password";
+    }
 
     document.getElementById("login-btn").textContent =
         mode === "in"
@@ -122,13 +170,14 @@ function switchLoginTab(mode) {
             : "Create Account";
 }
 
+// Handle submit action
 async function handleSubmit(event) {
     event.preventDefault(); 
     showError("");
     
-    // Check client instance state before calling APIs
+    // Check client state
     if (!window.supabaseClient) {
-        showError("Supabase initialization failed. Verify client connection settings. ");
+        showError("Supabase initialization failed. Verify client connection settings.");
         return;
     }
 
@@ -136,12 +185,21 @@ async function handleSubmit(event) {
     const password = document.getElementById("inp-pass").value;
     const fullName = document.getElementById("reg-name").value.trim();
 
+    // Validate empty credentials
     if (!username || !password) {
         showError("Username and password credentials are required.");
         return;
     }
 
-    // Convert username to a valid standard format string for Supabase auth engine
+    // Check registration password
+    if (loginMode === "up") {
+        if (password.length < 8) {
+            showError("Password must be at least 8 characters long.");
+            return;
+        }
+    }
+
+    // Create pseudo email
     const pseudoEmail = `${username}@heistsolver.com`;
     const btn = document.getElementById("login-btn");
     
@@ -150,19 +208,22 @@ async function handleSubmit(event) {
 
     try {
         if (loginMode === "in") {
-            // login
+            // User login operation
             const { data, error } = await window.supabaseClient.auth.signInWithPassword({
                 email: pseudoEmail,
                 password: password,
             });
 
-            if (error) throw error;
+            // Display standard error
+            if (error) {
+                throw new Error("Invalid username or password.");
+            }
 
             localStorage.setItem("loggedInUser", username);
             window.location.href = "{% url 'dashboard' %}";
 
         } else {
-            // register
+            // User registration operation
             if (!fullName) {
                 showError("Please enter your full name to generate a target profile.");
                 btn.disabled = false;
@@ -170,16 +231,21 @@ async function handleSubmit(event) {
                 return;
             }
 
-            // Sign up user inside Supabase core identities
+            // Create new account
             const { data, error: signUpError } = await window.supabaseClient.auth.signUp({
                 email: pseudoEmail,
                 password: password,
             });
 
-            if (signUpError) throw signUpError;
+            if (signUpError) {
+                if (signUpError.message.includes("already registered")) {
+                    throw new Error("Username is already taken.");
+                }
+                throw signUpError;
+            }
             if (!data.user) throw new Error("Authentication interface failed to provision identity.");
 
-            // Insert new stats entry row inside public.users table
+            // Insert user profile
             const { error: profileError } = await window.supabaseClient
                 .from('users')
                 .insert([
@@ -195,7 +261,6 @@ async function handleSubmit(event) {
 
             if (profileError) {
                 console.error("Profile binding tracking failed:", profileError);
-                // If profile table sync failed but auth succeeded, proceed to loop manually
             }
 
             localStorage.setItem("loggedInUser", username);
@@ -209,6 +274,7 @@ async function handleSubmit(event) {
     }
 }
 
+// Global key bindings
 document.addEventListener("DOMContentLoaded", () => {
     const pass = document.getElementById("inp-pass");
     const user = document.getElementById("inp-user");

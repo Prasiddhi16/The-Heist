@@ -71,13 +71,12 @@ def global_search(request):
 
     return JsonResponse({'cases': case_results, 'suspects': suspect_results})
 def get_supabase_user_id(request):
-    user_id = request.headers.get("X-User-ID")
-
-    if not user_id:
-        user_id = request.GET.get("user_id")
-
-    if not user_id:
-        user_id = request.POST.get("user_id")
+    user_id = (
+        request.headers.get("X-User-ID")
+        or request.GET.get("user_id")
+        or request.POST.get("user_id")
+        or request.session.get("user_id")
+    )
 
     if not user_id:
         return None
@@ -111,6 +110,31 @@ def _get_or_create_submission(case_id, submission_id, user_id=None):
 
     return submission
 
+
+@csrf_exempt
+def set_session_user(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST required"}, status=405)
+
+    try:
+        body = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    user_id = body.get("user_id")
+
+    if not user_id:
+        return JsonResponse({"error": "Missing user_id"}, status=400)
+
+    request.session["user_id"] = str(user_id)
+    request.session.modified = True
+
+    print("SESSION SAVED:", request.session["user_id"])
+
+    return JsonResponse({
+        "success": True,
+        "user_id": user_id
+    })
 
 @csrf_exempt
 def toggle_accuse(request, case_id, suspect_id):
@@ -549,6 +573,7 @@ def solve_case(request, case_id):
 
 def casehistory(request):
     user_id = get_supabase_user_id(request)
+    print("USER ID:", user_id)
 
     if not user_id:
         return render(request, "casehistory.html", {

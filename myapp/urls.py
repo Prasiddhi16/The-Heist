@@ -9,6 +9,11 @@ urlpatterns = [
     path("casehistory/", views.casehistory, name="casehistory"),
     path("leaderboard/", views.leaderboard, name="leaderboard"),
     path("heist/", views.heist, name="heist"),
+    path(
+    "api/set-session-user/",
+    views.set_session_user,
+    name="set_session_user",
+),
 
     path(
         "case/<int:case_id>/suspects/",
@@ -73,4 +78,5 @@ urlpatterns = [
         views.review_submission,
         name="review_submission"
     ),
+    
 ]

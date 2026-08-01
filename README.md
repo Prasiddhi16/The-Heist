@@ -15,7 +15,7 @@ evidence is tied together through enforced foreign key relationships.
 ##  Demo
 Watch video Heist Demo.mp4
 
-https://drive.google.com/drive/folders/1JLgHSjlh5T-adoU0N18XCiMBFzsDxhdr
+https://drive.google.com/file/d/1fmK8pp2jzkN64uVTof_Nb7Zw-FUrqM2C/view?usp=sharing
 
 
 

@@ -94,5 +94,5 @@ Mr. Bipesh Subedi.
 | Prasiddhi Dumre | 037970-24 |https://github.com/Prasiddhi16|
 | Ushma Sapkota | 037999-24 |https://github.com/Ushma-Sapkota|
 | Anusha Khatri | 036130-24 |https://github.com/AnushaKhatri5|
-'''
+
 

@@ -15,7 +15,7 @@ evidence is tied together through enforced foreign key relationships.
 
 ## Demo Video
 
-[Watch the Heist Demo](theheist/heist.mp4)
+[Watch the Heist Demo](theheist/Heist.mp4)
 
 
 

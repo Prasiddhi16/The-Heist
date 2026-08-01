@@ -12,8 +12,9 @@ evidence is tied together through enforced foreign key relationships.
 ![Evidence Investigation](The%20Heist%20images/Evidence%20Investigation%20Page.png)
  **For more screenshots and application pages, please visit the `The Heist Images` folder in this repository.**
 
-## Demo Video
-[ Watch the Heist Demo](Heist.mp4)
+##  Demo
+
+[Watch the Heist Demo](./Heist.mp4)
 
 
 

@@ -1,6 +1,69 @@
+{% load static %}
+
+<style>
+  .nav-search {
+    position: relative;
+  }
+
+  .search-results-dropdown {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: var(--bg, #1a1a1a);
+    border: 1px solid var(--border, #333);
+    border-radius: 8px;
+    max-height: 320px;
+    overflow-y: auto;
+    z-index: 50;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  }
+
+  .search-group-label {
+    padding: 6px 12px;
+    font-size: .7rem;
+    text-transform: uppercase;
+    color: var(--orange, #f90);
+    opacity: .8;
+  }
+
+  .search-result-item {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: var(--text, #eee);
+  }
+
+  .search-result-item:hover {
+    background: rgba(255,255,255,0.05);
+  }
+
+  .search-result-title {
+    font-size: .85rem;
+    font-weight: 600;
+  }
+
+  .search-result-sub {
+    font-size: .7rem;
+    opacity: .65;
+  }
+
+  .search-empty {
+    padding: 10px 12px;
+    font-size: .8rem;
+    opacity: .6;
+  }
+</style>
+
 <nav class="navbar">
   <a class="nav-logo" href="{% url 'heist' %}">
-    <div class="nav-logo-icon">🔍</div>
+    <div class="nav-logo-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    </div>
     <div>
       <div class="nav-logo-text">Heist Solver</div>
       <div class="nav-logo-sub">DETECTIVE INTEL</div>
@@ -8,8 +71,14 @@
   </a>
 
   <div class="nav-search">
-    <span class="nav-search-icon">🔍</span>
-    <input type="text" placeholder="Search cases, suspects..." id="globalSearch" />
+    <span class="nav-search-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+    </span>
+    <input type="text" placeholder="Search cases, suspects..." id="globalSearch" autocomplete="off" />
+    <div id="searchResults" class="search-results-dropdown" style="display:none;"></div>
   </div>
 
   <div class="nav-right">
@@ -20,3 +89,5 @@
     <div class="nav-avatar js-avatar" title="Detective">DT</div>
   </div>
 </nav>
+
+<script src="{% static 'js/search.js' %}"></script>

@@ -1,4 +1,4 @@
-# The Heist — Detective Intelligence System
+# The Heist:Detective Intelligence System
 
 A web-based case management and detective simulation platform built on a
 normalized relational schema, where every case, suspect, and piece of
@@ -37,7 +37,7 @@ constraints.
 
 Investigators sign up, land on a dashboard of active cases, drill into a
 specific case to review evidence and suspect profiles, and file a final
-verdict — accusing a suspect and citing supporting evidence — which the
+verdict and accusing a suspect and citing supporting evidence , which the
 system checks against a hidden solution and scores.
 
 Built as a group effort for **COMP 232 (Database Management Systems)** at

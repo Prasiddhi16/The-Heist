@@ -21,6 +21,7 @@ https://github.com/user-attachments/assets/your-video-id.mp4
 https://the-heist.onrender.com/
 
 ## Linked Report
+[Click here to view the PDF](The Heist.pdf)
 
 <!-- Link to the full project report PDF, e.g.: [Project Report](./docs/project-report.pdf) -->
 

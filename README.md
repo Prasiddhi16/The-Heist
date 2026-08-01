@@ -8,7 +8,6 @@ evidence is tied together through enforced foreign key relationships.
 
 ![Active Cases](The%20Heist%20images/Active%20Cases%20Page.png)
 
-![Dashboard](The%20Heist%20images/Dashboard%20Page%20-%20Active%20Case%20Console%20%26%20Intelligence%20Do....png)
 
 ![Evidence Investigation](The%20Heist%20images/Evidence%20Investigation%20Page.png)
  **For more screenshots and application pages, please visit the `The Heist Images` folder in this repository.**

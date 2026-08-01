@@ -1,7 +1,5 @@
 {% load static %}
-
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -28,62 +26,13 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-window.SUPABASE_URL = "{{ supabase_url }}";
-window.SUPABASE_ANON_KEY = "{{ supabase_anon_key }}";
+  window.SUPABASE_URL = "{{ supabase_url }}";
+  window.SUPABASE_ANON_KEY = "{{ supabase_anon_key }}";
+  window.HEIST_LOGIN_URL = "{% url 'login' %}";
 </script>
 
 <script src="{% static 'js/supabase-client.js' %}"></script>
 <script src="{% static 'js/app.js' %}"></script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const caseHistoryLink = document.getElementById("case-history-link");
-
-    if (!caseHistoryLink) {
-        console.log("Case History link not found.");
-        return;
-    }
-
-    console.log("Case History handler attached.");
-
-    caseHistoryLink.addEventListener("click", async function (event) {
-        event.preventDefault();
-
-        console.log("Case History clicked.");
-
-        try {
-            const userId = await window.getSupabaseUserId();
-
-            console.log("Retrieved User ID:", userId);
-
-            const url = new URL(
-                caseHistoryLink.href,
-                window.location.origin
-            );
-
-            if (userId) {
-                url.searchParams.set("user_id", userId);
-            }
-
-            console.log(
-                "Final Case History URL:",
-                url.toString()
-            );
-
-            window.location.href = url.toString();
-
-        } catch (error) {
-            console.error(
-                "Case History navigation error:",
-                error
-            );
-
-            window.location.href = caseHistoryLink.href;
-        }
-    });
-});
-</script>
-
 {% block extra_js %}{% endblock %}
 </body>
 </html>

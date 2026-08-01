@@ -21,7 +21,55 @@ from .models import (
     SolutionEvidence
 )
 
+from django.http import JsonResponse
+from django.urls import reverse
+from django.db.models import Q
+from .models import Case, Suspect
 
+
+def global_search(request):
+    query = request.GET.get('q', '').strip()
+
+    if len(query) < 2:
+        return JsonResponse({'cases': [], 'suspects': []})
+
+    cases = Case.objects.filter(
+        Q(title__icontains=query) |
+        Q(case_number__icontains=query) |
+        Q(location__icontains=query) |
+        Q(description__icontains=query)
+    )[:5]
+
+    suspects = Suspect.objects.select_related('case').filter(
+        Q(name__icontains=query) |
+        Q(occupation__icontains=query) |
+        Q(motive__icontains=query)
+    )[:5]
+
+    case_results = [
+        {
+            'id': c.case_id,
+            'title': c.title,
+            'case_number': c.case_number,
+            'status': c.status,
+             'url': reverse('cases') + f'#case-{c.case_id}',
+        }
+        for c in cases
+    ]
+
+    suspect_results = [
+        {
+            'id': s.suspect_id,
+            'name': s.name,
+            'occupation': s.occupation,
+            'case_title': s.case.title,
+            'case_id': s.case_id,
+            'url': reverse('suspects', args=[s.case_id])+ f'#suspect-{s.suspect_id}',
+        }
+        for s in suspects
+    ]
+
+    return JsonResponse({'cases': case_results, 'suspects': suspect_results})
 def get_supabase_user_id(request):
     user_id = request.headers.get("X-User-ID")
 

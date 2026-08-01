@@ -15,9 +15,11 @@ evidence is tied together through enforced foreign key relationships.
 
 ## Demo Video
 
-<!-- GitHub-hosted MP4 (renders inline and playable):
-https://github.com/user-attachments/assets/your-video-id.mp4
--->
+https://github.com/Prasiddhi16/The-Heist/raw/main/The-Heist1.mp4
+
+*(If it doesn't render inline, [click here to download/view it directly](./The-Heist1.mp4).)*
+
+📹 [Watch on Google Drive](https://drive.google.com/drive/folders/1JLgHSjlh5T-adoU0N18XCiMBFzsDxhdr) if the embed doesn't load
 
 ## Deployed Version
 https://the-heist.onrender.com/

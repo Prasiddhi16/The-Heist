@@ -94,14 +94,10 @@ Mr. Bipesh Subedi.
 | Anusha Khatri | 036130-24 |https://github.com/AnushaKhatri5|
 '''
 ## 📸 Application Screenshots
+![Active Cases](The%20Heist%20images/Active%20Cases%20Page.png)
 
-### Dashboard
-![Dashboard](The%20Heist%20Images/Dashboard%20Page.png)
+![Dashboard](The%20Heist%20images/Dashboard%20Page%20-%20Active%20Case%20Console%20%26%20Intelligence%20Do....png)
 
-### Active Cases
-![Active Cases](The%20Heist%20Images/Active%20Cases%20Page.png)
-
-### Evidence Investigation
-![Evidence Investigation](The%20Heist%20Images/Evidence%20Investigation%20Page.png)
+![Evidence Investigation](The%20Heist%20images/Evidence%20Investigation%20Page.png)
 
 > **For more screenshots and application pages, please visit the `The Heist Images` folder in this repository.**

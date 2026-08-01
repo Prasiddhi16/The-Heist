@@ -18,7 +18,7 @@ https://github.com/user-attachments/assets/your-video-id.mp4
 -->
 
 ## Deployed Version
-the-heist.onrender.com/
+https://the-heist.onrender.com/
 
 ## Linked Report
 

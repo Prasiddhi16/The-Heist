@@ -28,8 +28,8 @@ https://github.com/user-attachments/assets/your-video-id.mp4
 ## Overview
 
 The Heist (*Heist Solver: Detective Intelligence System*) is a web
-application that lets investigators manage multiple active criminal cases —
-heists, homicides, missing person cases — from a single structured
+application that lets investigators manage multiple active criminal cases like
+heists, homicides, missing person cases , from a single structured
 environment, rather than scattered spreadsheets and paper files. Every
 suspect, piece of evidence, and case outcome is stored in a relational
 database and explicitly linked back to its parent case through foreign key

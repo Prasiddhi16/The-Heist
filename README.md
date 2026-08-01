@@ -91,3 +91,16 @@ Mr. Bipesh Subedi.
 | Prasiddhi Dumre | 037970-24 |https://github.com/Prasiddhi16|
 | Ushma Sapkota | 037999-24 |https://github.com/Ushma-Sapkota|
 | Anusha Khatri | 036130-24 |https://github.com/AnushaKhatri5|
+'''
+## 📸 Application Screenshots
+
+### Dashboard
+![Dashboard](The%20Heist%20Images/Dashboard%20Page.png)
+
+### Active Cases
+![Active Cases](The%20Heist%20Images/Active%20Cases%20Page.png)
+
+### Evidence Investigation
+![Evidence Investigation](The%20Heist%20Images/Evidence%20Investigation%20Page.png)
+
+> **For more screenshots and application pages, please visit the `The Heist Images` folder in this repository.**

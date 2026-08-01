@@ -93,7 +93,7 @@ Mr. Bipesh Subedi.
 | Ushma Sapkota | 037999-24 |https://github.com/Ushma-Sapkota|
 | Anusha Khatri | 036130-24 |https://github.com/AnushaKhatri5|
 '''
-## 📸 Application Screenshots
+##  Application Screenshots
 ![Active Cases](The%20Heist%20images/Active%20Cases%20Page.png)
 
 ![Dashboard](The%20Heist%20images/Dashboard%20Page%20-%20Active%20Case%20Console%20%26%20Intelligence%20Do....png)

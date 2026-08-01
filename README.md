@@ -13,7 +13,8 @@ evidence is tied together through enforced foreign key relationships.
  **For more screenshots and application pages, please visit the `The Heist Images` folder in this repository.**
 
 ##  Demo
-Watch video Heist Demo.mp4
+Watch video  
+## Heist Demo.mp4
 
 https://drive.google.com/file/d/1fmK8pp2jzkN64uVTof_Nb7Zw-FUrqM2C/view?usp=sharing
 

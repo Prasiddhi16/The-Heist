@@ -20,31 +20,31 @@ if (window.supabase) {
     };
 
     (async () => {
-    const userId = await window.getSupabaseUserId();
+        const userId = await window.getSupabaseUserId();
 
-    console.log("Supabase UID:", userId);
+        console.log("Supabase UID:", userId);
 
-    if (!userId) return;
+        if (!userId) return;
 
-    const response = await fetch("/api/set-session-user/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        credentials: "same-origin",
-        body: JSON.stringify({
-            user_id: userId
-        })
-    });
+        const response = await fetch("/api/set-session-user/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "same-origin",
+            body: JSON.stringify({
+                user_id: userId
+            })
+        });
 
-    const result = await response.json();
+        const result = await response.json();
 
-    console.log("Session response:", result);
+        console.log("Session response:", result);
 
-    if (result.success) {
-        window.location.reload();
-    }
-})();
+        if (result.success) {
+            console.log("Django session updated successfully.");
+        }
+    })();
 
 } else {
     console.error("Supabase library failed to load.");

@@ -9,3 +9,15 @@ pip3 install -r requirements.txt
 python3 manage.py runserver
 
 '''
+## 📸 Application Screenshots
+
+### Dashboard
+![Dashboard](The%20Heist%20Images/Dashboard%20Page.png)
+
+### Active Cases
+![Active Cases](The%20Heist%20Images/Active%20Cases%20Page.png)
+
+### Evidence Investigation
+![Evidence Investigation](The%20Heist%20Images/Evidence%20Investigation%20Page.png)
+
+> **For more screenshots and application pages, please visit the `The Heist Images` folder in this repository.**

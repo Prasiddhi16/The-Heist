@@ -20,7 +20,7 @@ urlpatterns = [
         views.evidence,
         name="evidence"
     ),
-
+    path('api/search/', views.global_search, name='global_search'),
     path(
         "resolution/",
         views.case_resolution,

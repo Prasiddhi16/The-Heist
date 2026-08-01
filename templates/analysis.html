@@ -1,4 +1,3 @@
-
 {% extends 'index.html' %}
 {% load static %}
 
@@ -7,24 +6,84 @@
 {% block content %}
 
 <style>
-.analysis-page{
-    width:100%;
-    min-height:100%;
-    padding:30px 24px 60px;
-    color:#e5e7eb;
+    @import url('https://fonts.googleapis.com/css2?family=Nosifer&family=Special+Elite&display=swap');
+
+.page-hdr {
+  position: relative;
+  margin-bottom: 24px;
+  padding: 15px 0 15px 20px;
+  border-left: 3px solid var(--accent-red);
 }
 
-.analysis-page *{
-    box-sizing:border-box;
+.page-title {
+  font-family: 'Nosifer', cursive;
+  font-size: 1.8rem;
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow:
+    0 0 8px rgba(185, 43, 39, 0.9),
+    0 0 18px rgba(185, 43, 39, 0.7),
+    0 0 32px rgba(185, 43, 39, 0.5),
+    2px 2px 0 #000;
+  line-height: 1.3;
 }
 
-.analysis-container{
-    max-width:1250px;
-    margin:0 auto;
+.page-sub {
+  font-family: 'Special Elite', cursive;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+  font-style: italic;
+}
+.analysis-page { width: 100%; min-height: 100%; padding: 30px 24px 60px; color: #e5e7eb; }
+.analysis-page * { box-sizing: border-box; }
+
+.analysis-container { max-width: 1250px; margin: 0 auto; }
+
+.page-heading { margin-bottom: 30px; }
+.page-heading h2 { font-size: 32px; color: #f9fafb; margin-bottom: 8px; }
+.page-heading p { color: #9ca3af; font-size: 15px; }
+
+.case-summary {
+    background: rgba(31, 41, 55, .9);
+    border: 1px solid #374151;
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 28px;
 }
 
-.page-heading{
-    margin-bottom:30px;
+.case-summary-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; }
+
+.case-title h3 { color: #f9fafb; font-size: 24px; margin-bottom: 8px; }
+.case-title p { color: #9ca3af; font-size: 14px; }
+
+.status-badge {
+    padding: 7px 14px;
+    border-radius: 20px;
+    background: rgba(184, 134, 11, .15);
+    border: 1px solid #b8860b;
+    color: #d4af37;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.case-description {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #374151;
+    color: #d1d5db;
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.analysis-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+    gap: 24px;
+    align-items: start;
 }
 
 .page-heading h2{
@@ -41,803 +100,294 @@
     font-size:15px;
 }
 
-.case-summary{
-    background:rgba(31,41,55,.9);
-    border:1px solid #374151;
-    border-radius:14px;
-    padding:24px;
-    margin-bottom:28px;
+.suspect-details { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+
+.detail-item { background: rgba(55, 65, 81, .35); border-radius: 8px; padding: 12px; }
+.detail-label { color: #9ca3af; font-size: 11px; text-transform: uppercase; letter-spacing: .7px; margin-bottom: 5px; }
+.detail-value { color: #e5e7eb; font-size: 13px; line-height: 1.5; }
+
+.empty-state { text-align: center; padding: 30px 20px; color: #9ca3af; }
+.empty-icon { font-size: 34px; margin-bottom: 12px; opacity: .7; }
+.empty-state p { font-size: 14px; line-height: 1.6; }
+
+.evidence-count { color: #9ca3af; font-size: 13px; margin-top: -12px; margin-bottom: 18px; }
+.evidence-list { display: flex; flex-direction: column; gap: 12px; }
+
+.evidence-item {
+    background: rgba(17, 24, 39, .8);
+    border: 1px solid #374151;
+    border-radius: 9px;
+    padding: 16px;
+    transition: border-color .2s, transform .2s;
 }
 
-.case-summary-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:20px;
+.evidence-item:hover { border-color: #b8860b; transform: translateY(-1px); }
+
+.evidence-top { display: flex; justify-content: space-between; align-items: center; gap: 15px; margin-bottom: 8px; }
+.evidence-name { color: #f3f4f6; font-size: 15px; font-weight: 600; }
+
+.evidence-type {
+    color: #d4af37;
+    border: 1px solid #8b6b13;
+    background: rgba(184, 134, 11, .1);
+    padding: 4px 9px;
+    border-radius: 12px;
+    font-size: 10px;
+    text-transform: uppercase;
+    white-space: nowrap;
 }
 
-.case-title h3{
-    color:#f9fafb;
-    font-size:24px;
-    margin-bottom:8px;
+.evidence-location { color: #9ca3af; font-size: 12px; margin-bottom: 7px; }
+.evidence-details { color: #d1d5db; font-size: 13px; line-height: 1.5; }
+
+.readiness-card { text-align: center; }
+.readiness-card h3 { text-align: left; }
+
+.ring-wrap { position: relative; width: 190px; height: 190px; margin: 10px auto 25px; }
+.ring-wrap svg { width: 190px; height: 190px; transform: rotate(-90deg); }
+
+.ring-track { fill: none; stroke: #374151; stroke-width: 12; }
+.ring-fill { fill: none; stroke: #b8860b; stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset .8s ease; }
+
+.ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ring-pct { color: #f9fafb; font-size: 34px; font-weight: 700; }
+.ring-label { color: #9ca3af; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-top: 3px; }
+
+.checklist { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+
+.check-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    padding: 13px 14px;
+    background: rgba(17, 24, 39, .65);
+    border-radius: 8px;
+    border: 1px solid #374151;
 }
 
-.case-title p{
-    color:#9ca3af;
-    font-size:14px;
+.check-label { color: #d1d5db; font-size: 13px; }
+.check-value { color: #d4af37; font-size: 13px; font-weight: 600; text-align: right; }
+.pending { color: #9ca3af; font-weight: 400; }
+
+.hint-box { background: rgba(184, 134, 11, .07); border: 1px solid #6b5313; border-radius: 10px; padding: 18px; }
+.hint-title { color: #d4af37; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; margin-bottom: 12px; }
+.hint-suspect { color: #f3f4f6; font-size: 17px; font-weight: 600; margin-bottom: 8px; }
+.hint-meta { color: #9ca3af; font-size: 12px; margin-bottom: 10px; }
+.hint-note { color: #d1d5db; font-size: 13px; line-height: 1.6; }
+
+.verdict-card {
+    background: linear-gradient(135deg, rgba(184, 134, 11, .12), rgba(31, 41, 55, .9));
+    border-color: #6b5313;
 }
 
-.status-badge{
-    padding:7px 14px;
-    border-radius:20px;
-    background:rgba(184,134,11,.15);
-    border:1px solid #b8860b;
-    color:#d4af37;
-    font-size:12px;
-    text-transform:uppercase;
-    letter-spacing:1px;
+.verdict-info { color: #d1d5db; font-size: 13px; line-height: 1.6; margin-bottom: 20px; }
+
+.btn-solve {
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #b8860b;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: background .2s, transform .2s;
 }
 
-.case-description{
-    margin-top:18px;
-    padding-top:18px;
-    border-top:1px solid #374151;
-    color:#d1d5db;
-    line-height:1.7;
-    font-size:14px;
-}
+.btn-solve:hover:not(:disabled) { background: #d4af37; transform: translateY(-1px); }
+.btn-solve:disabled { background: #4b5563; color: #9ca3af; cursor: not-allowed; opacity: .7; }
 
-.analysis-grid{
-    display:grid;
-    grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);
-    gap:24px;
-    align-items:start;
-}
-
-.card{
-    background:rgba(31,41,55,.9);
-    border:1px solid #374151;
-    border-radius:14px;
-    padding:24px;
-    margin-bottom:24px;
-}
-
-.card:last-child{
-    margin-bottom:0;
-}
-
-.card h3{
-    color:#f9fafb;
-    font-size:18px;
-    margin-bottom:20px;
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.card h3::before{
-    content:"";
-    width:4px;
-    height:20px;
-    background:#b8860b;
-    border-radius:4px;
-}
-
-.suspect-box{
-    background:rgba(17,24,39,.8);
-    border:1px solid #4b5563;
-    border-radius:10px;
-    padding:20px;
-}
-
-.suspect-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:15px;
-    margin-bottom:15px;
-}
-
-.suspect-name{
-    color:#d4af37;
-    font-size:21px;
-    font-weight:600;
-}
-
-.accused-badge{
-    background:rgba(184,134,11,.15);
-    color:#d4af37;
-    border:1px solid #b8860b;
-    padding:5px 10px;
-    border-radius:15px;
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:.8px;
-}
-
-.suspect-details{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:14px;
-}
-
-.detail-item{
-    background:rgba(55,65,81,.35);
-    border-radius:8px;
-    padding:12px;
-}
-
-.detail-label{
-    color:#9ca3af;
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:.7px;
-    margin-bottom:5px;
-}
-
-.detail-value{
-    color:#e5e7eb;
-    font-size:13px;
-    line-height:1.5;
-}
-
-.empty-state{
-    text-align:center;
-    padding:30px 20px;
-    color:#9ca3af;
-}
-
-.empty-icon{
-    font-size:34px;
-    margin-bottom:12px;
-    opacity:.7;
-}
-
-.empty-state p{
-    font-size:14px;
-    line-height:1.6;
-}
-
-.evidence-count{
-    color:#9ca3af;
-    font-size:13px;
-    margin-top:-12px;
-    margin-bottom:18px;
-}
-
-.evidence-list{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-}
-
-.evidence-item{
-    background:rgba(17,24,39,.8);
-    border:1px solid #374151;
-    border-radius:9px;
-    padding:16px;
-    transition:border-color .2s,transform .2s;
-}
-
-.evidence-item:hover{
-    border-color:#b8860b;
-    transform:translateY(-1px);
-}
-
-.evidence-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:15px;
-    margin-bottom:8px;
-}
-
-.evidence-name{
-    color:#f3f4f6;
-    font-size:15px;
-    font-weight:600;
-}
-
-.evidence-type{
-    color:#d4af37;
-    border:1px solid #8b6b13;
-    background:rgba(184,134,11,.1);
-    padding:4px 9px;
-    border-radius:12px;
-    font-size:10px;
-    text-transform:uppercase;
-    white-space:nowrap;
-}
-
-.evidence-location{
-    color:#9ca3af;
-    font-size:12px;
-    margin-bottom:7px;
-}
-
-.evidence-details{
-    color:#d1d5db;
-    font-size:13px;
-    line-height:1.5;
-}
-
-.readiness-card{
-    text-align:center;
-}
-
-.readiness-card h3{
-    text-align:left;
-}
-
-.ring-wrap{
-    position:relative;
-    width:190px;
-    height:190px;
-    margin:10px auto 25px;
-}
-
-.ring-wrap svg{
-    width:190px;
-    height:190px;
-    transform:rotate(-90deg);
-}
-
-.ring-track{
-    fill:none;
-    stroke:#374151;
-    stroke-width:12;
-}
-
-.ring-fill{
-    fill:none;
-    stroke:#b8860b;
-    stroke-width:12;
-    stroke-linecap:round;
-    transition:stroke-dashoffset .8s ease;
-}
-
-.ring-center{
-    position:absolute;
-    inset:0;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-}
-
-.ring-pct{
-    color:#f9fafb;
-    font-size:34px;
-    font-weight:700;
-}
-
-.ring-label{
-    color:#9ca3af;
-    font-size:12px;
-    text-transform:uppercase;
-    letter-spacing:1px;
-    margin-top:3px;
-}
-
-.checklist{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    margin-top:15px;
-}
-
-.check-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:15px;
-    padding:13px 14px;
-    background:rgba(17,24,39,.65);
-    border-radius:8px;
-    border:1px solid #374151;
-}
-
-.check-label{
-    color:#d1d5db;
-    font-size:13px;
-}
-
-.check-value{
-    color:#d4af37;
-    font-size:13px;
-    font-weight:600;
-    text-align:right;
-}
-
-.pending{
-    color:#9ca3af;
-    font-weight:400;
-}
-
-.hint-box{
-    background:rgba(184,134,11,.07);
-    border:1px solid #6b5313;
-    border-radius:10px;
-    padding:18px;
-}
-
-.hint-title{
-    color:#d4af37;
-    font-size:13px;
-    font-weight:600;
-    text-transform:uppercase;
-    letter-spacing:.8px;
-    margin-bottom:12px;
-}
-
-.hint-suspect{
-    color:#f3f4f6;
-    font-size:17px;
-    font-weight:600;
-    margin-bottom:8px;
-}
-
-.hint-meta{
-    color:#9ca3af;
-    font-size:12px;
-    margin-bottom:10px;
-}
-
-.hint-note{
-    color:#d1d5db;
-    font-size:13px;
-    line-height:1.6;
-}
-
-.verdict-card{
-    background:linear-gradient(
-        135deg,
-        rgba(184,134,11,.12),
-        rgba(31,41,55,.9)
-    );
-    border-color:#6b5313;
-}
-
-.verdict-info{
-    color:#d1d5db;
-    font-size:13px;
-    line-height:1.6;
-    margin-bottom:20px;
-}
-
-.btn-solve{
-    width:100%;
-    padding:14px 20px;
-    border:none;
-    border-radius:8px;
-    background:#b8860b;
-    color:#111827;
-    font-size:14px;
-    font-weight:700;
-    cursor:pointer;
-    text-transform:uppercase;
-    letter-spacing:1px;
-    transition:background .2s,transform .2s;
-}
-
-.btn-solve:hover:not(:disabled){
-    background:#d4af37;
-    transform:translateY(-1px);
-}
-
-.btn-solve:disabled{
-    background:#4b5563;
-    color:#9ca3af;
-    cursor:not-allowed;
-    opacity:.7;
-}
-
-.warning-text{
-    color:#f59e0b;
-    font-size:12px;
-    margin-top:12px;
-    text-align:center;
-    line-height:1.5;
-}
+.warning-text { color: #f59e0b; font-size: 12px; margin-top: 12px; text-align: center; line-height: 1.5; }
 
 /* ================================= */
 /* VERDICT RESULT BASE STYLING */
 /* ================================= */
 
-.verdict-result{
-    padding:30px;
-    border-radius:14px;
+.verdict-result { padding: 30px; border-radius: 14px; }
+
+.correct-result {
+    border: 1px solid #15803d;
+    background: linear-gradient(135deg, rgba(21, 128, 61, .15), rgba(31, 41, 55, .95));
 }
 
-.correct-result{
-    border:1px solid #15803d;
-    background:linear-gradient(
-        135deg,
-        rgba(21,128,61,.15),
-        rgba(31,41,55,.95)
-    );
+.incorrect-result {
+    border: 1px solid #b8860b;
+    background: linear-gradient(135deg, rgba(184, 134, 11, .12), rgba(31, 41, 55, .95));
 }
 
-.incorrect-result{
-    border:1px solid #b8860b;
-    background:linear-gradient(
-        135deg,
-        rgba(184,134,11,.12),
-        rgba(31,41,55,.95)
-    );
+.result-header { display: flex; align-items: center; gap: 18px; margin-bottom: 25px; }
+
+.result-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: 700;
+    background: rgba(184, 134, 11, .15);
+    color: #d4af37;
+    border: 1px solid #b8860b;
+    flex-shrink: 0;
 }
 
-.result-header{
-    display:flex;
-    align-items:center;
-    gap:18px;
-    margin-bottom:25px;
+.correct-result .result-icon { color: #4ade80; border-color: #15803d; background: rgba(21, 128, 61, .15); }
+
+.result-header h2 { color: #f9fafb; font-size: 24px; margin-bottom: 5px; }
+.result-header p { color: #9ca3af; font-size: 14px; line-height: 1.5; }
+
+.score-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    background: rgba(17, 24, 39, .8);
+    border: 1px solid #374151;
+    border-radius: 10px;
+    margin-bottom: 18px;
 }
 
-.result-icon{
-    width:60px;
-    height:60px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:30px;
-    font-weight:700;
-    background:rgba(184,134,11,.15);
-    color:#d4af37;
-    border:1px solid #b8860b;
-    flex-shrink:0;
-}
+.score-box span { color: #d1d5db; font-size: 14px; }
+.score-box strong { color: #d4af37; font-size: 26px; }
 
-.correct-result .result-icon{
-    color:#4ade80;
-    border-color:#15803d;
-    background:rgba(21,128,61,.15);
-}
+.review-note { padding: 18px; background: rgba(17, 24, 39, .6); border-radius: 10px; border: 1px solid #374151; }
+.review-note strong { display: block; color: #d4af37; font-size: 13px; text-transform: uppercase; letter-spacing: .7px; margin-bottom: 8px; }
+.review-note p { color: #d1d5db; font-size: 14px; line-height: 1.6; }
 
-.result-header h2{
-    color:#f9fafb;
-    font-size:24px;
-    margin-bottom:5px;
-}
-
-.result-header p{
-    color:#9ca3af;
-    font-size:14px;
-    line-height:1.5;
-}
-
-.score-box{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:18px 20px;
-    background:rgba(17,24,39,.8);
-    border:1px solid #374151;
-    border-radius:10px;
-    margin-bottom:18px;
-}
-
-.score-box span{
-    color:#d1d5db;
-    font-size:14px;
-}
-
-.score-box strong{
-    color:#d4af37;
-    font-size:26px;
-}
-
-.review-note{
-    padding:18px;
-    background:rgba(17,24,39,.6);
-    border-radius:10px;
-    border:1px solid #374151;
-}
-
-.review-note strong{
-    display:block;
-    color:#d4af37;
-    font-size:13px;
-    text-transform:uppercase;
-    letter-spacing:.7px;
-    margin-bottom:8px;
-}
-
-.review-note p{
-    color:#d1d5db;
-    font-size:14px;
-    line-height:1.6;
-}
-
-.result-message{
-    margin-top:18px;
-    padding:14px;
-    border-radius:8px;
-    text-align:center;
-    font-size:13px;
-}
-
-.success-message{
-    color:#86efac;
-    background:rgba(21,128,61,.12);
-    border:1px solid #166534;
-}
-
-.retry-message{
-    color:#fcd34d;
-    background:rgba(184,134,11,.1);
-    border:1px solid #6b5313;
-}
+.result-message { margin-top: 18px; padding: 14px; border-radius: 8px; text-align: center; font-size: 13px; }
+.success-message { color: #86efac; background: rgba(21, 128, 61, .12); border: 1px solid #166534; }
+.retry-message { color: #fcd34d; background: rgba(184, 134, 11, .1); border: 1px solid #6b5313; }
 
 /* ================================= */
 /* VERDICT POPUP OVERLAY */
 /* ================================= */
 
-.verdict-overlay{
-    position:fixed;
-    inset:0;
-    z-index:99999;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:25px;
-    background:rgba(0,0,0,.68);
-    backdrop-filter:blur(10px);
-    -webkit-backdrop-filter:blur(10px);
-    animation:overlayFadeIn .25s ease forwards;
+.verdict-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+    background: rgba(0, 0, 0, .68);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    animation: overlayFadeIn .25s ease forwards;
 }
 
-.verdict-modal{
-    position:relative;
-    width:100%;
-    max-width:650px;
-    max-height:90vh;
-    overflow-y:auto;
-    border-radius:16px;
-    background:#1f2937;
-    animation:modalPopIn .3s ease forwards;
+.verdict-modal {
+    position: relative;
+    width: 100%;
+    max-width: 650px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 16px;
+    background: #1f2937;
+    animation: modalPopIn .3s ease forwards;
 }
 
-.verdict-modal::-webkit-scrollbar{
-    width:6px;
+.verdict-modal::-webkit-scrollbar { width: 6px; }
+.verdict-modal::-webkit-scrollbar-track { background: #111827; border-radius: 10px; }
+.verdict-modal::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+
+.correct-modal { border: 1px solid #15803d; box-shadow: 0 25px 80px rgba(0, 0, 0, .75), 0 0 40px rgba(21, 128, 61, .18); }
+.incorrect-modal { border: 1px solid #b8860b; box-shadow: 0 25px 80px rgba(0, 0, 0, .75), 0 0 40px rgba(184, 134, 11, .18); }
+
+.verdict-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 5;
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #4b5563;
+    border-radius: 50%;
+    background: rgba(17, 24, 39, .9);
+    color: #9ca3af;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease;
 }
 
-.verdict-modal::-webkit-scrollbar-track{
-    background:#111827;
-    border-radius:10px;
+.verdict-close:hover { background: #374151; color: #f9fafb; border-color: #6b7280; transform: rotate(90deg); }
+
+.verdict-modal .verdict-result { margin: 0; padding: 30px; border: none; border-radius: 16px; background: transparent; }
+.verdict-modal .result-header { padding-right: 45px; }
+.verdict-modal .result-icon { animation: resultIconPop .5s ease .15s both; }
+.verdict-modal .score-box { animation: resultContentFade .4s ease .2s both; }
+.verdict-modal .review-note { animation: resultContentFade .4s ease .3s both; }
+.verdict-modal .result-message { animation: resultContentFade .4s ease .4s both; }
+
+@keyframes overlayFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-.verdict-modal::-webkit-scrollbar-thumb{
-    background:#4b5563;
-    border-radius:10px;
+@keyframes modalPopIn {
+    from { opacity: 0; transform: scale(.90) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
-.correct-modal{
-    border:1px solid #15803d;
-    box-shadow:
-        0 25px 80px rgba(0,0,0,.75),
-        0 0 40px rgba(21,128,61,.18);
+@keyframes resultIconPop {
+    from { opacity: 0; transform: scale(.5); }
+    to { opacity: 1; transform: scale(1); }
 }
 
-.incorrect-modal{
-    border:1px solid #b8860b;
-    box-shadow:
-        0 25px 80px rgba(0,0,0,.75),
-        0 0 40px rgba(184,134,11,.18);
-}
-
-.verdict-close{
-    position:absolute;
-    top:14px;
-    right:14px;
-    z-index:5;
-    width:38px;
-    height:38px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    border:1px solid #4b5563;
-    border-radius:50%;
-    background:rgba(17,24,39,.9);
-    color:#9ca3af;
-    font-size:24px;
-    line-height:1;
-    cursor:pointer;
-    transition:
-        background .2s ease,
-        color .2s ease,
-        border-color .2s ease,
-        transform .2s ease;
-}
-
-.verdict-close:hover{
-    background:#374151;
-    color:#f9fafb;
-    border-color:#6b7280;
-    transform:rotate(90deg);
-}
-
-.verdict-modal .verdict-result{
-    margin:0;
-    padding:30px;
-    border:none;
-    border-radius:16px;
-    background:transparent;
-}
-
-.verdict-modal .result-header{
-    padding-right:45px;
-}
-
-.verdict-modal .result-icon{
-    animation:resultIconPop .5s ease .15s both;
-}
-
-.verdict-modal .score-box{
-    animation:resultContentFade .4s ease .2s both;
-}
-
-.verdict-modal .review-note{
-    animation:resultContentFade .4s ease .3s both;
-}
-
-.verdict-modal .result-message{
-    animation:resultContentFade .4s ease .4s both;
-}
-
-@keyframes overlayFadeIn{
-    from{
-        opacity:0;
-    }
-
-    to{
-        opacity:1;
-    }
-}
-
-@keyframes modalPopIn{
-    from{
-        opacity:0;
-        transform:scale(.90) translateY(20px);
-    }
-
-    to{
-        opacity:1;
-        transform:scale(1) translateY(0);
-    }
-}
-
-@keyframes resultIconPop{
-    from{
-        opacity:0;
-        transform:scale(.5);
-    }
-
-    to{
-        opacity:1;
-        transform:scale(1);
-    }
-}
-
-@keyframes resultContentFade{
-    from{
-        opacity:0;
-        transform:translateY(8px);
-    }
-
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
+@keyframes resultContentFade {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* ================================= */
 /* RESPONSIVE */
 /* ================================= */
 
-@media(max-width:850px){
-
-    .analysis-grid{
-        grid-template-columns:1fr;
-    }
-
-    .analysis-page{
-        padding:25px 18px 50px;
-    }
+@media (max-width: 850px) {
+    .analysis-grid { grid-template-columns: 1fr; }
+    .analysis-page { padding: 25px 18px 50px; }
 }
 
-@media(max-width:550px){
-
-    .case-summary-header{
-        flex-direction:column;
-    }
-
-    .suspect-details{
-        grid-template-columns:1fr;
-    }
-
-    .evidence-top{
-        align-items:flex-start;
-        flex-direction:column;
-    }
-
-    .page-heading h2{
-        font-size:26px;
-    }
-
-    .result-header{
-        align-items:flex-start;
-        gap:14px;
-    }
-
-    .result-icon{
-        width:52px;
-        height:52px;
-        font-size:25px;
-    }
-
-    .result-header h2{
-        font-size:21px;
-    }
-
-    .score-box{
-        gap:15px;
-    }
-
-    .score-box strong{
-        font-size:22px;
-    }
-
-    .verdict-overlay{
-        padding:15px;
-    }
-
-    .verdict-modal{
-        max-height:92vh;
-    }
-
-    .verdict-modal .verdict-result{
-        padding:24px 20px;
-    }
-
-    .verdict-modal .result-header{
-        padding-right:35px;
-    }
-
-    .verdict-close{
-        top:10px;
-        right:10px;
-        width:34px;
-        height:34px;
-        font-size:21px;
-    }
+@media (max-width: 550px) {
+    .case-summary-header { flex-direction: column; }
+    .suspect-details { grid-template-columns: 1fr; }
+    .evidence-top { align-items: flex-start; flex-direction: column; }
+    .page-heading h2 { font-size: 26px; }
+    .result-header { align-items: flex-start; gap: 14px; }
+    .result-icon { width: 52px; height: 52px; font-size: 25px; }
+    .result-header h2 { font-size: 21px; }
+    .score-box { gap: 15px; }
+    .score-box strong { font-size: 22px; }
+    .verdict-overlay { padding: 15px; }
+    .verdict-modal { max-height: 92vh; }
+    .verdict-modal .verdict-result { padding: 24px 20px; }
+    .verdict-modal .result-header { padding-right: 35px; }
+    .verdict-close { top: 10px; right: 10px; width: 34px; height: 34px; font-size: 21px; }
 }
 
-
-@keyframes modalPopOut{
-from{
-opacity:1;
-transform:scale(1) translateY(0);
+@keyframes modalPopOut {
+    from { opacity: 1; transform: scale(1) translateY(0); }
+    to { opacity: 0; transform: scale(.92) translateY(15px); }
 }
-
-
-to{
-    opacity:0;
-    transform:scale(.92) translateY(15px);
-}
-
-}
-
 </style>
-
 
 <div class="analysis-page">
 <div class="analysis-container">
 
-<div class="page-heading">
-    <h2>Case Analysis</h2>
-    <p>Review your collected evidence and selected suspect before filing the final verdict.</p>
+<div class="page-hdr">
+    <div>
+        <div class="page-title">Case Analysis</div>
+        <div class="page-sub">Review your collected evidence and selected suspect before filing the final verdict.</div>
+    </div>
 </div>
 
 <section class="case-summary">
@@ -849,74 +399,47 @@ to{
                 {% if case.location %} · {{ case.location }}{% endif %}
             </p>
         </div>
-
-        <div class="status-badge">
-            {{ case.status|default:"Active" }}
-        </div>
+        <div class="status-badge">{{ case.status|default:"Active" }}</div>
     </div>
 
     {% if case.description %}
-        <div class="case-description">
-            {{ case.description }}
-        </div>
+        <div class="case-description">{{ case.description }}</div>
     {% endif %}
 </section>
 
 <div class="analysis-grid">
-
 <div>
 
 <section class="card">
     <h3>Suspect Accused</h3>
 
     {% if selected_suspect %}
-
         <div class="suspect-box">
             <div class="suspect-header">
-                <div class="suspect-name">
-                    {{ selected_suspect.name }}
-                </div>
-
-                <div class="accused-badge">
-                    Selected
-                </div>
+                <div class="suspect-name">{{ selected_suspect.name }}</div>
+                <div class="accused-badge">Selected</div>
             </div>
 
             <div class="suspect-details">
-
                 <div class="detail-item">
                     <div class="detail-label">Occupation</div>
-                    <div class="detail-value">
-                        {{ selected_suspect.occupation|default:"Not available" }}
-                    </div>
+                    <div class="detail-value">{{ selected_suspect.occupation|default:"Not available" }}</div>
                 </div>
-
                 <div class="detail-item">
                     <div class="detail-label">Alibi Status</div>
-                    <div class="detail-value">
-                        {{ selected_suspect.alibi_status|default:"Unknown" }}
-                    </div>
+                    <div class="detail-value">{{ selected_suspect.alibi_status|default:"Unknown" }}</div>
                 </div>
-
                 <div class="detail-item">
                     <div class="detail-label">Motive</div>
-                    <div class="detail-value">
-                        {{ selected_suspect.motive|default:"No motive recorded" }}
-                    </div>
+                    <div class="detail-value">{{ selected_suspect.motive|default:"No motive recorded" }}</div>
                 </div>
-
                 <div class="detail-item">
                     <div class="detail-label">Alibi</div>
-                    <div class="detail-value">
-                        {{ selected_suspect.alibi|default:"No alibi recorded" }}
-                    </div>
+                    <div class="detail-value">{{ selected_suspect.alibi|default:"No alibi recorded" }}</div>
                 </div>
-
             </div>
         </div>
-
     {% else %}
-
         <div class="empty-state">
             <div class="empty-icon">👤</div>
             <p>
@@ -925,7 +448,6 @@ to{
                 and select the person you believe is responsible.
             </p>
         </div>
-
     {% endif %}
 </section>
 
@@ -933,54 +455,31 @@ to{
     <h3>Evidence Reviewed</h3>
 
     <div class="evidence-count">
-        {{ evidence_collected }}
-        of
-        {{ evidence_total }}
-        evidence item{{ evidence_total|pluralize }} reviewed
+        {{ evidence_collected }} of {{ evidence_total }} evidence item{{ evidence_total|pluralize }} reviewed
     </div>
 
     {% if selected_evidence %}
-
         <div class="evidence-list">
-
             {% for item in selected_evidence %}
-
                 <div class="evidence-item">
-
                     <div class="evidence-top">
-
-                        <div class="evidence-name">
-                            {{ item.item_name }}
-                        </div>
-
+                        <div class="evidence-name">{{ item.item_name }}</div>
                         {% if item.evidence_type %}
-                            <div class="evidence-type">
-                                {{ item.evidence_type }}
-                            </div>
+                            <div class="evidence-type">{{ item.evidence_type }}</div>
                         {% endif %}
-
                     </div>
 
                     {% if item.found_at %}
-                        <div class="evidence-location">
-                            📍 Found at: {{ item.found_at }}
-                        </div>
+                        <div class="evidence-location">📍 Found at: {{ item.found_at }}</div>
                     {% endif %}
 
                     {% if item.details %}
-                        <div class="evidence-details">
-                            {{ item.details }}
-                        </div>
+                        <div class="evidence-details">{{ item.details }}</div>
                     {% endif %}
-
                 </div>
-
             {% endfor %}
-
         </div>
-
     {% else %}
-
         <div class="empty-state">
             <div class="empty-icon">🗂️</div>
             <p>
@@ -989,142 +488,71 @@ to{
                 support your deduction.
             </p>
         </div>
-
     {% endif %}
 </section>
 
 </div>
-
 <div>
 
 <section class="card readiness-card">
-
     <h3>Case Readiness</h3>
 
     <div class="ring-wrap">
-
         <svg viewBox="0 0 176 176">
-
-            <circle
-                class="ring-track"
-                cx="88"
-                cy="88"
-                r="72">
-            </circle>
-
-            <circle
-                id="readinessRing"
-                class="ring-fill"
-                cx="88"
-                cy="88"
-                r="72"
-                data-percent="{{ readiness_score }}">
-            </circle>
-
+            <circle class="ring-track" cx="88" cy="88" r="72"></circle>
+            <circle id="readinessRing" class="ring-fill" cx="88" cy="88" r="72" data-percent="{{ readiness_score }}"></circle>
         </svg>
 
         <div class="ring-center">
-
-            <div class="ring-pct">
-                {{ readiness_score }}%
-            </div>
-
-            <div class="ring-label">
-                Ready
-            </div>
-
+            <div class="ring-pct">{{ readiness_score }}%</div>
+            <div class="ring-label">Ready</div>
         </div>
-
     </div>
 
     <div class="checklist">
-
         <div class="check-row">
-            <span class="check-label">
-                Evidence reviewed
-            </span>
-
-            <span class="check-value">
-                {{ evidence_collected }} / {{ evidence_total }}
-            </span>
+            <span class="check-label">Evidence reviewed</span>
+            <span class="check-value">{{ evidence_collected }} / {{ evidence_total }}</span>
         </div>
 
         <div class="check-row">
-
-            <span class="check-label">
-                Suspect selected
-            </span>
-
+            <span class="check-label">Suspect selected</span>
             {% if selected_suspect %}
-
-                <span class="check-value">
-                    ✓ {{ selected_suspect.name }}
-                </span>
-
+                <span class="check-value">✓ {{ selected_suspect.name }}</span>
             {% else %}
-
-                <span class="check-value pending">
-                    — Pending —
-                </span>
-
+                <span class="check-value pending">— Pending —</span>
             {% endif %}
-
         </div>
-
     </div>
-
 </section>
 
 <section class="card">
-
     <h3>Deduction Hint</h3>
 
     {% if top_suspect %}
-
         <div class="hint-box">
-
-            <div class="hint-title">
-                ⚠ Person of Interest
-            </div>
-
-            <div class="hint-suspect">
-                {{ top_suspect.name }}
-            </div>
-
+            <div class="hint-title">⚠ Person of Interest</div>
+            <div class="hint-suspect">{{ top_suspect.name }}</div>
             <div class="hint-meta">
-
-                {% if top_suspect.occupation %}
-                    {{ top_suspect.occupation }}
-                {% endif %}
-
-                {% if top_suspect.alibi_status %}
-                    · Alibi: {{ top_suspect.alibi_status }}
-                {% endif %}
-
+                {% if top_suspect.occupation %}{{ top_suspect.occupation }}{% endif %}
+                {% if top_suspect.alibi_status %} · Alibi: {{ top_suspect.alibi_status }}{% endif %}
             </div>
-
             <div class="hint-note">
                 This suspect's alibi or background requires
                 closer investigation. Review the available
                 evidence carefully before reaching your
                 final conclusion.
             </div>
-
         </div>
-
     {% else %}
-
         <div class="empty-state">
             <div class="empty-icon">💡</div>
             <p>No deduction hint is currently available.</p>
         </div>
-
     {% endif %}
-
 </section>
 
 <section class="card verdict-card">
-
     <h3>Final Verdict</h3>
 
     <div class="verdict-info">
@@ -1133,148 +561,119 @@ to{
         your deduction against the hidden case solution.
     </div>
 
-    <form
-    method="post"
-    action="{% url 'solve_case' case.case_id %}"
->
-    {% csrf_token %}
-
-    <input
-        type="hidden"
-        name="submission_id"
-        value="{{ submission.submission_id }}"
-    >
-
-    <input
-        type="hidden"
-        name="user_id"
-        value="{{ submission.user_id }}"
-    >
-
-    <button
-        type="submit"
-        class="btn-solve"
-        {% if not can_file_verdict %}disabled{% endif %}
-    >
-         File Verdict
-    </button>
-</form>
+    <form method="post" action="{% url 'solve_case' case.case_id %}">
+        {% csrf_token %}
+        <input type="hidden" name="submission_id" value="{{ submission.submission_id }}">
+        <input type="hidden" name="user_id" value="{{ submission.user_id }}">
+        <button type="submit" class="btn-solve" {% if not can_file_verdict %}disabled{% endif %}>
+            File Verdict
+        </button>
+    </form>
 
     {% if not selected_suspect %}
-
-        <div class="warning-text">
-            Select a suspect before filing your verdict.
-        </div>
-
+        <div class="warning-text">Select a suspect before filing your verdict.</div>
     {% elif evidence_collected == 0 %}
-
-        <div class="warning-text">
-            Select at least one piece of evidence
-            before filing your verdict.
-        </div>
-
+        <div class="warning-text">Select at least one piece of evidence before filing your verdict.</div>
     {% endif %}
-
 </section>
 
 </div>
-
 </div>
 
 {% if verdict_done %}
-
 <div class="verdict-overlay" id="verdictOverlay">
-
 <div class="verdict-modal {% if verdict_correct %}correct-modal{% else %}incorrect-modal{% endif %}">
-
-    <button
-        type="button"
-        class="verdict-close"
-        id="closeVerdict"
-        aria-label="Close result"
-    >
-        ×
-    </button>
+    <button type="button" class="verdict-close" id="closeVerdict" aria-label="Close result">×</button>
 
     <section class="verdict-result {% if verdict_correct %}correct-result{% else %}incorrect-result{% endif %}">
-
         <div class="result-header">
-
-            <div class="result-icon">
-                {% if verdict_correct %}
-                    ✓
-                {% else %}
-                    ✕
-                {% endif %}
-            </div>
-
+            <div class="result-icon">{% if verdict_correct %}✓{% else %}✕{% endif %}</div>
             <div>
                 {% if verdict_correct %}
-
                     <h2>Case Solved</h2>
-
-                    <p>
-                        Excellent investigation. You identified
-                        the correct solution.
-                    </p>
-
+                    <p>Excellent investigation. You identified the correct solution.</p>
                 {% else %}
-
                     <h2>Incorrect Deduction</h2>
-
                     <p>
                         Your investigation was partially correct,
                         but the final deduction did not match
                         the case solution.
                     </p>
-
                 {% endif %}
             </div>
-
         </div>
 
         <div class="score-box">
             <span>Final Score</span>
-
-            <strong>
-                {{ verdict_score }}/100
-            </strong>
+            <strong>{{ verdict_score }}/100</strong>
         </div>
 
         <div class="review-note">
-
-            <strong>
-                Investigation Feedback
-            </strong>
-
-            <p>
-                {{ verdict_notes }}
-            </p>
-
+            <strong>Investigation Feedback</strong>
+            <p>{{ verdict_notes }}</p>
         </div>
 
         {% if verdict_correct %}
-
-            <div class="result-message success-message">
-                 You successfully solved this case.
-            </div>
-
+            <div class="result-message success-message">You successfully solved this case.</div>
         {% else %}
-
             <div class="result-message retry-message">
-                 Review the evidence and suspect information
-                to improve your deduction.
+                Review the evidence and suspect information to improve your deduction.
             </div>
-
         {% endif %}
-
     </section>
-
 </div>
-
 </div>
-
 {% endif %}
-<script> document.addEventListener("DOMContentLoaded", function(){ const ring = document.getElementById("readinessRing"); if(ring){ const percent = parseFloat( ring.dataset.percent || 0 ); const radius = 72; const circumference = 2 * Math.PI * radius; ring.style.strokeDasharray = circumference; ring.style.strokeDashoffset = circumference - (percent / 100) * circumference; } const overlay = document.getElementById("verdictOverlay"); const closeButton = document.getElementById("closeVerdict"); if(overlay && closeButton){ closeButton.addEventListener("click", function(){ overlay.style.animation = "overlayFadeOut .2s ease forwards"; const modal = overlay.querySelector(".verdict-modal"); if(modal){ modal.style.animation = "modalPopOut .2s ease forwards"; } setTimeout(function(){ overlay.remove(); document.body.style.overflow = ""; }, 200); }); overlay.addEventListener("click", function(event){ if(event.target === overlay){ closeButton.click(); } }); document.addEventListener("keydown", function(event){ if(event.key === "Escape"){ closeButton.click(); } }); document.body.style.overflow = "hidden"; } }); </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const ring = document.getElementById("readinessRing");
+
+    if (ring) {
+        const percent = parseFloat(ring.dataset.percent || 0);
+        const radius = 72;
+        const circumference = 2 * Math.PI * radius;
+
+        ring.style.strokeDasharray = circumference;
+        ring.style.strokeDashoffset = circumference - (percent / 100) * circumference;
+    }
+
+    const overlay = document.getElementById("verdictOverlay");
+    const closeButton = document.getElementById("closeVerdict");
+
+    if (overlay && closeButton) {
+        closeButton.addEventListener("click", function () {
+            overlay.style.animation = "overlayFadeOut .2s ease forwards";
+
+            const modal = overlay.querySelector(".verdict-modal");
+            if (modal) {
+                modal.style.animation = "modalPopOut .2s ease forwards";
+            }
+
+            setTimeout(function () {
+                overlay.remove();
+                document.body.style.overflow = "";
+            }, 200);
+        });
+
+        overlay.addEventListener("click", function (event) {
+            if (event.target === overlay) {
+                closeButton.click();
+            }
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                closeButton.click();
+            }
+        });
+
+        document.body.style.overflow = "hidden";
+    }
+});
+</script>
+
+</div>
+</div>
 
 {% endblock %}

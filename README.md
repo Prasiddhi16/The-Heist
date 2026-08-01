@@ -65,7 +65,7 @@ START → LOGIN → DASHBOARD → CASES MODULE (master list)
 ## Setup / Installation
 
 ```bash
-git clone <repo-url>
+git clone <https://github.com/Prasiddhi16/The-Heist.git>
 cd the-heist
 
 # Python environment
@@ -86,9 +86,9 @@ Built by a four-member team as a COMP 232 group project at Kathmandu
 University, Department of Computer Science and Engineering, submitted to
 Mr. Bipesh Subedi.
 
-| Name | Student ID |
-|---|---|
-| Prapti Dhamala | 037967-24 |
-| Prasiddhi Dumre | 037970-24 |
-| Ushma Sapkota | 037999-24 |
-| Anusha Khatri | 036130-24 |
+| Name | Student ID |Git Profiles|
+|---|---|---|
+| Prapti Dhamala | 037967-24 |https://github.com/PraptiDhamala|
+| Prasiddhi Dumre | 037970-24 |https://github.com/Prasiddhi16|
+| Ushma Sapkota | 037999-24 |https://github.com/Ushma-Sapkota|
+| Anusha Khatri | 036130-24 |https://github.com/AnushaKhatri5|

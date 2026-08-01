@@ -2,9 +2,37 @@
 {% block title %}Leaderboard{% endblock %}
 {% block content %}
 <style>
-.page-hdr{border-left:3px solid #b3221c;padding-left:14px;margin-bottom:24px}
-.page-title{font-family:'Courier New',monospace;letter-spacing:1px;text-transform:uppercase;color:#f6f4f0;font-size:1.3rem;margin-bottom:4px}
-.page-sub{color:#9a8f7c;font-style:italic}
+ @import url('https://fonts.googleapis.com/css2?family=Nosifer&family=Special+Elite&display=swap');
+
+.page-hdr {
+  position: relative;
+  margin-bottom: 24px;
+  padding: 15px 0 15px 20px;
+  border-left: 3px solid var(--accent-red);
+}
+
+.page-title {
+  font-family: 'Nosifer', cursive;
+  font-size: 1.8rem;
+  font-weight: 400;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: black;
+  text-shadow:
+    0 0 8px rgba(184, 151, 22, 0.9),
+    0 0 18px rgba(184, 151, 22, 0.9),
+    0 0 32px rgba(184, 151, 22, 0.9),
+    2px 2px 0 #000;
+  line-height: 1.3;
+}
+
+.page-sub {
+  font-family: 'Special Elite', cursive;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+  font-style: italic;
+}
 .leaderboard-card{background:#14120f;background-image:radial-gradient(rgba(255,255,255,.02) 1px,transparent 1px);background-size:4px 4px;border:1px solid #2c2620;box-shadow:0 0 0 1px #000 inset,0 10px 30px rgba(0,0,0,.5);padding:20px;margin-bottom:24px;overflow-x:auto}
 .card-hdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
 .card-title{font-family:'Courier New',monospace;letter-spacing:1.5px;text-transform:uppercase;color:#bfae93;font-size:.85rem}
